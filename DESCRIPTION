@@ -1,0 +1,39 @@
+Package: surveil
+Title: Time Series Models for Routine Disease Surveillance 
+Version: 0.0.1
+Authors@R: 
+    person(given = "Connor",
+           family = "Donegan",
+           role = c("aut", "cre"),
+           email = "connor.donegan@utsouthwestern.edu",
+           comment = c(ORCID = "0000-0002-9698-5443"))
+Description: Bayesian time series models for routine disease surveillance.
+License: `use_gpl3_license()`
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1
+Biarch: true
+Depends: 
+    R (>= 3.4.0)
+Imports: 
+    methods,
+    Rcpp (>= 0.12.0),
+    RcppParallel (>= 5.0.1),
+    rstan (>= 2.18.1),
+    rstantools (>= 2.1.1.9),
+    tidybayes (>= 3.0.0),
+    dplyr (>= 1.0.7),
+    loo (>= 2.0.0),
+    rlang (>= 0.4.0),
+    tidyr (>= 1.1.0),
+    bridgesampling (>= 1.0)
+LinkingTo: 
+    BH (>= 1.66.0),
+    Rcpp (>= 0.12.0),
+    RcppEigen (>= 0.3.3.3.0),
+    RcppParallel (>= 5.0.1),
+    rstan (>= 2.18.1),
+    StanHeaders (>= 2.18.0),
+    loo (>= 2.4.0)
+SystemRequirements: GNU make
