@@ -1,0 +1,411 @@
+
+#' Thiel's T for a non-nested data structure
+#'
+#' @param Count Case counts, integers
+#' @param Population Population at risk, integers
+#' @param rates If `Count` is not provided, then `rates` must be provided (`Count = rates * Population`).
+#' @param total If `total = TRUE`, Theil's index will be returned. Each unit contributes to Theil's index; if `total = FALSE`, all of the elements that sum to Theil's index will be returned.
+#'
+#' @return
+#' 
+#' ### theil2
+#'
+#' If `total = TRUE` (the default), `theil2` returns Theil's index as a numeric value. Else, `theil2` returns a vector of values that sum to Theil's index.
+#' 
+#' @examples
+#'
+#' Count <- c(10, 12, 3, 111)
+#' Pop <- c(1000, 1200, 4000, 9000)
+#' theil2(Count, Pop)
+#' theil2(Count, Pop, total = FALSE)
+#' 
+#' @export
+#' @rdname theil
+theil2 <- function(Count, Population, rates, total = TRUE) {
+    if (missing(Count)) Count <- rates * Population
+    omega = Count / sum(Count)
+    eta = Population / sum( Population )
+    T = omega * log (omega / eta)
+    T[is.na(T)] <- 0
+    if (total) T = sum( T )
+    return (Theil = T)
+}
+
+
+
+#' Theil's inequality index
+#' 
+#' @description Theil's entropy-based inequality index
+#' @param x A fitted `surveil` model, from \code{\link[surveil]{stan_rw}}; or, a list of fitted `surveil` models, where each model represents a different geographic area (e.g., states).
+#' 
+#' @details
+#'
+#' Theil's index is a good index of inequality in disease and mortality burdens when multiple groups are being considered. It provides a summary measure of inequality across a set of demographic groups that may be tracked over time. Also, it is interesting because it is additive, and thus admits of simple decompositions. 
+#'
+#' The index measures discrepancies between a population's share of the disease burden, `omega`, and their share of the population, `eta`. A situation of zero inequality would imply that each population's share of cases is equal to its population share, or, `omega=eta`. Each population's contribution to total inequality is calculated as:
+#' ```
+#'              T_i = omega_i * [log(omega_i/eta_i)],
+#' ```
+#' the log-ratio of case-share to population-share, weighted by their share of cases. Theil's index for all areas is the sum of each area's T_i:
+#' ```
+#'              T = sum_(i=1)^n T_i.
+#' ```
+#' Theil's T is thus a weighted mean of log-ratios of case shares to population shares, where each log-ratio (which we may describe as a raw inequality score) is weighted by its share of total cases. The index has a minimum of zero and a maximum of `log(N)`, where `N` is the number of units (e.g., number of counties).
+
+#' Theil's index is based on Shannon's information theory and Theil used it to study a variety of topics, including income inequality and racial segregation. Theil's index is often of great interest because it is additive across multiple scales, such as when the data has a nested structure to it (e.g., demographic groups within states). 
+#'
+#' @source
+#'
+#' Conceicao, P. and P. Ferreira (2000). The young person's guide to the Theil Index: Suggesting intuitive interpretations and exploring analytical applications. University of Texas Inequality Project. UTIP Working Paper Number 14. Accessed May 1, 2021 from \url{https://utip.gov.utexas.edu/papers.html}
+#'
+#' Conceicao, P, Galbraith, JK, Bradford, P. (2001). The Theil Index in sequences of nested and hierarchic grouping structures: implications for the measurement of inequality through time, with data aggregated at different levels of industrial classification. *Eastern Economic Journal*. 27(4): 491-514.
+#' 
+#' Theil, Henri (1972). *Statistical Decomposition Analysis.* Amsterdan, The Netherlands and London, UK: North-Holland Publishing Company.
+#'
+#' Shannon, Claude E. and Weaver, Warren (1963). *The Mathematical Theory of Communication*. Urbana and Chicago, USA: University if Illinois Press.
+#'
+#' @seealso \code{\link[surveil]{plot.theil}} \code{\link[surveil]{print.theil}} \code{\link[surveil]{plot.theil_list}}
+#' 
+#' @export
+#' @md
+theil <- function(x) {
+    UseMethod("theil", x)
+}
+
+
+#' Theil's inequality index
+#' 
+#' @return
+#' ### theil.surveil
+#' 
+#' A named list with the following elements: \describe{
+#'
+#' \item{summary}{ A `data.frame` summarizing the posterior probability distribution for Theil's T, including the mean and 95 percent credible interval for each time period}
+#' \item{samples}{A `data.frame` with MCMC samples for Theil's T}
+#' }
+#' 
+#' 
+#' @importFrom ggdist mean_qi
+#' @importFrom tidybayes gather_draws
+#' @importFrom dplyr `%>%` distinct select inner_join left_join mutate group_by ungroup summarise
+#' @md
+#' @rdname theil
+#' @method theil surveil
+#' @export
+theil.surveil <- function(x) {
+    if (inherits(x$group, "NULL")) stop("There is no grouping variable stored in x$group but the purpose of Theil's T is to measure inequality across group.")
+    rate <- group.index <- time.index <- NULL # global binding
+    group.df <- x$group$group.df
+    group.df$group.index <- as.integer(group.df$group.index)
+    time.var <- unique(x$summary$time)
+    time.index <- 1:length(time.var)
+    time.df <- data.frame(time = time.var, time.index = time.index)
+    
+    names(x$summary)[grep(x$group$group, names(x$summary))] <- "label"    
+    pop.df <- dplyr::distinct(x$summary, .data$time, .data$label, .data$Population) %>%
+        dplyr::left_join(group.df, by = "label") %>%
+        dplyr::left_join(time.df, by = "time")
+    suppressMessages(
+        theil.samples <- x$samples %>%
+            tidybayes::gather_draws(rate[group.index, time.index]) %>%
+            dplyr::select(.data$group.index, .data$time.index, .data$.draw, .data$.value) %>%
+            dplyr::inner_join(pop.df, by = c("time.index", "group.index")) %>%
+            dplyr::mutate(Count = .data$.value * .data$Population) %>%
+            dplyr::ungroup() %>%
+            dplyr::group_by(.data$time, .data$.draw) %>%    
+            dplyr::summarise(Theil = theil2(Count = .data$Count, Population = .data$Population)) %>%
+            dplyr::ungroup()          
+    )
+    theil.df <- theil.samples %>%
+        dplyr::group_by(.data$time) %>%
+        ggdist::mean_qi(.data$Theil)
+    res <- list(summary = theil.df,
+                samples = theil.samples,
+                groups = x$group$group.df$label,
+                group_var = x$group$group)
+    class(res) <- append("theil", class(res))
+    return (res)
+}
+
+
+#' Theil index
+#'
+#' 
+#' @return
+#' ### theil.list
+#'
+#' An object of class `theil_list` and `tbl_df` containing MCMC samples for Theil's index at each time period. Columns are: \describe{
+#' \item{time}{Time period indicator}
+#' \item{.draw}{An id for each MCMC sample; note that samples are from the joint distribution}
+#' \item{Theil_between}{The between-geographies component of Thiel's index}
+#' \item{Theil_within}{The within-geographies component of Theil's index}
+#' \item{Theil}{Theil's indequality index (T = Between + Within)}.
+#' }
+#'
+#' 
+#' @importFrom dplyr bind_rows inner_join `%>%` ungroup group_by mutate summarise
+#' @importFrom stats aggregate
+#' @export
+#' @method theil list
+#' @rdname theil
+#' @md
+theil.list <- function(x) {
+    Population <- time <- NULL # global binding
+    stopifnot(all(unlist(lapply(x, function(xi) inherits(xi, "surveil")))))
+    geog.pop.list <- lapply(x, function(x) {
+    stats::aggregate(Population ~ time, FUN = sum, x$summary)
+    })
+    geog.pop.df <- dplyr::bind_rows(geog.pop.list, .id = "geog")
+    tw.i.list <- lapply(x, function(x) theil(x)$samples)
+    tw.i.df <- dplyr::bind_rows(tw.i.list, .id = "geog")
+    cases.list <- lapply(x, make_cases)
+    cases.df <- dplyr::bind_rows(cases.list, .id = "geog")
+
+   theil_samples <- cases.df %>%
+       dplyr::inner_join(tw.i.df, by = c("geog", "time", ".draw")) %>%    
+       dplyr::inner_join(geog.pop.df, by = c("geog", "time")) %>%
+       dplyr::ungroup() %>%
+       dplyr::group_by(.data$time, .data$.draw) %>%
+       dplyr::mutate(total.count = sum(.data$Count),
+                     total.pop = sum(.data$Population)
+                     ) %>%
+       dplyr::mutate(omega = .data$Count / .data$total.count,
+                     eta = .data$Population / .data$total.pop,
+                     T_between_contribution = .data$omega * log(.data$omega / .data$eta),
+                     T_within_contribution = .data$omega * .data$Theil) %>%
+       dplyr::summarise(
+                  Theil_between = sum(.data$T_between_contribution),
+                  Theil_within = sum(.data$T_within_contribution),
+                  ) %>%
+       dplyr::mutate(Theil = .data$Theil_between + .data$Theil_within) %>%
+       dplyr::ungroup()
+    theil_summary <- theil_samples %>%
+        dplyr::group_by(.data$time) %>%
+        ggdist::mean_qi(.data$Theil, .data$Theil_between, .data$Theil_within)
+    out <- list(summary = theil_summary, samples = theil_samples, areas = length(x))
+    class(out) <- append("theil_list", class(out))
+    return (out)    
+}
+
+#' @noRd
+#' @importFrom dplyr distinct `%>%` left_join mutate select inner_join ungroup group_by
+#' @importFrom tidybayes gather_draws
+make_cases <- function(x) {
+    rate <- group.index <- time.index <- NULL # global binding
+    stopifnot(inherits(x, "surveil"))
+    group.df <- x$group$group.df
+    group.df$group.index <- as.integer(group.df$group.index)
+    time.var <- unique(x$summary$time)
+    time.df <- data.frame(time = time.var, time.index = 1:length(time.var))    
+    names(x$summary)[grep(x$group$group, names(x$summary))] <- "label"    
+    pop.df <- dplyr::distinct(x$summary, .data$time, .data$label, .data$Population) %>%
+        dplyr::left_join(group.df, by = "label") %>%
+        dplyr::left_join(time.df, by = "time") %>%
+        dplyr::mutate(group.index = as.integer(.data$group.index))            
+    cases.samples <- x$samples %>%
+        tidybayes::gather_draws(rate[group.index, time.index]) %>%
+        dplyr::select(.data$group.index, .data$time.index, .data$.draw, .data$.value) %>%
+        dplyr::inner_join(pop.df, by = c("time.index", "group.index")) %>%
+        dplyr::mutate(Count = .data$.value * .data$Population) %>%
+        dplyr::ungroup() %>%
+        dplyr::group_by(.data$time, .data$.draw) %>%
+        dplyr::mutate(Count = sum(.data$Count)) %>% # count.per.geog
+        dplyr::ungroup() %>%
+        select(.data$time, .data$.draw, .data$Count)
+    return (cases.samples)
+    }
+
+
+
+#' Plot theil's index
+#' 
+#' @export
+#' @md
+#' @param x An object of class `theil`, as created by calling \code{\link[surveil]{theil}} on a fitted `surveil` model.
+#' @param fill Fill color
+#' @param col Line color
+#' @param scale Multiply Theil's T by `scale` for readability
+#' @param labels X-axis labels (time periods)
+#' @param ... additional plot arguments passed to \code{\link[ggplot2]{theme}}
+#' @return A `ggplot`
+#' @examples
+#'  \dontrun{
+#'  dfw <- msa[grep("Dallas", msa$MSA), ]
+#'  fit <- stan_rw(dfw, time = Year, group = Race)
+#'  theil.dfw <- theil(fit)
+#'  plot(theil.dfw)
+#' }
+#' @method plot theil
+#' @import ggplot2
+#' @rdname theil
+plot.theil <- function(x, col = "black", fill = "gray80", scale = 100, labels = x$summary$time, ...) {
+    ggplot(x$summary) +
+        geom_ribbon(
+            aes(.data$time,
+                ymin= scale * .data$.lower,
+                ymax= scale * .data$.upper),
+            fill = fill,
+            alpha = 0.5
+        ) +
+        geom_line(aes(.data$time, scale * .data$Theil),
+                  col = col,                
+                  lwd = 0.75
+                  ) +
+        scale_x_continuous(
+            name = NULL
+        ) +
+        scale_y_continuous(name = paste0("Theil x ", scale)) +
+        theme_classic() +
+        theme(...)
+}
+
+
+#' print Theil's index
+#' @param x Object of class `theil`, as returned by calling `theil` on a fitted `surveil` model
+#' @param scale Scale Theil's index by `scale`
+#' @param digits number of digits to print (passed to \code{\link[base]{print.data.frame}})
+#' @param ... additional print arguments
+#' @method print theil
+#' @rdname theil
+#' @importFrom scales comma percent
+#' @export
+print.theil <- function(x, scale = 100, digits = 3, ...) {    
+    message("Summary of Theil's Inequality Index")    
+    message("Groups: ", paste(x$groups, collapse = ", "))
+    message("Time periods observed: ", length(x$summary$time))
+    pdf <- as.data.frame(x$summary)
+    pdf <- pdf[,c("time", "Theil", ".lower", ".upper")]
+    if (scale != 1) {
+        pdf$Theil <- pdf$Theil * scale
+        pdf$.lower <- pdf$.lower * scale
+        pdf$.upper <- pdf$.upper * scale
+        message("Theil's T (times ", scale, ") with 95% credible intervals")
+    } else {
+        message("Theil's T with 95% credible intervals")
+    }
+    print(pdf, digits = digits, row.names = FALSE, ...)
+}
+
+#' Plot theil's index for nested data
+#'
+#' @description Plot the between geography, within geography, and total (Total = Between + Within) inequality as measured by Theil's index.
+#' 
+#' @param x An object of class `theil_list`, as created by calling \code{\link[surveil]{theil}} on a list of fitted `surveil` models.
+#' @param col Line color
+#' @param fill Fill color for credible intervals
+#' @param alpha Transparency of credible interval fill color
+#' @param scale Multiply Theil's T by `scale` for readability
+#' @param plot If `FALSE`, return a list of `ggplot`s.
+#' @param base_size Passed to `theme_classic` to control size of plot elements (e.g., text)
+#' @param between_title Plot title for the between geography component of Theil's T; defaults to "Between".
+#' @param within_title Plot title for the within geography component of Theil's T; defaults to "Within".
+#' @param total_title Plot title for Theil's index; defaults to "Total".
+#' @param ... additional plot arguments passed to \code{\link[ggplot2]{theme}}
+#' @return If `plot = FALSE`, returns a list of `ggplot`s; otherwise, the `ggplots` will be drawn to the current plotting device using \code{\link[gridExtra]{grid.arrange}}.
+#'
+#' @method plot theil_list
+#' @import ggplot2
+#' @importFrom ggdist mean_qi
+#' @importFrom dplyr `%>%` group_by mutate summarise 
+#' @importFrom gridExtra grid.arrange
+#' @seealso \code{\link[surveil]{theil}}
+#' @export
+#' @rdname theil
+#' @md
+plot.theil_list <- function(x,
+                            col = "black",
+                            fill = "black",
+                            alpha = 0.25,
+                            between_title = "Between",
+                            within_title = "Within",
+                            total_title = "Total",
+                            scale = 100,
+                            plot = TRUE,
+                            base_size = 14,
+                            ...) {
+    if (scale != 1) message("y-axis scale is T times ", scale)
+    max.val <- x$summary %>%
+        dplyr::summarise(max.val = max(.data$Theil.upper))
+    max.val <- as.numeric(max.val$max.val) * scale
+    print(max.val)
+    ## between geography inequality
+    g1 <- ggplot(x$summary,
+                 aes(x = .data$time,                     
+                     y = .data$Theil_between * scale,
+                     ymin = .data$Theil_between.lower * scale,
+                     ymax = .data$Theil_between.upper * scale)
+                     ) +
+        geom_line(col = col) +
+        geom_ribbon(alpha = alpha,
+                    fill = fill
+                    ) +
+        scale_y_continuous(name = NULL,
+                           limits = c(0, max.val)) +
+        labs(subtitle = between_title, x  = NULL) +
+        theme_classic(base_size = base_size) +
+        theme(...)
+    ## within geography inequality
+    g2 <- ggplot(x$summary,
+                 aes(.data$time,
+                     .data$Theil_within * scale)) +
+        geom_line(col = col) +
+        geom_ribbon(aes(ymin = .data$Theil_within.lower * scale,
+                        ymax = .data$Theil_within.upper * scale),
+                    alpha = alpha,
+                    fill = fill
+                    ) +
+        scale_y_continuous(name = NULL, limits = c(0, max.val)) +
+        labs(
+            subtitle = within_title,
+            x = NULL
+        ) +
+        theme_classic(base_size = base_size) +
+        theme(...)
+    ## total inequality
+    g3 <- ggplot(x$summary,
+                 aes(.data$time,
+                     .data$Theil * scale)) +
+        geom_line(col = col) +
+        geom_ribbon(aes(ymin = .data$Theil.lower * scale,
+                        ymax = .data$Theil.upper * scale),
+                    alpha = alpha,
+                    fill = fill
+                    ) +
+        scale_y_continuous(name = NULL, limits = c(0, max.val)) +
+        labs(subtitle = total_title, x  = NULL) +
+        theme_classic(base_size = base_size) +
+        theme(...)    
+    if (!plot) {
+        glist <- list(between = g1, within = g2, total = g3)
+        return (glist)
+    } else {
+        gridExtra::grid.arrange(g1, g2, g3, nrow = 1)
+    }
+}
+
+
+#' print Theil's index
+#' @param x Object of class `theil_list`, as returned by calling `theil` on a list of fitted `surveil` models
+#' @param scale Scale Theil's index by `scale` 
+#' @param digits number of digits to print (passed to \code{\link[base]{print.data.frame}})
+#' @param ... additional print arguments
+#' @method print theil_list
+#' @importFrom scales comma percent
+#' @export
+#' @rdname theil
+print.theil_list <- function(x, scale = 100, digits = 3, ...) {    
+    message("Summary of Theil's Inequality Index for Nested Population Structure")    
+    message("Areas: ", x$areas) 
+    message("Time periods: ", length(x$summary$time))
+    pdf <- as.data.frame(x$summary)
+    pdf <- pdf[,c("time", "Theil_between", "Theil_within", "Theil")]
+    if (scale != 1) {
+        pdf$Theil <- pdf$Theil * scale
+        pdf$Theil_between <- pdf$Theil_between * scale
+        pdf$Theil_within <- pdf$Theil_within * scale
+        message("Theil's T (times ", scale, ")")
+    } else {
+        message("Theil's T: within geographies, between geographies, and total inequality")
+    }
+    print(pdf, digits = digits, row.names = FALSE, ...)
+}

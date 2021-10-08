@@ -15,7 +15,7 @@ A \code{tibble} with the following attributes:
 }
 }
 \source{
-United States Cancer Statistics--Incidence: 1999-2017, WONDER Online Database. United States Department of Health and Human Services, Centers for Disease Control and Prevention and National Cancer Institute; 2020. Accessed at \link{http://wonder.cdc.gov/cancer-v2017.html} on Nov 9, 2020 2:59:24 PM.
+United States Cancer Statistics--Incidence: 1999-2017, WONDER Online Database. United States Department of Health and Human Services, Centers for Disease Control and Prevention and National Cancer Institute; 2020. Accessed at \url{http://wonder.cdc.gov/cancer-v2017.html} on Nov 9, 2020 2:59:24 PM.
 }
 \usage{
 msa
@@ -24,8 +24,8 @@ msa
 Annual counts of colorectal cancer (cancer of colon or rectum), ages 50-79, for Texas's top four metropolitan statistical areas (MSAs), with population at risk estimates, by race-ethnicity (non-Hispanic White, non-Hispanic Black, Hispanic/Latino).
 }
 \examples{
-\dontrun{
+
 data(msa)
-}
+head(msa)
 }
 \keyword{datasets}

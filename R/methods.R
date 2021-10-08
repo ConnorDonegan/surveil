@@ -6,55 +6,59 @@
 #' @author Connor Donegan (Connor.Donegan@UTSouthwestern.edu)
 #' @examples
 #'
-#' data(msa)
-#'
-#' library(tidyverse)
+#' \dontrun{
+#' library(ggplot2)
 #'    data(msa)
 #'    dfw <- msa[grep("Dallas", msa$MSA), ]
-#'    fit <- stan_rw(dfw)
+#'    fit <- stan_rw(dfw, time = Year, group = Race)
 #'
 #'   ## plot time-varying risk with 95\% credible intervals
 #'  plot(fit)
-#'
+#'  plot(fit, legend.text = element_text(size = 12))
+#' 
 #'  ## as a ggplot, you can customize the output
 #' plot(fit) +
 #'  scale_x_continuous(breaks = 1:19, 
 #'                     labels = 1999:2017,
 #'                     name = NULL
 #'                     )
-#'
+#' }
+#' @param x A fitted `surveil` model
 #' @param base_size Passed to `theme_classic()` to control size of plot components (text).
+#' @param scale Scale the rates by this amount; e.g., `scale = 100e3` will print rates per 100,000 at risk.
+#' @param ... additional arguments will be passed to `\code{\link[ggplot2]{theme}}
 #' @export 
 #' @import graphics
-#' @name fit
+#' 
+#'
 #' @rdname surveil
 #' @method plot surveil
 #' @importFrom scales comma
 #' @import ggplot2
 #' @importFrom rlang parse_expr
-plot.surveil <- function(fit, rate_scale = 1, base_size = 14) {
-    if (inherits(fit$group, "list")) {
-        group <- rlang::parse_expr(fit$group$group)    
-        gg <- ggplot(fit$summary,
+plot.surveil <- function(x, scale = 1, base_size = 14, ...) {
+    if (inherits(x$group, "list")) {
+        group <- rlang::parse_expr(x$group$group)    
+        gg <- ggplot(x$summary,
                      aes(group = {{ group }},
                          col = {{ group }} )
                      )
     } else {
-        gg <- ggplot(fit$summary)
+        gg <- ggplot(x$summary)
     }
-    if (rate_scale != 1) message("Plotted rates are per ", scales::comma(rate_scale))
+    if (scale != 1) message("Plotted rates are per ", scales::comma(scale))
     gg +
-        geom_ribbon(aes(time,
-                        ymin = rate_scale * lwr_2.5,
-                        ymax = rate_scale * upr_97.5
+        geom_ribbon(aes(.data$time,
+                        ymin = scale * .data$lwr_2.5,
+                        ymax = scale * .data$upr_97.5
                         ),
                     alpha = 0.5,
                     fill = 'gray80',
                     col = 'gray80',
                     lwd = 0
                     ) +
-        geom_line(aes(time, rate_scale * mean)) +
-        geom_point(aes(time, rate_scale * Crude),
+        geom_line(aes(.data$time, scale * .data$mean)) +
+        geom_point(aes(.data$time, scale * .data$Crude),
                    alpha = 0.75
                    ) +
         scale_x_continuous(name = NULL) +
@@ -65,347 +69,78 @@ plot.surveil <- function(fit, rate_scale = 1, base_size = 14) {
             name = NULL
         ) +     
         theme_classic(base_size = base_size) +
-        theme(legend.position = "bottom")
+        theme(legend.position = "bottom",
+              ...)
 }
 
 #' Print `surveil` model results
 #'
 #' @description Print a summary of `surveil` model results to the console
 #'
-#' @param fit A fitted `surveil` model.
-#' 
-#' @seealso \code{\link[surveil]{stan_rw}}
+#' @param x A fitted `surveil` model.
+#' @param scale Scale the rates by this amount; e.g., `scale = 100e3` will print rates per 100,000 at risk.
+#' @param ... additional arguments passed to \code{\link[base]{print.data.frame}}
+#' @seealso \code{\link[surveil]{stan_rw}} \code{\link[surveil]{plot.surveil}}
 #'
 #' @method print surveil
 #' @export
 #' @rdname surveil
-print.surveil <- function(fit, ...) {    
+print.surveil <- function(x, scale = 1, ...) {    
     message("Summary of surveil model results")
-    message("Model specification: ", fit$type)
-    message("Time periods: ", nrow(fit$data$cases))
-    if (inherits(fit$group, "list")) message("Grouping variable: ", fit$group$group)
-                                        #  if (fit$type == "RWCorr") pars <- c("rate", "sigma", )
-    fit$summary
+    message("Time periods: ", nrow(x$data$cases))
+    cols <- "time"
+    if (inherits(x$group, "list")) {
+        message("Grouping variable: ", x$group$group)
+        cols <- c(cols, x$group$group)
+        message("Correlation matrix: ", x$cor)
+    }
+
+    data.cols <- c("mean", "lwr_2.5", "upr_97.5")
+    x$summary[,data.cols] <- x$summary[,data.cols] * scale
+    cols <- c(cols, data.cols)
+    print(x$summary[ , cols], ...)
 }
 
-
-#' Log marginal likelihood via Bridge Sampling
+#' WAIC
 #'
-#' @description Computes log marginal likelihood via bridge sampling. This is needed to calculate the Bayes factor for model comparison using the \code{\link{bridgesampling}} package.
+#' @description Widely Application Information Criteria (WAIC) for model comparison
+#' 
+#' @param fit An \code{surveil} object or any Stan model with a parameter named "log_lik", the pointwise log likelihood of the observations.
+#' @param pointwise Logical (defaults to `FALSE`); if `pointwide = TRUE`, a vector of values for each observation will be returned. 
+#' @param digits Round results to this many digits.
+#' 
+#' @return A vector of length 3 with \code{WAIC}, a rough measure of the effective number of parameters estimated by the model \code{Eff_pars}, and log predictive density \code{Lpd}. If \code{pointwise = TRUE}, results are returned in a \code{data.frame}.
 #'
-#' @details Please see \code{\link[bridgesampling]{bridge_sampler}} for details and references.
-#'
-#' @param fit A fitted `surveil` model.
-#'
-#' @param ... Other arguments passed to \code{\link[bridgesampling]{bridge_sampler}}.
-#'
-#' @seealso \code{\link[bridgesampling]{bayes_factor}}  \code{\link[bridgesampling]{post_prob}} \code{\link[surveil]{stan_rw}}
-#'
-#' @importFrom bridgesampling bridge_sampler
-#' @method bridge_sampler surveil
-#' @export
-#' @rdname surveil
-bridge_sampler.surveil <- function(fit, ...) {    
-    bridgesampling::bridge_sampler(fit$samples, ...)
-}
-
-
-#' Widely Application Information Criteria (WAIC)
-#'
-#' @description Calculates WAIC for a fitted `surveil` model using \code{\link[loo]{waic}}.
-#'
-#' @seealso \code{\link[surveil]{stan_rw}}
-#'
+#' @examples
+#' 
+#' \dontrun{
+#' data(msa)
+#' austin <- msa[grep("Austin", msa$MSA), ]
+#' fit <- stan_rw(austin, time = Year, group = Race)
+#' waic(fit)
+#' }
 #' @source
 #'
 #' Watanabe, S. (2010). Asymptotic equivalence of Bayes cross validation and widely application information criterion in singular learning theory. Journal of Machine Learning Research 11, 3571-3594.
-#'
-#'Vehtari, A., Gelman, A., and Gabry, J. (2017a). Practical Bayesian model evaluation using leave-one-out cross-validation and WAIC. Statistics and Computing. 27(5), 1413--1432. doi:10.1007/s11222-016-9696-4 (journal version, preprint arXiv:1507.04544).
-#'
-#'Vehtari, A., Simpson, D., Gelman, A., Yao, Y., and Gabry, J. (2019). Pareto smoothed importance sampling. preprint arXiv:1507.02646
-#'
+#' @importFrom stats var
 #' @export
-#' @rdname surveil
-#' @method waic surveil
-#' @importFrom loo extract_log_lik waic
-waic.surveil <- function(fit) {    
-    log_lik <- loo::extract_log_lik(fit$samples)
-    loo::waic(log_lik)
+waic <- function(fit, pointwise = FALSE, digits = 2) {
+  ll <- as.matrix(fit, pars = "log_lik")
+  nsamples <- nrow(ll)
+  lpd <- apply(ll, 2, log_sum_exp) - log(nsamples)
+  p_waic <- apply(ll, 2, var)
+  waic <- -2 * (lpd - p_waic)
+  if(pointwise) return(data.frame(waic = waic, eff_pars = p_waic, lpd = lpd))
+  res <- c(WAIC = sum(waic), Eff_pars = sum(p_waic), Lpd = sum(lpd))
+  return(round(res, digits))
 }
 
-#' Efficient approximate leave-one-out cross-validation (LOO)
+#' Log sum of exponentials
+#' @noRd
+#' @details Code adapted from Richard McElreath's Rethinking package, and other sources.
 #' 
-#' @description Implements \code{\link[loo]{loo.array}} for `surveil` models.
-#' @seealso \code{\link[surveil]{stan_rw}}
-#'
-#' @source
-#'
-#' Vehtari, A., Gelman, A., and Gabry, J. (2017a). Practical Bayesian model evaluation using leave-one-out cross-validation and WAIC. Statistics and Computing. 27(5), 1413--1432. [doi:10.1007/s11222-016-9696-4] (journal version, preprint [arXiv:1507.04544]).
-#'
-#'Vehtari, A., Simpson, D., Gelman, A., Yao, Y., and Gabry, J. (2019). Pareto smoothed importance sampling. preprint [arXiv:1507.02646]
-#'
-#' @export
-#' @method loo surveil
-#' @rdname surveil
-#' @importFrom loo extract_log_lik relative_eff loo
-loo.surveil <- function(fit,
-                        save_psis = FALSE,
-                        cores = getOption("mc.cores", 1)) {
-  LLarray <- loo::extract_log_lik(stanfit = fit$samples,
-                                  parameter_name = "log_lik",
-                                  merge_chains = FALSE)
-  r_eff <- loo::relative_eff(x = exp(LLarray), cores = cores)
-  loo::loo.array(LLarray,
-                 r_eff = r_eff,
-                 cores = cores,
-                 save_psis = save_psis)
+log_sum_exp <- function(x) {
+  xmax <- max(x)
+  xsum <- sum( exp( x - xmax ) )
+  xmax + log(xsum)
 }
-
-
-
-#' Plot surveil_diff objects for analyses of inequality
-#' @param col Line color
-#' @param fill Fill color for credible intervals, passed to `geom_ribbon`
-#' @param plot If `plot = FALSE`, a list of `ggplot`s will be returned
-#' @param rate_scale Scale rates by this amount (rate * rate_scale)
-#' @param PAR Return population attributable risk? IF `FALSE`, then the rate ratio will be used instead of PAR.
-#' @param base_size Passed to `theme_classic` to control size of plot elements (e.g., text)
-#' 
-#' @method plot surveil_diff
-#' @importFrom scales comma
-#' @import ggplot2
-#' @name surveil_diff
-#' @export
-plot.surveil_diff <- function(x, col = "black", fill = "gray80", plot = TRUE, rate_scale = 100e3, PAR = TRUE, base_size = 14) {
-    gg.ec <- ggplot(x$summary) +
-        geom_ribbon(aes(time, ymin = EC.lower, ymax = EC.upper),
-                    fill = fill,
-                    alpha = 0.5) +
-        geom_line(aes(time, EC), lwd = 1,
-                  col = col
-                  ) +
-        scale_x_continuous(
-            name = NULL
-        ) +
-        geom_hline(yintercept = 0) +
-        theme_classic(base_size = base_size) 
-    if (PAR) {
-        gg.relative <- ggplot(x$summary) +
-            geom_ribbon(aes(time, ymin = PAR.lower, ymax = PAR.upper),
-                        fill = fill,
-                        alpha = 0.5) +
-            geom_line(aes(time, PAR),
-                      col = col,
-                      lwd = 1
-                      ) +
-            scale_x_continuous(
-                name = NULL
-            ) +
-            geom_hline(yintercept = 0) +
-            theme_classic(base_size = base_size) 
-    } else {
-        gg.relative <- ggplot(x$summary) +
-            geom_ribbon(aes(time, ymin = RR.lower, ymax = RR.upper),
-                        fill = fill,
-                        alpha = 0.5) +
-            geom_line(aes(time, RR),
-                      col = col,
-                      lwd = 1
-                      ) +
-            scale_x_continuous(
-                name = NULL
-            ) +
-            geom_hline(yintercept = 0) +            
-            theme_classic(base_size = base_size) 
-    }
-    f.lab <- function(brks) rate_scale * brks
-    gg.rd <- ggplot(x$summary) +
-        geom_ribbon(aes(time, ymin = RD.lower, ymax = RD.upper),
-                    fill = fill,
-                    alpha = 0.5) +
-        geom_line(aes(time, RD),
-                  col = col,
-                  lwd = 1
-                  ) +
-        scale_x_continuous(
-            name = NULL
-        ) +
-        geom_hline(yintercept = 0) +        
-        theme_classic(base_size = base_size) +
-        scale_y_continuous(labels = f.lab)
-    message("Rate differences (RD) are per ", scales::comma(rate_scale), " at-risk")    
-    if (plot) {
-        return ( gridExtra::grid.arrange(gg.rd,  gg.relative, gg.ec, ncol = 1) )
-    } else return (list(RD = gg.rd, Relative = gg.relative, EC = gg.ec))
-}
-
-
-#' print surveil_diff objects for analyses of inequality
-#' @param rate_scale Print rates and rate differences as per `rate_scale`.
-#' @method print surveil_diff
-#' @importFrom scales comma percent
-#' @name surveil_diff
-#' @export
-#' @md 
-print.surveil_diff <- function(x, rate_scale = 1) {    
-    message("Summary of Pairwise Inequality")    
-    message("Target group: ", x$groups["target"])
-    message("Reference group: ", x$groups["reference"])
-    message("Time periods observed: ", length(x$summary$time))
-    if (rate_scale != 1) {
-        message("Rate scale: per ", scales::comma(rate_scale))
-        x$summary$Rate <- x$summary$Rate * rate_scale
-        x$summary$RD <- x$summary$RD * rate_scale
-    }
-    xs <- x$cumulative_cases
-    xs[1:3] <-  round(xs[1:3])
-    xs[4:6] <- round(xs[4:6], 2)
-    message("Cumulative excess cases (EC): ", scales::comma(xs[1]), " [", xs[2], ", ", xs[3], "]")
-    message("Cumulative EC as a fraction of group risk (PAR): ", xs["PAR"], " [", xs[5], ", ", xs[6], "]")
-    x$summary$EC <- round(x$summary$EC)
-    print(as.data.frame(x$summary)[,c("time", "Rate", "RD", "PAR", "RR", "EC")], digits = 2, row.names = FALSE)
-}
-
-#' Plot theil's index
-#' 
-#' @export
-#' @md
-#' @param x An object of class `theil`, as created by calling \code{\link[surveil]{theil}} on a fitted `surveil` model.
-#' @param fill Fill and line color
-#' @param scale Multiply Theil's T by `scale` for readability
-#' @param labels X-axis labels (time periods)
-#' @return A `ggplot`
-#' @examples
-#'  library(tidyverse)
-#'  dfw <- filter(msa, str_detect(MSA, "Dallas")
-#'  fit <- stan_rw(dfw, group = Race, iter = 500)
-#'  theil.dfw <- theil(fit)
-#'  plot(theil.dfw)
-#' @method plot theil
-#' @import ggplot2
-plot.theil <- function(x, col = "black", fill = "gray80", scale = 100, labels = x$summary$time) {
-    #brks <- x$summary$time
-    x$summary %>%
-        ggplot() +
-        geom_ribbon(
-            aes(time,
-                ymin= scale * .lower,
-                ymax= scale * .upper),
-            fill = fill,
-            alpha = 0.5
-        ) +
-        geom_line(aes(time, scale * Theil),
-                  col = col,                
-                  lwd = 0.75
-                  ) +
-        scale_x_continuous(
-            name = NULL
-        ) +
-        scale_y_continuous(name = paste0("Theil x ", scale)) +
-        theme_classic() 
-}
-
-
-#' print Theil's index
-#' @param rate_scale Print rates and rate differences as per `rate_scale`.
-#' @method print theil
-#' @importFrom scales comma percent
-#' @export
-print.theil <- function(x, scale = 100) {    
-    message("Summary of Theil's Inequality Index")    
-    message("Groups: ", paste(x$groups, collapse = ", "))
-    message("Time periods observed: ", length(x$summary$time))
-    pdf <- as.data.frame(x$summary)
-    pdf <- pdf[,c("time", "Theil", ".lower", ".upper")]
-    if (scale != 1) {
-        pdf$Theil <- pdf$Theil * scale
-        pdf$.lower <- pdf$.lower * scale
-        pdf$.upper <- pdf$.upper * scale
-        message("Theil's T (times ", scale, ") with 95% credible intervals")
-    } else {
-        message("Theil's T with 95% credible intervals")
-    }
-    print(pdf, digits = 3, row.names = FALSE)
-}
-
-
-
-#' Plot theil's index for nested data
-#'
-#' @description Plot the between area, within area, and total (between + within) inequality as measured by Theil's index.
-#' @export
-#' @md
-#' @param x An object of class `theil_list`, as created by calling \code{\link[surveil]{theil}} on a list of fitted `surveil` models.
-#' @param color Line color
-#' @param fill Fill color for credible intervals
-#' @param alpha Transparency of credible interval fill color
-#' @param scale Multiply Theil's T by `scale` for readability
-#' @param plot If `FALSE`, return a list of `ggplot`s.
-#' @param base_size Passed to `theme_classic` to control size of plot elements (e.g., text)
-#' 
-#' @return If `plot = FALSE`, returns a list of `ggplot`s; otherwise, the `ggplots` will be drawn to the current plotting device using \code{\link[gridExtra]{grid.arrange}}.
-#'
-#' 
-#' @method plot theil_list
-#' @import ggplot2
-#' @importFrom tidybayes mean_qi
-#' @importFrom gridExtra grid.arrange
-plot.theil_list <- function(x, col = "black", fill = "black", alpha = 0.25, between_title = "Between", within_title = "Within", total_title = "Total", scale = 100, plot = TRUE, base_size = 14) {
-    if (scale != 1) message("y-axis scale is T times ", scale)
-    t_total_df <- x %>%
-        dplyr::group_by(time) %>%
-        dplyr::mutate(Theil = Theil * scale) %>%
-        tidybayes::mean_qi(Theil)
-    max.val <- t_total_df %>%
-        summarise(max.val = max(.upper))
-    max.val <- as.numeric(max.val) 
-    ## between geography inequality
-    g1 <- x %>%
-        dplyr::group_by(time) %>%
-        dplyr::mutate(Theil = Theil_between * scale) %>%
-        tidybayes::mean_qi(Theil) %>%
-        ggplot(aes(time, Theil)) +
-        geom_line(col = col) +
-        geom_ribbon(aes(ymin = .lower, ymax = .upper),
-                    alpha = alpha,
-                    fill = fill
-                    ) +
-        scale_y_continuous(name = NULL, limits = c(0, max.val)) +
-        labs(subtitle = between_title, x  = NULL) +
-        theme_classic(base_size = base_size) 
-    ## within geography inequality
-    g2 <- x %>%
-        dplyr::group_by(time) %>%
-        dplyr::mutate(Theil = Theil_within * scale) %>%
-        tidybayes::mean_qi(Theil) %>%
-        ggplot(aes(time, Theil)) +
-        geom_line(col = col) +
-        geom_ribbon(aes(ymin = .lower, ymax = .upper),
-                    alpha = alpha,
-                    fill = fill
-                    ) +
-        scale_y_continuous(name = NULL, limits = c(0, max.val)) +
-        labs(
-            subtitle = within_title,
-            x = NULL
-        ) +
-        theme_classic(base_size = base_size)  
-    ## total inequality
-    g3 <- t_total_df %>%
-        ggplot(aes(time, Theil)) +
-        geom_line(col = col) +
-        geom_ribbon(aes(ymin = .lower, ymax = .upper),
-                    alpha = alpha,
-                    fill = fill
-                    ) +
-        scale_y_continuous(name = NULL, limits = c(0, max.val)) +
-        labs(subtitle = total_title, x  = NULL) +
-        theme_classic(base_size = base_size) 
-    if (!plot) {
-        glist <- list(between = g1, within = g2, total = g3)
-        return (glist)
-    } else {
-        gridExtra::grid.arrange(g1, g2, g3, nrow = 1)
-    }
-}
-    

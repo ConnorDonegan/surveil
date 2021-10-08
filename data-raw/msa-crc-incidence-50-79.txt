@@ -1,0 +1,349 @@
+"Notes"	"MSA"	"MSA Code"	"Race"	"Race Code"	"Ethnicity"	"Ethnicity Code"	"Year"	"Year Code"	Count	Population	Crude Rate
+	"Austin-Round Rock, TX"	"12420"	"Black or African American"	"2054-5"	"Hispanic"	"2135-2"	"1999"	"1999"	0	318	0.0
+	"Austin-Round Rock, TX"	"12420"	"Black or African American"	"2054-5"	"Hispanic"	"2135-2"	"2000"	"2000"	0	325	0.0
+	"Austin-Round Rock, TX"	"12420"	"Black or African American"	"2054-5"	"Hispanic"	"2135-2"	"2001"	"2001"	Suppressed	392	Suppressed
+	"Austin-Round Rock, TX"	"12420"	"Black or African American"	"2054-5"	"Hispanic"	"2135-2"	"2002"	"2002"	0	468	0.0
+	"Austin-Round Rock, TX"	"12420"	"Black or African American"	"2054-5"	"Hispanic"	"2135-2"	"2003"	"2003"	Suppressed	518	Suppressed
+	"Austin-Round Rock, TX"	"12420"	"Black or African American"	"2054-5"	"Hispanic"	"2135-2"	"2004"	"2004"	0	571	0.0
+	"Austin-Round Rock, TX"	"12420"	"Black or African American"	"2054-5"	"Hispanic"	"2135-2"	"2005"	"2005"	0	618	0.0
+	"Austin-Round Rock, TX"	"12420"	"Black or African American"	"2054-5"	"Hispanic"	"2135-2"	"2006"	"2006"	0	717	0.0
+	"Austin-Round Rock, TX"	"12420"	"Black or African American"	"2054-5"	"Hispanic"	"2135-2"	"2007"	"2007"	0	809	0.0
+	"Austin-Round Rock, TX"	"12420"	"Black or African American"	"2054-5"	"Hispanic"	"2135-2"	"2008"	"2008"	0	909	0.0
+	"Austin-Round Rock, TX"	"12420"	"Black or African American"	"2054-5"	"Hispanic"	"2135-2"	"2009"	"2009"	0	1023	0.0
+	"Austin-Round Rock, TX"	"12420"	"Black or African American"	"2054-5"	"Hispanic"	"2135-2"	"2010"	"2010"	Suppressed	1059	Suppressed
+	"Austin-Round Rock, TX"	"12420"	"Black or African American"	"2054-5"	"Hispanic"	"2135-2"	"2011"	"2011"	0	1150	0.0
+	"Austin-Round Rock, TX"	"12420"	"Black or African American"	"2054-5"	"Hispanic"	"2135-2"	"2012"	"2012"	0	1267	0.0
+	"Austin-Round Rock, TX"	"12420"	"Black or African American"	"2054-5"	"Hispanic"	"2135-2"	"2013"	"2013"	0	1393	0.0
+	"Austin-Round Rock, TX"	"12420"	"Black or African American"	"2054-5"	"Hispanic"	"2135-2"	"2014"	"2014"	Suppressed	1537	Suppressed
+	"Austin-Round Rock, TX"	"12420"	"Black or African American"	"2054-5"	"Hispanic"	"2135-2"	"2015"	"2015"	Suppressed	1659	Suppressed
+	"Austin-Round Rock, TX"	"12420"	"Black or African American"	"2054-5"	"Hispanic"	"2135-2"	"2016"	"2016"	Suppressed	1773	Suppressed
+	"Austin-Round Rock, TX"	"12420"	"Black or African American"	"2054-5"	"Hispanic"	"2135-2"	"2017"	"2017"	Suppressed	1869	Suppressed
+	"Austin-Round Rock, TX"	"12420"	"Black or African American"	"2054-5"	"Non-Hispanic"	"2186-5"	"1999"	"1999"	28	14421	194.2
+	"Austin-Round Rock, TX"	"12420"	"Black or African American"	"2054-5"	"Non-Hispanic"	"2186-5"	"2000"	"2000"	16	15215	105.2
+	"Austin-Round Rock, TX"	"12420"	"Black or African American"	"2054-5"	"Non-Hispanic"	"2186-5"	"2001"	"2001"	22	16000	137.5
+	"Austin-Round Rock, TX"	"12420"	"Black or African American"	"2054-5"	"Non-Hispanic"	"2186-5"	"2002"	"2002"	24	16694	143.8
+	"Austin-Round Rock, TX"	"12420"	"Black or African American"	"2054-5"	"Non-Hispanic"	"2186-5"	"2003"	"2003"	34	17513	194.1
+	"Austin-Round Rock, TX"	"12420"	"Black or African American"	"2054-5"	"Non-Hispanic"	"2186-5"	"2004"	"2004"	26	18429	141.1
+	"Austin-Round Rock, TX"	"12420"	"Black or African American"	"2054-5"	"Non-Hispanic"	"2186-5"	"2005"	"2005"	27	19536	138.2
+	"Austin-Round Rock, TX"	"12420"	"Black or African American"	"2054-5"	"Non-Hispanic"	"2186-5"	"2006"	"2006"	25	21236	117.7
+	"Austin-Round Rock, TX"	"12420"	"Black or African American"	"2054-5"	"Non-Hispanic"	"2186-5"	"2007"	"2007"	30	22582	132.8
+	"Austin-Round Rock, TX"	"12420"	"Black or African American"	"2054-5"	"Non-Hispanic"	"2186-5"	"2008"	"2008"	30	23931	125.4
+	"Austin-Round Rock, TX"	"12420"	"Black or African American"	"2054-5"	"Non-Hispanic"	"2186-5"	"2009"	"2009"	32	25126	127.4
+	"Austin-Round Rock, TX"	"12420"	"Black or African American"	"2054-5"	"Non-Hispanic"	"2186-5"	"2010"	"2010"	39	26574	146.8
+	"Austin-Round Rock, TX"	"12420"	"Black or African American"	"2054-5"	"Non-Hispanic"	"2186-5"	"2011"	"2011"	19	28107	67.6
+	"Austin-Round Rock, TX"	"12420"	"Black or African American"	"2054-5"	"Non-Hispanic"	"2186-5"	"2012"	"2012"	17	30062	56.5
+	"Austin-Round Rock, TX"	"12420"	"Black or African American"	"2054-5"	"Non-Hispanic"	"2186-5"	"2013"	"2013"	41	31620	129.7
+	"Austin-Round Rock, TX"	"12420"	"Black or African American"	"2054-5"	"Non-Hispanic"	"2186-5"	"2014"	"2014"	42	33272	126.2
+	"Austin-Round Rock, TX"	"12420"	"Black or African American"	"2054-5"	"Non-Hispanic"	"2186-5"	"2015"	"2015"	34	34862	97.5
+	"Austin-Round Rock, TX"	"12420"	"Black or African American"	"2054-5"	"Non-Hispanic"	"2186-5"	"2016"	"2016"	45	36374	123.7
+	"Austin-Round Rock, TX"	"12420"	"Black or African American"	"2054-5"	"Non-Hispanic"	"2186-5"	"2017"	"2017"	45	37877	118.8
+	"Austin-Round Rock, TX"	"12420"	"White"	"2106-3"	"Hispanic"	"2135-2"	"1999"	"1999"	38	29831	127.4
+	"Austin-Round Rock, TX"	"12420"	"White"	"2106-3"	"Hispanic"	"2135-2"	"2000"	"2000"	43	32568	132.0
+	"Austin-Round Rock, TX"	"12420"	"White"	"2106-3"	"Hispanic"	"2135-2"	"2001"	"2001"	35	34845	100.4
+	"Austin-Round Rock, TX"	"12420"	"White"	"2106-3"	"Hispanic"	"2135-2"	"2002"	"2002"	55	37044	148.5
+	"Austin-Round Rock, TX"	"12420"	"White"	"2106-3"	"Hispanic"	"2135-2"	"2003"	"2003"	52	39385	132.0
+	"Austin-Round Rock, TX"	"12420"	"White"	"2106-3"	"Hispanic"	"2135-2"	"2004"	"2004"	58	42019	138.0
+	"Austin-Round Rock, TX"	"12420"	"White"	"2106-3"	"Hispanic"	"2135-2"	"2005"	"2005"	54	45396	119.0
+	"Austin-Round Rock, TX"	"12420"	"White"	"2106-3"	"Hispanic"	"2135-2"	"2006"	"2006"	58	49234	117.8
+	"Austin-Round Rock, TX"	"12420"	"White"	"2106-3"	"Hispanic"	"2135-2"	"2007"	"2007"	52	53358	97.5
+	"Austin-Round Rock, TX"	"12420"	"White"	"2106-3"	"Hispanic"	"2135-2"	"2008"	"2008"	44	57249	76.9
+	"Austin-Round Rock, TX"	"12420"	"White"	"2106-3"	"Hispanic"	"2135-2"	"2009"	"2009"	55	61386	89.6
+	"Austin-Round Rock, TX"	"12420"	"White"	"2106-3"	"Hispanic"	"2135-2"	"2010"	"2010"	56	66058	84.8
+	"Austin-Round Rock, TX"	"12420"	"White"	"2106-3"	"Hispanic"	"2135-2"	"2011"	"2011"	61	71076	85.8
+	"Austin-Round Rock, TX"	"12420"	"White"	"2106-3"	"Hispanic"	"2135-2"	"2012"	"2012"	72	76485	94.1
+	"Austin-Round Rock, TX"	"12420"	"White"	"2106-3"	"Hispanic"	"2135-2"	"2013"	"2013"	62	82023	75.6
+	"Austin-Round Rock, TX"	"12420"	"White"	"2106-3"	"Hispanic"	"2135-2"	"2014"	"2014"	67	87877	76.2
+	"Austin-Round Rock, TX"	"12420"	"White"	"2106-3"	"Hispanic"	"2135-2"	"2015"	"2015"	91	93832	97.0
+	"Austin-Round Rock, TX"	"12420"	"White"	"2106-3"	"Hispanic"	"2135-2"	"2016"	"2016"	94	99896	94.1
+	"Austin-Round Rock, TX"	"12420"	"White"	"2106-3"	"Hispanic"	"2135-2"	"2017"	"2017"	91	105653	86.1
+	"Austin-Round Rock, TX"	"12420"	"White"	"2106-3"	"Non-Hispanic"	"2186-5"	"1999"	"1999"	200	154603	129.4
+	"Austin-Round Rock, TX"	"12420"	"White"	"2106-3"	"Non-Hispanic"	"2186-5"	"2000"	"2000"	205	163073	125.7
+	"Austin-Round Rock, TX"	"12420"	"White"	"2106-3"	"Non-Hispanic"	"2186-5"	"2001"	"2001"	243	171626	141.6
+	"Austin-Round Rock, TX"	"12420"	"White"	"2106-3"	"Non-Hispanic"	"2186-5"	"2002"	"2002"	214	179212	119.4
+	"Austin-Round Rock, TX"	"12420"	"White"	"2106-3"	"Non-Hispanic"	"2186-5"	"2003"	"2003"	208	188218	110.5
+	"Austin-Round Rock, TX"	"12420"	"White"	"2106-3"	"Non-Hispanic"	"2186-5"	"2004"	"2004"	194	198050	98.0
+	"Austin-Round Rock, TX"	"12420"	"White"	"2106-3"	"Non-Hispanic"	"2186-5"	"2005"	"2005"	212	209374	101.3
+	"Austin-Round Rock, TX"	"12420"	"White"	"2106-3"	"Non-Hispanic"	"2186-5"	"2006"	"2006"	197	222847	88.4
+	"Austin-Round Rock, TX"	"12420"	"White"	"2106-3"	"Non-Hispanic"	"2186-5"	"2007"	"2007"	216	235856	91.6
+	"Austin-Round Rock, TX"	"12420"	"White"	"2106-3"	"Non-Hispanic"	"2186-5"	"2008"	"2008"	203	248502	81.7
+	"Austin-Round Rock, TX"	"12420"	"White"	"2106-3"	"Non-Hispanic"	"2186-5"	"2009"	"2009"	206	259925	79.3
+	"Austin-Round Rock, TX"	"12420"	"White"	"2106-3"	"Non-Hispanic"	"2186-5"	"2010"	"2010"	216	272155	79.4
+	"Austin-Round Rock, TX"	"12420"	"White"	"2106-3"	"Non-Hispanic"	"2186-5"	"2011"	"2011"	228	285120	80.0
+	"Austin-Round Rock, TX"	"12420"	"White"	"2106-3"	"Non-Hispanic"	"2186-5"	"2012"	"2012"	231	298202	77.5
+	"Austin-Round Rock, TX"	"12420"	"White"	"2106-3"	"Non-Hispanic"	"2186-5"	"2013"	"2013"	216	310184	69.6
+	"Austin-Round Rock, TX"	"12420"	"White"	"2106-3"	"Non-Hispanic"	"2186-5"	"2014"	"2014"	228	322742	70.6
+	"Austin-Round Rock, TX"	"12420"	"White"	"2106-3"	"Non-Hispanic"	"2186-5"	"2015"	"2015"	289	333703	86.6
+	"Austin-Round Rock, TX"	"12420"	"White"	"2106-3"	"Non-Hispanic"	"2186-5"	"2016"	"2016"	268	343238	78.1
+	"Austin-Round Rock, TX"	"12420"	"White"	"2106-3"	"Non-Hispanic"	"2186-5"	"2017"	"2017"	282	351423	80.2
+	"Dallas-Fort Worth-Arlington, TX"	"19100"	"Black or African American"	"2054-5"	"Hispanic"	"2135-2"	"1999"	"1999"	Suppressed	1143	Suppressed
+	"Dallas-Fort Worth-Arlington, TX"	"19100"	"Black or African American"	"2054-5"	"Hispanic"	"2135-2"	"2000"	"2000"	Suppressed	1170	Suppressed
+	"Dallas-Fort Worth-Arlington, TX"	"19100"	"Black or African American"	"2054-5"	"Hispanic"	"2135-2"	"2001"	"2001"	Suppressed	1326	Suppressed
+	"Dallas-Fort Worth-Arlington, TX"	"19100"	"Black or African American"	"2054-5"	"Hispanic"	"2135-2"	"2002"	"2002"	Suppressed	1464	Suppressed
+	"Dallas-Fort Worth-Arlington, TX"	"19100"	"Black or African American"	"2054-5"	"Hispanic"	"2135-2"	"2003"	"2003"	Suppressed	1599	Suppressed
+	"Dallas-Fort Worth-Arlington, TX"	"19100"	"Black or African American"	"2054-5"	"Hispanic"	"2135-2"	"2004"	"2004"	Suppressed	1805	Suppressed
+	"Dallas-Fort Worth-Arlington, TX"	"19100"	"Black or African American"	"2054-5"	"Hispanic"	"2135-2"	"2005"	"2005"	0	2070	0.0
+	"Dallas-Fort Worth-Arlington, TX"	"19100"	"Black or African American"	"2054-5"	"Hispanic"	"2135-2"	"2006"	"2006"	Suppressed	2244	Suppressed
+	"Dallas-Fort Worth-Arlington, TX"	"19100"	"Black or African American"	"2054-5"	"Hispanic"	"2135-2"	"2007"	"2007"	Suppressed	2498	Suppressed
+	"Dallas-Fort Worth-Arlington, TX"	"19100"	"Black or African American"	"2054-5"	"Hispanic"	"2135-2"	"2008"	"2008"	Suppressed	2822	Suppressed
+	"Dallas-Fort Worth-Arlington, TX"	"19100"	"Black or African American"	"2054-5"	"Hispanic"	"2135-2"	"2009"	"2009"	Suppressed	3152	Suppressed
+	"Dallas-Fort Worth-Arlington, TX"	"19100"	"Black or African American"	"2054-5"	"Hispanic"	"2135-2"	"2010"	"2010"	Suppressed	3449	Suppressed
+	"Dallas-Fort Worth-Arlington, TX"	"19100"	"Black or African American"	"2054-5"	"Hispanic"	"2135-2"	"2011"	"2011"	Suppressed	3740	Suppressed
+	"Dallas-Fort Worth-Arlington, TX"	"19100"	"Black or African American"	"2054-5"	"Hispanic"	"2135-2"	"2012"	"2012"	Suppressed	4152	Suppressed
+	"Dallas-Fort Worth-Arlington, TX"	"19100"	"Black or African American"	"2054-5"	"Hispanic"	"2135-2"	"2013"	"2013"	Suppressed	4514	Suppressed
+	"Dallas-Fort Worth-Arlington, TX"	"19100"	"Black or African American"	"2054-5"	"Hispanic"	"2135-2"	"2014"	"2014"	Suppressed	4990	Suppressed
+	"Dallas-Fort Worth-Arlington, TX"	"19100"	"Black or African American"	"2054-5"	"Hispanic"	"2135-2"	"2015"	"2015"	Suppressed	5359	Suppressed
+	"Dallas-Fort Worth-Arlington, TX"	"19100"	"Black or African American"	"2054-5"	"Hispanic"	"2135-2"	"2016"	"2016"	Suppressed	5757	Suppressed
+	"Dallas-Fort Worth-Arlington, TX"	"19100"	"Black or African American"	"2054-5"	"Hispanic"	"2135-2"	"2017"	"2017"	Suppressed	6227	Suppressed
+	"Dallas-Fort Worth-Arlington, TX"	"19100"	"Black or African American"	"2054-5"	"Non-Hispanic"	"2186-5"	"1999"	"1999"	197	105096	187.4
+	"Dallas-Fort Worth-Arlington, TX"	"19100"	"Black or African American"	"2054-5"	"Non-Hispanic"	"2186-5"	"2000"	"2000"	169	110439	153.0
+	"Dallas-Fort Worth-Arlington, TX"	"19100"	"Black or African American"	"2054-5"	"Non-Hispanic"	"2186-5"	"2001"	"2001"	214	116953	183.0
+	"Dallas-Fort Worth-Arlington, TX"	"19100"	"Black or African American"	"2054-5"	"Non-Hispanic"	"2186-5"	"2002"	"2002"	230	123101	186.8
+	"Dallas-Fort Worth-Arlington, TX"	"19100"	"Black or African American"	"2054-5"	"Non-Hispanic"	"2186-5"	"2003"	"2003"	221	129843	170.2
+	"Dallas-Fort Worth-Arlington, TX"	"19100"	"Black or African American"	"2054-5"	"Non-Hispanic"	"2186-5"	"2004"	"2004"	232	137228	169.1
+	"Dallas-Fort Worth-Arlington, TX"	"19100"	"Black or African American"	"2054-5"	"Non-Hispanic"	"2186-5"	"2005"	"2005"	235	145520	161.5
+	"Dallas-Fort Worth-Arlington, TX"	"19100"	"Black or African American"	"2054-5"	"Non-Hispanic"	"2186-5"	"2006"	"2006"	261	158252	164.9
+	"Dallas-Fort Worth-Arlington, TX"	"19100"	"Black or African American"	"2054-5"	"Non-Hispanic"	"2186-5"	"2007"	"2007"	255	168015	151.8
+	"Dallas-Fort Worth-Arlington, TX"	"19100"	"Black or African American"	"2054-5"	"Non-Hispanic"	"2186-5"	"2008"	"2008"	299	177362	168.6
+	"Dallas-Fort Worth-Arlington, TX"	"19100"	"Black or African American"	"2054-5"	"Non-Hispanic"	"2186-5"	"2009"	"2009"	270	189027	142.8
+	"Dallas-Fort Worth-Arlington, TX"	"19100"	"Black or African American"	"2054-5"	"Non-Hispanic"	"2186-5"	"2010"	"2010"	297	200260	148.3
+	"Dallas-Fort Worth-Arlington, TX"	"19100"	"Black or African American"	"2054-5"	"Non-Hispanic"	"2186-5"	"2011"	"2011"	283	211200	134.0
+	"Dallas-Fort Worth-Arlington, TX"	"19100"	"Black or African American"	"2054-5"	"Non-Hispanic"	"2186-5"	"2012"	"2012"	272	223501	121.7
+	"Dallas-Fort Worth-Arlington, TX"	"19100"	"Black or African American"	"2054-5"	"Non-Hispanic"	"2186-5"	"2013"	"2013"	268	234881	114.1
+	"Dallas-Fort Worth-Arlington, TX"	"19100"	"Black or African American"	"2054-5"	"Non-Hispanic"	"2186-5"	"2014"	"2014"	316	246676	128.1
+	"Dallas-Fort Worth-Arlington, TX"	"19100"	"Black or African American"	"2054-5"	"Non-Hispanic"	"2186-5"	"2015"	"2015"	299	259028	115.4
+	"Dallas-Fort Worth-Arlington, TX"	"19100"	"Black or African American"	"2054-5"	"Non-Hispanic"	"2186-5"	"2016"	"2016"	322	270525	119.0
+	"Dallas-Fort Worth-Arlington, TX"	"19100"	"Black or African American"	"2054-5"	"Non-Hispanic"	"2186-5"	"2017"	"2017"	328	281659	116.5
+	"Dallas-Fort Worth-Arlington, TX"	"19100"	"White"	"2106-3"	"Hispanic"	"2135-2"	"1999"	"1999"	54	82996	65.1
+	"Dallas-Fort Worth-Arlington, TX"	"19100"	"White"	"2106-3"	"Hispanic"	"2135-2"	"2000"	"2000"	95	90743	104.7
+	"Dallas-Fort Worth-Arlington, TX"	"19100"	"White"	"2106-3"	"Hispanic"	"2135-2"	"2001"	"2001"	102	98671	103.4
+	"Dallas-Fort Worth-Arlington, TX"	"19100"	"White"	"2106-3"	"Hispanic"	"2135-2"	"2002"	"2002"	91	106258	85.6
+	"Dallas-Fort Worth-Arlington, TX"	"19100"	"White"	"2106-3"	"Hispanic"	"2135-2"	"2003"	"2003"	98	114597	85.5
+	"Dallas-Fort Worth-Arlington, TX"	"19100"	"White"	"2106-3"	"Hispanic"	"2135-2"	"2004"	"2004"	108	123165	87.7
+	"Dallas-Fort Worth-Arlington, TX"	"19100"	"White"	"2106-3"	"Hispanic"	"2135-2"	"2005"	"2005"	106	132868	79.8
+	"Dallas-Fort Worth-Arlington, TX"	"19100"	"White"	"2106-3"	"Hispanic"	"2135-2"	"2006"	"2006"	106	143982	73.6
+	"Dallas-Fort Worth-Arlington, TX"	"19100"	"White"	"2106-3"	"Hispanic"	"2135-2"	"2007"	"2007"	147	155645	94.4
+	"Dallas-Fort Worth-Arlington, TX"	"19100"	"White"	"2106-3"	"Hispanic"	"2135-2"	"2008"	"2008"	136	167703	81.1
+	"Dallas-Fort Worth-Arlington, TX"	"19100"	"White"	"2106-3"	"Hispanic"	"2135-2"	"2009"	"2009"	143	180292	79.3
+	"Dallas-Fort Worth-Arlington, TX"	"19100"	"White"	"2106-3"	"Hispanic"	"2135-2"	"2010"	"2010"	162	194475	83.3
+	"Dallas-Fort Worth-Arlington, TX"	"19100"	"White"	"2106-3"	"Hispanic"	"2135-2"	"2011"	"2011"	182	209469	86.9
+	"Dallas-Fort Worth-Arlington, TX"	"19100"	"White"	"2106-3"	"Hispanic"	"2135-2"	"2012"	"2012"	161	225924	71.3
+	"Dallas-Fort Worth-Arlington, TX"	"19100"	"White"	"2106-3"	"Hispanic"	"2135-2"	"2013"	"2013"	168	242235	69.4
+	"Dallas-Fort Worth-Arlington, TX"	"19100"	"White"	"2106-3"	"Hispanic"	"2135-2"	"2014"	"2014"	205	259824	78.9
+	"Dallas-Fort Worth-Arlington, TX"	"19100"	"White"	"2106-3"	"Hispanic"	"2135-2"	"2015"	"2015"	207	278940	74.2
+	"Dallas-Fort Worth-Arlington, TX"	"19100"	"White"	"2106-3"	"Hispanic"	"2135-2"	"2016"	"2016"	216	298575	72.3
+	"Dallas-Fort Worth-Arlington, TX"	"19100"	"White"	"2106-3"	"Hispanic"	"2135-2"	"2017"	"2017"	224	318001	70.4
+	"Dallas-Fort Worth-Arlington, TX"	"19100"	"White"	"2106-3"	"Non-Hispanic"	"2186-5"	"1999"	"1999"	964	724112	133.1
+	"Dallas-Fort Worth-Arlington, TX"	"19100"	"White"	"2106-3"	"Non-Hispanic"	"2186-5"	"2000"	"2000"	989	746831	132.4
+	"Dallas-Fort Worth-Arlington, TX"	"19100"	"White"	"2106-3"	"Non-Hispanic"	"2186-5"	"2001"	"2001"	1041	766387	135.8
+	"Dallas-Fort Worth-Arlington, TX"	"19100"	"White"	"2106-3"	"Non-Hispanic"	"2186-5"	"2002"	"2002"	1032	785557	131.4
+	"Dallas-Fort Worth-Arlington, TX"	"19100"	"White"	"2106-3"	"Non-Hispanic"	"2186-5"	"2003"	"2003"	1062	806721	131.6
+	"Dallas-Fort Worth-Arlington, TX"	"19100"	"White"	"2106-3"	"Non-Hispanic"	"2186-5"	"2004"	"2004"	994	829714	119.8
+	"Dallas-Fort Worth-Arlington, TX"	"19100"	"White"	"2106-3"	"Non-Hispanic"	"2186-5"	"2005"	"2005"	1027	856357	119.9
+	"Dallas-Fort Worth-Arlington, TX"	"19100"	"White"	"2106-3"	"Non-Hispanic"	"2186-5"	"2006"	"2006"	1001	887932	112.7
+	"Dallas-Fort Worth-Arlington, TX"	"19100"	"White"	"2106-3"	"Non-Hispanic"	"2186-5"	"2007"	"2007"	1018	918033	110.9
+	"Dallas-Fort Worth-Arlington, TX"	"19100"	"White"	"2106-3"	"Non-Hispanic"	"2186-5"	"2008"	"2008"	1022	950043	107.6
+	"Dallas-Fort Worth-Arlington, TX"	"19100"	"White"	"2106-3"	"Non-Hispanic"	"2186-5"	"2009"	"2009"	1000	980818	102.0
+	"Dallas-Fort Worth-Arlington, TX"	"19100"	"White"	"2106-3"	"Non-Hispanic"	"2186-5"	"2010"	"2010"	1000	1012578	98.8
+	"Dallas-Fort Worth-Arlington, TX"	"19100"	"White"	"2106-3"	"Non-Hispanic"	"2186-5"	"2011"	"2011"	967	1046661	92.4
+	"Dallas-Fort Worth-Arlington, TX"	"19100"	"White"	"2106-3"	"Non-Hispanic"	"2186-5"	"2012"	"2012"	955	1081389	88.3
+	"Dallas-Fort Worth-Arlington, TX"	"19100"	"White"	"2106-3"	"Non-Hispanic"	"2186-5"	"2013"	"2013"	958	1108287	86.4
+	"Dallas-Fort Worth-Arlington, TX"	"19100"	"White"	"2106-3"	"Non-Hispanic"	"2186-5"	"2014"	"2014"	1107	1136456	97.4
+	"Dallas-Fort Worth-Arlington, TX"	"19100"	"White"	"2106-3"	"Non-Hispanic"	"2186-5"	"2015"	"2015"	1073	1159285	92.6
+	"Dallas-Fort Worth-Arlington, TX"	"19100"	"White"	"2106-3"	"Non-Hispanic"	"2186-5"	"2016"	"2016"	1003	1177026	85.2
+	"Dallas-Fort Worth-Arlington, TX"	"19100"	"White"	"2106-3"	"Non-Hispanic"	"2186-5"	"2017"	"2017"	1150	1190548	96.6
+	"Houston-The Woodlands-Sugar Land, TX"	"26420"	"Black or African American"	"2054-5"	"Hispanic"	"2135-2"	"1999"	"1999"	Suppressed	1669	Suppressed
+	"Houston-The Woodlands-Sugar Land, TX"	"26420"	"Black or African American"	"2054-5"	"Hispanic"	"2135-2"	"2000"	"2000"	Suppressed	1730	Suppressed
+	"Houston-The Woodlands-Sugar Land, TX"	"26420"	"Black or African American"	"2054-5"	"Hispanic"	"2135-2"	"2001"	"2001"	Suppressed	1938	Suppressed
+	"Houston-The Woodlands-Sugar Land, TX"	"26420"	"Black or African American"	"2054-5"	"Hispanic"	"2135-2"	"2002"	"2002"	Suppressed	2119	Suppressed
+	"Houston-The Woodlands-Sugar Land, TX"	"26420"	"Black or African American"	"2054-5"	"Hispanic"	"2135-2"	"2003"	"2003"	Suppressed	2311	Suppressed
+	"Houston-The Woodlands-Sugar Land, TX"	"26420"	"Black or African American"	"2054-5"	"Hispanic"	"2135-2"	"2004"	"2004"	Suppressed	2610	Suppressed
+	"Houston-The Woodlands-Sugar Land, TX"	"26420"	"Black or African American"	"2054-5"	"Hispanic"	"2135-2"	"2005"	"2005"	Suppressed	2890	Suppressed
+	"Houston-The Woodlands-Sugar Land, TX"	"26420"	"Black or African American"	"2054-5"	"Hispanic"	"2135-2"	"2006"	"2006"	Suppressed	3234	Suppressed
+	"Houston-The Woodlands-Sugar Land, TX"	"26420"	"Black or African American"	"2054-5"	"Hispanic"	"2135-2"	"2007"	"2007"	Suppressed	3611	Suppressed
+	"Houston-The Woodlands-Sugar Land, TX"	"26420"	"Black or African American"	"2054-5"	"Hispanic"	"2135-2"	"2008"	"2008"	Suppressed	4044	Suppressed
+	"Houston-The Woodlands-Sugar Land, TX"	"26420"	"Black or African American"	"2054-5"	"Hispanic"	"2135-2"	"2009"	"2009"	Suppressed	4543	Suppressed
+	"Houston-The Woodlands-Sugar Land, TX"	"26420"	"Black or African American"	"2054-5"	"Hispanic"	"2135-2"	"2010"	"2010"	Suppressed	5142	Suppressed
+	"Houston-The Woodlands-Sugar Land, TX"	"26420"	"Black or African American"	"2054-5"	"Hispanic"	"2135-2"	"2011"	"2011"	Suppressed	5494	Suppressed
+	"Houston-The Woodlands-Sugar Land, TX"	"26420"	"Black or African American"	"2054-5"	"Hispanic"	"2135-2"	"2012"	"2012"	Suppressed	5893	Suppressed
+	"Houston-The Woodlands-Sugar Land, TX"	"26420"	"Black or African American"	"2054-5"	"Hispanic"	"2135-2"	"2013"	"2013"	Suppressed	6358	Suppressed
+	"Houston-The Woodlands-Sugar Land, TX"	"26420"	"Black or African American"	"2054-5"	"Hispanic"	"2135-2"	"2014"	"2014"	Suppressed	6875	Suppressed
+	"Houston-The Woodlands-Sugar Land, TX"	"26420"	"Black or African American"	"2054-5"	"Hispanic"	"2135-2"	"2015"	"2015"	Suppressed	7432	Suppressed
+	"Houston-The Woodlands-Sugar Land, TX"	"26420"	"Black or African American"	"2054-5"	"Hispanic"	"2135-2"	"2016"	"2016"	Suppressed	8022	Suppressed
+	"Houston-The Woodlands-Sugar Land, TX"	"26420"	"Black or African American"	"2054-5"	"Hispanic"	"2135-2"	"2017"	"2017"	Suppressed	8610	Suppressed
+	"Houston-The Woodlands-Sugar Land, TX"	"26420"	"Black or African American"	"2054-5"	"Non-Hispanic"	"2186-5"	"1999"	"1999"	214	131751	162.4
+	"Houston-The Woodlands-Sugar Land, TX"	"26420"	"Black or African American"	"2054-5"	"Non-Hispanic"	"2186-5"	"2000"	"2000"	236	137816	171.2
+	"Houston-The Woodlands-Sugar Land, TX"	"26420"	"Black or African American"	"2054-5"	"Non-Hispanic"	"2186-5"	"2001"	"2001"	234	144697	161.7
+	"Houston-The Woodlands-Sugar Land, TX"	"26420"	"Black or African American"	"2054-5"	"Non-Hispanic"	"2186-5"	"2002"	"2002"	263	151843	173.2
+	"Houston-The Woodlands-Sugar Land, TX"	"26420"	"Black or African American"	"2054-5"	"Non-Hispanic"	"2186-5"	"2003"	"2003"	262	159739	164.0
+	"Houston-The Woodlands-Sugar Land, TX"	"26420"	"Black or African American"	"2054-5"	"Non-Hispanic"	"2186-5"	"2004"	"2004"	317	167831	188.9
+	"Houston-The Woodlands-Sugar Land, TX"	"26420"	"Black or African American"	"2054-5"	"Non-Hispanic"	"2186-5"	"2005"	"2005"	289	176305	163.9
+	"Houston-The Woodlands-Sugar Land, TX"	"26420"	"Black or African American"	"2054-5"	"Non-Hispanic"	"2186-5"	"2006"	"2006"	291	192392	151.3
+	"Houston-The Woodlands-Sugar Land, TX"	"26420"	"Black or African American"	"2054-5"	"Non-Hispanic"	"2186-5"	"2007"	"2007"	317	201043	157.7
+	"Houston-The Woodlands-Sugar Land, TX"	"26420"	"Black or African American"	"2054-5"	"Non-Hispanic"	"2186-5"	"2008"	"2008"	304	209778	144.9
+	"Houston-The Woodlands-Sugar Land, TX"	"26420"	"Black or African American"	"2054-5"	"Non-Hispanic"	"2186-5"	"2009"	"2009"	321	220430	145.6
+	"Houston-The Woodlands-Sugar Land, TX"	"26420"	"Black or African American"	"2054-5"	"Non-Hispanic"	"2186-5"	"2010"	"2010"	314	230549	136.2
+	"Houston-The Woodlands-Sugar Land, TX"	"26420"	"Black or African American"	"2054-5"	"Non-Hispanic"	"2186-5"	"2011"	"2011"	325	240060	135.4
+	"Houston-The Woodlands-Sugar Land, TX"	"26420"	"Black or African American"	"2054-5"	"Non-Hispanic"	"2186-5"	"2012"	"2012"	313	249758	125.3
+	"Houston-The Woodlands-Sugar Land, TX"	"26420"	"Black or African American"	"2054-5"	"Non-Hispanic"	"2186-5"	"2013"	"2013"	342	259136	132.0
+	"Houston-The Woodlands-Sugar Land, TX"	"26420"	"Black or African American"	"2054-5"	"Non-Hispanic"	"2186-5"	"2014"	"2014"	364	269180	135.2
+	"Houston-The Woodlands-Sugar Land, TX"	"26420"	"Black or African American"	"2054-5"	"Non-Hispanic"	"2186-5"	"2015"	"2015"	366	279280	131.1
+	"Houston-The Woodlands-Sugar Land, TX"	"26420"	"Black or African American"	"2054-5"	"Non-Hispanic"	"2186-5"	"2016"	"2016"	367	288389	127.3
+	"Houston-The Woodlands-Sugar Land, TX"	"26420"	"Black or African American"	"2054-5"	"Non-Hispanic"	"2186-5"	"2017"	"2017"	397	296591	133.9
+	"Houston-The Woodlands-Sugar Land, TX"	"26420"	"White"	"2106-3"	"Hispanic"	"2135-2"	"1999"	"1999"	113	125696	89.9
+	"Houston-The Woodlands-Sugar Land, TX"	"26420"	"White"	"2106-3"	"Hispanic"	"2135-2"	"2000"	"2000"	130	135635	95.8
+	"Houston-The Woodlands-Sugar Land, TX"	"26420"	"White"	"2106-3"	"Hispanic"	"2135-2"	"2001"	"2001"	137	145441	94.2
+	"Houston-The Woodlands-Sugar Land, TX"	"26420"	"White"	"2106-3"	"Hispanic"	"2135-2"	"2002"	"2002"	130	156106	83.3
+	"Houston-The Woodlands-Sugar Land, TX"	"26420"	"White"	"2106-3"	"Hispanic"	"2135-2"	"2003"	"2003"	139	167377	83.0
+	"Houston-The Woodlands-Sugar Land, TX"	"26420"	"White"	"2106-3"	"Hispanic"	"2135-2"	"2004"	"2004"	170	179167	94.9
+	"Houston-The Woodlands-Sugar Land, TX"	"26420"	"White"	"2106-3"	"Hispanic"	"2135-2"	"2005"	"2005"	185	192397	96.2
+	"Houston-The Woodlands-Sugar Land, TX"	"26420"	"White"	"2106-3"	"Hispanic"	"2135-2"	"2006"	"2006"	191	207686	92.0
+	"Houston-The Woodlands-Sugar Land, TX"	"26420"	"White"	"2106-3"	"Hispanic"	"2135-2"	"2007"	"2007"	177	223424	79.2
+	"Houston-The Woodlands-Sugar Land, TX"	"26420"	"White"	"2106-3"	"Hispanic"	"2135-2"	"2008"	"2008"	185	240114	77.0
+	"Houston-The Woodlands-Sugar Land, TX"	"26420"	"White"	"2106-3"	"Hispanic"	"2135-2"	"2009"	"2009"	202	257534	78.4
+	"Houston-The Woodlands-Sugar Land, TX"	"26420"	"White"	"2106-3"	"Hispanic"	"2135-2"	"2010"	"2010"	236	276102	85.5
+	"Houston-The Woodlands-Sugar Land, TX"	"26420"	"White"	"2106-3"	"Hispanic"	"2135-2"	"2011"	"2011"	233	294364	79.2
+	"Houston-The Woodlands-Sugar Land, TX"	"26420"	"White"	"2106-3"	"Hispanic"	"2135-2"	"2012"	"2012"	270	313847	86.0
+	"Houston-The Woodlands-Sugar Land, TX"	"26420"	"White"	"2106-3"	"Hispanic"	"2135-2"	"2013"	"2013"	286	334666	85.5
+	"Houston-The Woodlands-Sugar Land, TX"	"26420"	"White"	"2106-3"	"Hispanic"	"2135-2"	"2014"	"2014"	274	356395	76.9
+	"Houston-The Woodlands-Sugar Land, TX"	"26420"	"White"	"2106-3"	"Hispanic"	"2135-2"	"2015"	"2015"	292	379181	77.0
+	"Houston-The Woodlands-Sugar Land, TX"	"26420"	"White"	"2106-3"	"Hispanic"	"2135-2"	"2016"	"2016"	286	401594	71.2
+	"Houston-The Woodlands-Sugar Land, TX"	"26420"	"White"	"2106-3"	"Hispanic"	"2135-2"	"2017"	"2017"	352	422977	83.2
+	"Houston-The Woodlands-Sugar Land, TX"	"26420"	"White"	"2106-3"	"Non-Hispanic"	"2186-5"	"1999"	"1999"	788	574834	137.1
+	"Houston-The Woodlands-Sugar Land, TX"	"26420"	"White"	"2106-3"	"Non-Hispanic"	"2186-5"	"2000"	"2000"	864	590153	146.4
+	"Houston-The Woodlands-Sugar Land, TX"	"26420"	"White"	"2106-3"	"Non-Hispanic"	"2186-5"	"2001"	"2001"	813	606259	134.1
+	"Houston-The Woodlands-Sugar Land, TX"	"26420"	"White"	"2106-3"	"Non-Hispanic"	"2186-5"	"2002"	"2002"	846	624584	135.5
+	"Houston-The Woodlands-Sugar Land, TX"	"26420"	"White"	"2106-3"	"Non-Hispanic"	"2186-5"	"2003"	"2003"	823	643401	127.9
+	"Houston-The Woodlands-Sugar Land, TX"	"26420"	"White"	"2106-3"	"Non-Hispanic"	"2186-5"	"2004"	"2004"	823	662671	124.2
+	"Houston-The Woodlands-Sugar Land, TX"	"26420"	"White"	"2106-3"	"Non-Hispanic"	"2186-5"	"2005"	"2005"	774	683242	113.3
+	"Houston-The Woodlands-Sugar Land, TX"	"26420"	"White"	"2106-3"	"Non-Hispanic"	"2186-5"	"2006"	"2006"	761	706965	107.6
+	"Houston-The Woodlands-Sugar Land, TX"	"26420"	"White"	"2106-3"	"Non-Hispanic"	"2186-5"	"2007"	"2007"	826	728752	113.3
+	"Houston-The Woodlands-Sugar Land, TX"	"26420"	"White"	"2106-3"	"Non-Hispanic"	"2186-5"	"2008"	"2008"	771	751639	102.6
+	"Houston-The Woodlands-Sugar Land, TX"	"26420"	"White"	"2106-3"	"Non-Hispanic"	"2186-5"	"2009"	"2009"	793	774098	102.4
+	"Houston-The Woodlands-Sugar Land, TX"	"26420"	"White"	"2106-3"	"Non-Hispanic"	"2186-5"	"2010"	"2010"	803	794960	101.0
+	"Houston-The Woodlands-Sugar Land, TX"	"26420"	"White"	"2106-3"	"Non-Hispanic"	"2186-5"	"2011"	"2011"	818	815323	100.3
+	"Houston-The Woodlands-Sugar Land, TX"	"26420"	"White"	"2106-3"	"Non-Hispanic"	"2186-5"	"2012"	"2012"	823	835632	98.5
+	"Houston-The Woodlands-Sugar Land, TX"	"26420"	"White"	"2106-3"	"Non-Hispanic"	"2186-5"	"2013"	"2013"	856	853407	100.3
+	"Houston-The Woodlands-Sugar Land, TX"	"26420"	"White"	"2106-3"	"Non-Hispanic"	"2186-5"	"2014"	"2014"	803	870129	92.3
+	"Houston-The Woodlands-Sugar Land, TX"	"26420"	"White"	"2106-3"	"Non-Hispanic"	"2186-5"	"2015"	"2015"	882	882788	99.9
+	"Houston-The Woodlands-Sugar Land, TX"	"26420"	"White"	"2106-3"	"Non-Hispanic"	"2186-5"	"2016"	"2016"	823	889873	92.5
+	"Houston-The Woodlands-Sugar Land, TX"	"26420"	"White"	"2106-3"	"Non-Hispanic"	"2186-5"	"2017"	"2017"	836	893630	93.6
+	"San Antonio-New Braunfels, TX"	"41700"	"Black or African American"	"2054-5"	"Hispanic"	"2135-2"	"1999"	"1999"	Suppressed	619	Suppressed
+	"San Antonio-New Braunfels, TX"	"41700"	"Black or African American"	"2054-5"	"Hispanic"	"2135-2"	"2000"	"2000"	0	683	0.0
+	"San Antonio-New Braunfels, TX"	"41700"	"Black or African American"	"2054-5"	"Hispanic"	"2135-2"	"2001"	"2001"	0	761	0.0
+	"San Antonio-New Braunfels, TX"	"41700"	"Black or African American"	"2054-5"	"Hispanic"	"2135-2"	"2002"	"2002"	0	830	0.0
+	"San Antonio-New Braunfels, TX"	"41700"	"Black or African American"	"2054-5"	"Hispanic"	"2135-2"	"2003"	"2003"	0	903	0.0
+	"San Antonio-New Braunfels, TX"	"41700"	"Black or African American"	"2054-5"	"Hispanic"	"2135-2"	"2004"	"2004"	Suppressed	1032	Suppressed
+	"San Antonio-New Braunfels, TX"	"41700"	"Black or African American"	"2054-5"	"Hispanic"	"2135-2"	"2005"	"2005"	Suppressed	1140	Suppressed
+	"San Antonio-New Braunfels, TX"	"41700"	"Black or African American"	"2054-5"	"Hispanic"	"2135-2"	"2006"	"2006"	0	1243	0.0
+	"San Antonio-New Braunfels, TX"	"41700"	"Black or African American"	"2054-5"	"Hispanic"	"2135-2"	"2007"	"2007"	0	1376	0.0
+	"San Antonio-New Braunfels, TX"	"41700"	"Black or African American"	"2054-5"	"Hispanic"	"2135-2"	"2008"	"2008"	0	1522	0.0
+	"San Antonio-New Braunfels, TX"	"41700"	"Black or African American"	"2054-5"	"Hispanic"	"2135-2"	"2009"	"2009"	0	1692	0.0
+	"San Antonio-New Braunfels, TX"	"41700"	"Black or African American"	"2054-5"	"Hispanic"	"2135-2"	"2010"	"2010"	0	1885	0.0
+	"San Antonio-New Braunfels, TX"	"41700"	"Black or African American"	"2054-5"	"Hispanic"	"2135-2"	"2011"	"2011"	0	2056	0.0
+	"San Antonio-New Braunfels, TX"	"41700"	"Black or African American"	"2054-5"	"Hispanic"	"2135-2"	"2012"	"2012"	0	2222	0.0
+	"San Antonio-New Braunfels, TX"	"41700"	"Black or African American"	"2054-5"	"Hispanic"	"2135-2"	"2013"	"2013"	Suppressed	2387	Suppressed
+	"San Antonio-New Braunfels, TX"	"41700"	"Black or African American"	"2054-5"	"Hispanic"	"2135-2"	"2014"	"2014"	Suppressed	2531	Suppressed
+	"San Antonio-New Braunfels, TX"	"41700"	"Black or African American"	"2054-5"	"Hispanic"	"2135-2"	"2015"	"2015"	Suppressed	2731	Suppressed
+	"San Antonio-New Braunfels, TX"	"41700"	"Black or African American"	"2054-5"	"Hispanic"	"2135-2"	"2016"	"2016"	Suppressed	2887	Suppressed
+	"San Antonio-New Braunfels, TX"	"41700"	"Black or African American"	"2054-5"	"Hispanic"	"2135-2"	"2017"	"2017"	Suppressed	3026	Suppressed
+	"San Antonio-New Braunfels, TX"	"41700"	"Black or African American"	"2054-5"	"Non-Hispanic"	"2186-5"	"1999"	"1999"	32	19162	167.0
+	"San Antonio-New Braunfels, TX"	"41700"	"Black or African American"	"2054-5"	"Non-Hispanic"	"2186-5"	"2000"	"2000"	34	19810	171.6
+	"San Antonio-New Braunfels, TX"	"41700"	"Black or African American"	"2054-5"	"Non-Hispanic"	"2186-5"	"2001"	"2001"	35	20637	169.6
+	"San Antonio-New Braunfels, TX"	"41700"	"Black or African American"	"2054-5"	"Non-Hispanic"	"2186-5"	"2002"	"2002"	22	21495	102.3
+	"San Antonio-New Braunfels, TX"	"41700"	"Black or African American"	"2054-5"	"Non-Hispanic"	"2186-5"	"2003"	"2003"	29	22386	129.5
+	"San Antonio-New Braunfels, TX"	"41700"	"Black or African American"	"2054-5"	"Non-Hispanic"	"2186-5"	"2004"	"2004"	27	23398	115.4
+	"San Antonio-New Braunfels, TX"	"41700"	"Black or African American"	"2054-5"	"Non-Hispanic"	"2186-5"	"2005"	"2005"	22	24676	89.2
+	"San Antonio-New Braunfels, TX"	"41700"	"Black or African American"	"2054-5"	"Non-Hispanic"	"2186-5"	"2006"	"2006"	32	26664	120.0
+	"San Antonio-New Braunfels, TX"	"41700"	"Black or African American"	"2054-5"	"Non-Hispanic"	"2186-5"	"2007"	"2007"	42	27993	150.0
+	"San Antonio-New Braunfels, TX"	"41700"	"Black or African American"	"2054-5"	"Non-Hispanic"	"2186-5"	"2008"	"2008"	38	29352	129.5
+	"San Antonio-New Braunfels, TX"	"41700"	"Black or African American"	"2054-5"	"Non-Hispanic"	"2186-5"	"2009"	"2009"	41	30882	132.8
+	"San Antonio-New Braunfels, TX"	"41700"	"Black or African American"	"2054-5"	"Non-Hispanic"	"2186-5"	"2010"	"2010"	43	32475	132.4
+	"San Antonio-New Braunfels, TX"	"41700"	"Black or African American"	"2054-5"	"Non-Hispanic"	"2186-5"	"2011"	"2011"	37	34049	108.7
+	"San Antonio-New Braunfels, TX"	"41700"	"Black or African American"	"2054-5"	"Non-Hispanic"	"2186-5"	"2012"	"2012"	51	35592	143.3
+	"San Antonio-New Braunfels, TX"	"41700"	"Black or African American"	"2054-5"	"Non-Hispanic"	"2186-5"	"2013"	"2013"	44	36915	119.2
+	"San Antonio-New Braunfels, TX"	"41700"	"Black or African American"	"2054-5"	"Non-Hispanic"	"2186-5"	"2014"	"2014"	40	38348	104.3
+	"San Antonio-New Braunfels, TX"	"41700"	"Black or African American"	"2054-5"	"Non-Hispanic"	"2186-5"	"2015"	"2015"	38	39825	95.4
+	"San Antonio-New Braunfels, TX"	"41700"	"Black or African American"	"2054-5"	"Non-Hispanic"	"2186-5"	"2016"	"2016"	38	41275	92.1
+	"San Antonio-New Braunfels, TX"	"41700"	"Black or African American"	"2054-5"	"Non-Hispanic"	"2186-5"	"2017"	"2017"	39	42516	91.7
+	"San Antonio-New Braunfels, TX"	"41700"	"White"	"2106-3"	"Hispanic"	"2135-2"	"1999"	"1999"	156	138630	112.5
+	"San Antonio-New Braunfels, TX"	"41700"	"White"	"2106-3"	"Hispanic"	"2135-2"	"2000"	"2000"	192	145608	131.9
+	"San Antonio-New Braunfels, TX"	"41700"	"White"	"2106-3"	"Hispanic"	"2135-2"	"2001"	"2001"	164	151549	108.2
+	"San Antonio-New Braunfels, TX"	"41700"	"White"	"2106-3"	"Hispanic"	"2135-2"	"2002"	"2002"	190	158121	120.2
+	"San Antonio-New Braunfels, TX"	"41700"	"White"	"2106-3"	"Hispanic"	"2135-2"	"2003"	"2003"	190	165111	115.1
+	"San Antonio-New Braunfels, TX"	"41700"	"White"	"2106-3"	"Hispanic"	"2135-2"	"2004"	"2004"	211	172468	122.3
+	"San Antonio-New Braunfels, TX"	"41700"	"White"	"2106-3"	"Hispanic"	"2135-2"	"2005"	"2005"	197	180023	109.4
+	"San Antonio-New Braunfels, TX"	"41700"	"White"	"2106-3"	"Hispanic"	"2135-2"	"2006"	"2006"	229	189180	121.0
+	"San Antonio-New Braunfels, TX"	"41700"	"White"	"2106-3"	"Hispanic"	"2135-2"	"2007"	"2007"	231	198369	116.4
+	"San Antonio-New Braunfels, TX"	"41700"	"White"	"2106-3"	"Hispanic"	"2135-2"	"2008"	"2008"	227	208031	109.1
+	"San Antonio-New Braunfels, TX"	"41700"	"White"	"2106-3"	"Hispanic"	"2135-2"	"2009"	"2009"	228	217437	104.9
+	"San Antonio-New Braunfels, TX"	"41700"	"White"	"2106-3"	"Hispanic"	"2135-2"	"2010"	"2010"	216	227753	94.8
+	"San Antonio-New Braunfels, TX"	"41700"	"White"	"2106-3"	"Hispanic"	"2135-2"	"2011"	"2011"	226	236936	95.4
+	"San Antonio-New Braunfels, TX"	"41700"	"White"	"2106-3"	"Hispanic"	"2135-2"	"2012"	"2012"	267	245990	108.5
+	"San Antonio-New Braunfels, TX"	"41700"	"White"	"2106-3"	"Hispanic"	"2135-2"	"2013"	"2013"	293	255332	114.8
+	"San Antonio-New Braunfels, TX"	"41700"	"White"	"2106-3"	"Hispanic"	"2135-2"	"2014"	"2014"	269	264863	101.6
+	"San Antonio-New Braunfels, TX"	"41700"	"White"	"2106-3"	"Hispanic"	"2135-2"	"2015"	"2015"	301	274397	109.7
+	"San Antonio-New Braunfels, TX"	"41700"	"White"	"2106-3"	"Hispanic"	"2135-2"	"2016"	"2016"	300	283422	105.8
+	"San Antonio-New Braunfels, TX"	"41700"	"White"	"2106-3"	"Hispanic"	"2135-2"	"2017"	"2017"	322	291903	110.3
+	"San Antonio-New Braunfels, TX"	"41700"	"White"	"2106-3"	"Non-Hispanic"	"2186-5"	"1999"	"1999"	279	200702	139.0
+	"San Antonio-New Braunfels, TX"	"41700"	"White"	"2106-3"	"Non-Hispanic"	"2186-5"	"2000"	"2000"	285	204368	139.5
+	"San Antonio-New Braunfels, TX"	"41700"	"White"	"2106-3"	"Non-Hispanic"	"2186-5"	"2001"	"2001"	261	208529	125.2
+	"San Antonio-New Braunfels, TX"	"41700"	"White"	"2106-3"	"Non-Hispanic"	"2186-5"	"2002"	"2002"	250	213062	117.3
+	"San Antonio-New Braunfels, TX"	"41700"	"White"	"2106-3"	"Non-Hispanic"	"2186-5"	"2003"	"2003"	296	218248	135.6
+	"San Antonio-New Braunfels, TX"	"41700"	"White"	"2106-3"	"Non-Hispanic"	"2186-5"	"2004"	"2004"	277	224396	123.4
+	"San Antonio-New Braunfels, TX"	"41700"	"White"	"2106-3"	"Non-Hispanic"	"2186-5"	"2005"	"2005"	269	231171	116.4
+	"San Antonio-New Braunfels, TX"	"41700"	"White"	"2106-3"	"Non-Hispanic"	"2186-5"	"2006"	"2006"	279	239865	116.3
+	"San Antonio-New Braunfels, TX"	"41700"	"White"	"2106-3"	"Non-Hispanic"	"2186-5"	"2007"	"2007"	263	247736	106.2
+	"San Antonio-New Braunfels, TX"	"41700"	"White"	"2106-3"	"Non-Hispanic"	"2186-5"	"2008"	"2008"	286	255397	112.0
+	"San Antonio-New Braunfels, TX"	"41700"	"White"	"2106-3"	"Non-Hispanic"	"2186-5"	"2009"	"2009"	244	262597	92.9
+	"San Antonio-New Braunfels, TX"	"41700"	"White"	"2106-3"	"Non-Hispanic"	"2186-5"	"2010"	"2010"	241	269490	89.4
+	"San Antonio-New Braunfels, TX"	"41700"	"White"	"2106-3"	"Non-Hispanic"	"2186-5"	"2011"	"2011"	257	275677	93.2
+	"San Antonio-New Braunfels, TX"	"41700"	"White"	"2106-3"	"Non-Hispanic"	"2186-5"	"2012"	"2012"	256	281220	91.0
+	"San Antonio-New Braunfels, TX"	"41700"	"White"	"2106-3"	"Non-Hispanic"	"2186-5"	"2013"	"2013"	261	286691	91.0
+	"San Antonio-New Braunfels, TX"	"41700"	"White"	"2106-3"	"Non-Hispanic"	"2186-5"	"2014"	"2014"	258	292212	88.3
+	"San Antonio-New Braunfels, TX"	"41700"	"White"	"2106-3"	"Non-Hispanic"	"2186-5"	"2015"	"2015"	279	296736	94.0
+	"San Antonio-New Braunfels, TX"	"41700"	"White"	"2106-3"	"Non-Hispanic"	"2186-5"	"2016"	"2016"	275	300613	91.5
+	"San Antonio-New Braunfels, TX"	"41700"	"White"	"2106-3"	"Non-Hispanic"	"2186-5"	"2017"	"2017"	281	304021	92.4
+"---"
+"Dataset: United States and Puerto Rico Cancer Statistics, 1999-2017 Incidence"
+"Query Parameters:"
+"Age Groups: 50-54 years; 55-59 years; 60-64 years ; 65-69 years; 70-74 years; 75-79 years"
+"Cancer Sites: Colon and Rectum"
+"Ethnicity: Hispanic; Non-Hispanic"
+"MSA: Austin-Round Rock, TX (12420); Dallas-Fort Worth-Arlington, TX (19100); Houston-The Woodlands-Sugar Land, TX (26420); San"
+"Antonio-New Braunfels, TX (41700)"
+"Race: Black or African American; White"
+"Group By: MSA; Race; Ethnicity; Year"
+"Show Totals: False"
+"Show Zero Values: True"
+"Show Suppressed: True"
+"Calculate Rates Per: 100,000"
+"Standard Population: 2000 U.S. Std. Million"
+"---"
+"Help: See http://wonder.cdc.gov/wonder/help/cancer-v2017.html for more information."
+"---"
+"Query Date: Nov 9, 2020 2:59:24 PM"
+"---"
+"Suggested Citation: United States Cancer Statistics - Incidence: 1999 - 2017, WONDER Online Database. United States Department"
+"of Health and Human Services, Centers for Disease Control and Prevention and National Cancer Institute; 2020. Accessed at"
+"http://wonder.cdc.gov/cancer-v2017.html on Nov 9, 2020 2:59:24 PM"
+"---"
+Caveats:
+"1. 'Suppressed' is displayed for data values when they must not be provided in order to protect personal privacy. Data is"
+"suppressed if fewer than 16 cases are reported in any one line of the results table. Data for the ""Asian / Pacific Islander"""
+"and ""American Indian or Alaska Native"" race categories are suppressed at the Metropolitan Statistical Area level for"
+"populations less than 50,000 persons. Data are suppressed at the state and Metropolitan Statistical Area level for certain race"
+"and ethnicity groups: 1) ""American Indian or Alaska Native"" race data are suppressed at the state and MSA level for Delaware,"
+"Illinois, Kansas, Kentucky, New Jersey, and New York; 2) ""Asian or Pacific Islander"" race data are suppressed at the state and"
+"MSA level for Delaware, Illinois, Kansas, and Kentucky; 3) ""Hispanic"" ethnicity data are supressed at the state and MSA level"
+"for Delaware, and Kentucky. 4) All combinations of race by ethnicity are supressed at the state and MSA level for Delaware,"
+"Kansas, Kentucky, Pennsylvania, and Massachusetts. More information:"
+"http://wonder.cdc.gov/wonder/help/cancer-v2017.html#Confidentiality."
+"2. Data are from selected statewide and metropolitan area cancer registries that meet data quality criteria. Incidence data"
+"shown for the United States are diagnoses and populations from included registries only."
+"3. Information on primary site, behavior, and histology was coded according to the International Classification of Diseases for"
+"Oncology, Third Edition (ICD-O-3) and categorized according to the revised SEER recodes dated January 27, 2003, which define"
+"standard groupings of primary cancer sites."
+"4. For the 2005 year, the Census Bureau estimates that 203,937 persons were displaced from Alabama, Louisiana, Mississippi and"
+"Texas due to Hurricanes Katrina and Rita. CDC WONDER does not include the displaced persons in the 2005 population counts for"
+"these states, nor are these counts included in the summary populations for the affected division, regions or national"
+"population. However, the USCS web site does include these displaced persons in the national population figures for 2005."

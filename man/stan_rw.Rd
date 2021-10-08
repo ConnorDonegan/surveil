@@ -2,7 +2,7 @@
 % Please edit documentation in R/stan_rw.R
 \name{stan_rw}
 \alias{stan_rw}
-\title{Time series models for disease incidence data}
+\title{Time series models for mortality or disease incidence data}
 \usage{
 stan_rw(
   data,
@@ -19,30 +19,29 @@ stan_rw(
 )
 }
 \arguments{
-\item{data}{A \code{data.frame} containing columns of cases counts---named \code{Count}---and corresponding populations at risk---named \code{Population}. This must be in the correct time order. For example, you can prepare the data using \code{data <- dplyr::arrange(data, Year)}. It is also acceptable to order by time and group, e.g, \code{data <- dplyr::arrange(data, Year, group)} or \code{dplyr::arrange(data, group, Year)}. If the data contains a grouping variable, this must be specified using the \code{group} argument.}
+\item{data}{A \code{data.frame} containing the following columns: \describe{
+\item{Count}{Number of cases or deaths; this column must be named 'Count'.}
+\item{Population}{Size of population at risk; this column must be named 'Population'.}
+\item{time}{Time period indicator; provide the column name using the \code{time} argument.}
+\item{group}{Optional grouping variable; provide the column name using the \code{group} argument.}
+}}
 
-\item{group}{If a grouping structure is present, provide the (unquoted) name of the column in \code{data} containing the grouping structure, such as age brackets or race-ethnicity. E.g., if \code{data} has column names \code{Year}, \code{Race}, \code{Cases}, and \code{Population}, then you will want to provide \code{group = Race}.}
+\item{group}{If \code{data} is aggregated by demographic group, provide the (unquoted) name of the column in \code{data} containing the grouping structure, such as age brackets or race-ethnicity. E.g., if \code{data} has column names \code{Year}, \code{Race}, \code{Cases}, and \code{Population}, then you would provide \code{group = Race}.}
 
 \item{time}{Specify the (unquoted) name of the time variable in \code{data}, as in \code{time = Year}. This variable must be numeric-alike (i.e., \code{as.numeric(data$time)} will not fail).}
 
-\item{cor}{For correlated random walks use \code{cor = TRUE}; default value is \code{FALSE}.}
+\item{cor}{For correlated random walks use \code{cor = TRUE}; default value is \code{FALSE}. Note this only applies when the \code{group} argument is used.}
 
-\item{prior}{A named \code{list} with prior parameters.
+\item{prior}{Optionally provide a named \code{list} with prior parameters. If any of the following items are missing, default priors will be assigned and printed to the console.
 
 \describe{
-\item{eta_1}{The first value of log-risk in each series must be assigned a prior probability distribution. These will automatically be assigned independent Student's t distributions. Provide the degrees of freedom (df), location, and scale parameters for each demographic group in a list, where each parameter is a \code{k}-length vector.
+\item{eta_1}{The first value of log-risk in each series must be assigned a Student's t prior probability distribution. Provide the degrees of freedom (df), location, and scale parameters for each demographic group in a list, where each parameter is a \code{k}-length vector.
 
-For example, with \code{k=2} demographic groups, the following code will assign priors of \code{student_t(10, -5, 5)} to the starting values of both series: \verb{prior = list(eta_1 = list(df = c(10, 10), location = c(-6.5, -6.5), scale = c(5, 5))}.
+For example, with \code{k=2} demographic groups, the following code will assign priors of \code{student_t(10, -5, 5)} to the starting values of both series: \verb{prior = list(eta_1 = student_t(df = c(10, 10), location = c(-6.5, -6.5), scale = c(5, 5))}. Note, \code{eta} is the log-rate, so centering the prior for \code{eta_1} on \code{-5} is equivalent to centering the prior rate on \verb{exp(-6.5)*100,000 = 150} cases per 100,000 person-years at risk.}
 
-Note, \code{eta} is the log-rate, so centering the prior for \code{eta_1} on \code{-5} is equivalent to centering the prior rate on \verb{exp(-6.5)*100,000 = 150} cases per 100,000 person-years at risk. The Student's t distribution is equivalent to the Gaussian distribution when \code{df} is large (e.g., 1,000). Student's t distribution is equivalent to a Cauchy distribution when \code{df = 1}.}
+\item{sigma}{Each demographic group has a scale parameter assigned to its log-rate. This is the scale of the annual deviations from the previous year's log-rate. The scale parameters are assigned independent half-Student's t prior distributions (these \code{half} t distributions are restricted to be positive-valued only).}
 
-\item{sigma}{Each demographic group has a scale parameter assigned to its log-rate. This is the scale of the annual deviations from the previous year's log-rate. The scale parameters are assigned independent half-Student's t prior distributions (these \code{half} t distributions are restricted to be positive-valued only).
-
-For example, with \code{k=2} demographic groups, the following code will assign priors of \code{student_t(1, 0, 1)}, to the scale parameters of both series: \verb{prior = list(eta_1 = list(df = c(1, 1), location = c(0, 0), scale = c(1, 1))}.
-
-The Student's t distribution is equivalent to the Gaussian distribution when \code{df} is large (e.g., 1,000). Student's t distribution is equivalent to a Cauchy distribution when \code{df = 1}. Because this is the scale of log-rates, the scale parameter will always be a small value (a small change in the log-rate can translate to a large difference in the rate).}
-
-\item{omega}{If \code{corr = TRUE}, an LKJ prior is assigned to the correlation matrix, Omega. This prior has one parameter, !! finish writing !!}
+\item{omega}{If \code{cor = TRUE}, an LKJ prior is assigned to the correlation matrix, Omega.}
 }}
 
 \item{chains}{Number of independent MCMC chains to initiate (passed to \code{\link[rstan]{sampling}}).}
@@ -58,29 +57,22 @@ The Student's t distribution is equivalent to the Gaussian distribution when \co
 \item{...}{Other arguments passed to \code{\link[rstan]{sampling}}.}
 }
 \description{
-Estimate time-varying disease risk given annual chronic disease case counts (or deaths) and population at risk estimates.
+Model time-varying disease risk given time series of case (or death) counts and population at risk.
 }
 \examples{
-
-library(tidyverse)
+\dontrun{
    data(msa)
+   dfw <- msa[grep("Dallas", msa$MSA), ]
+   fit <- stan_rw(dfw, time = Year, group = Race)
 
-   dfw <- dplyr::filter(msa, str_detect(MSA, "Dallas"))
-   
-   fit <- stan_rw(dfw, group = Race, cores = parallel::detectCores())
+print(fit)
 
- rstan::stan_rhat(fit$samples)
+# RStan summary
  head(fit$summary)
+
+# default plot
  plot(fit)
-
- plot(fit) +
-   scale_y_continuous(
-     breaks = seq(0, 1, by = 20 / 100e3),
-     labels = seq(0, 1, by = 20 / 100e3) * 100e3,
-     name = "Cases per 100,000 at risk"
-   ) +
-   scale_x_continuous(breaks = 1:19, labels = 1999:2017, name = NULL)
-
+}
 }
 \author{
 Connor Donegan (Connor.Donegan@UTSouthwestern.edu)

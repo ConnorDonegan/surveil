@@ -1,31 +1,30 @@
-#' Time series models for disease incidence data
+#' Time series models for mortality or disease incidence data
 
-#' @description Estimate time-varying disease risk given annual chronic disease case counts (or deaths) and population at risk estimates.
+#' @description Model time-varying disease risk given time series of case (or death) counts and population at risk.
 #'
-#' @param data A `data.frame` containing columns of cases counts---named `Count`---and corresponding populations at risk---named `Population`. This must be in the correct time order. For example, you can prepare the data using `data <- dplyr::arrange(data, Year)`. It is also acceptable to order by time and group, e.g, `data <- dplyr::arrange(data, Year, group)` or `dplyr::arrange(data, group, Year)`. If the data contains a grouping variable, this must be specified using the `group` argument.
+#' @param data A `data.frame` containing the following columns: \describe{
+#'  \item{Count}{Number of cases or deaths; this column must be named 'Count'.}
+#'  \item{Population}{Size of population at risk; this column must be named 'Population'.}
+#'  \item{time}{Time period indicator; provide the column name using the `time` argument.}
+#'  \item{group}{Optional grouping variable; provide the column name using the `group` argument.}
+#' }
 #'
 #' @param time Specify the (unquoted) name of the time variable in `data`, as in `time = Year`. This variable must be numeric-alike (i.e., `as.numeric(data$time)` will not fail).
 #' 
-#' @param group If a grouping structure is present, provide the (unquoted) name of the column in `data` containing the grouping structure, such as age brackets or race-ethnicity. E.g., if `data` has column names `Year`, `Race`, `Cases`, and `Population`, then you will want to provide `group = Race`.
+#' @param group If `data` is aggregated by demographic group, provide the (unquoted) name of the column in `data` containing the grouping structure, such as age brackets or race-ethnicity. E.g., if `data` has column names `Year`, `Race`, `Cases`, and `Population`, then you would provide `group = Race`. 
 #'
-#' @param cor  For correlated random walks use `cor = TRUE`; default value is `FALSE`.
+#' @param cor  For correlated random walks use `cor = TRUE`; default value is `FALSE`. Note this only applies when the `group` argument is used.
 #' 
-#' @param prior A named `list` with prior parameters.
+#' @param prior Optionally provide a named `list` with prior parameters. If any of the following items are missing, default priors will be assigned and printed to the console.
 #'
 #' \describe{
-#' \item{eta_1}{The first value of log-risk in each series must be assigned a prior probability distribution. These will automatically be assigned independent Student's t distributions. Provide the degrees of freedom (df), location, and scale parameters for each demographic group in a list, where each parameter is a `k`-length vector.
+#' \item{eta_1}{The first value of log-risk in each series must be assigned a Student's t prior probability distribution. Provide the degrees of freedom (df), location, and scale parameters for each demographic group in a list, where each parameter is a `k`-length vector.
 #'
-#' For example, with `k=2` demographic groups, the following code will assign priors of `student_t(10, -5, 5)` to the starting values of both series: `prior = list(eta_1 = list(df = c(10, 10), location = c(-6.5, -6.5), scale = c(5, 5))`.
+#' For example, with `k=2` demographic groups, the following code will assign priors of `student_t(10, -5, 5)` to the starting values of both series: `prior = list(eta_1 = student_t(df = c(10, 10), location = c(-6.5, -6.5), scale = c(5, 5))`. Note, `eta` is the log-rate, so centering the prior for `eta_1` on `-5` is equivalent to centering the prior rate on `exp(-6.5)*100,000 = 150` cases per 100,000 person-years at risk.}
 #'
-#' Note, `eta` is the log-rate, so centering the prior for `eta_1` on `-5` is equivalent to centering the prior rate on `exp(-6.5)*100,000 = 150` cases per 100,000 person-years at risk. The Student's t distribution is equivalent to the Gaussian distribution when `df` is large (e.g., 1,000). Student's t distribution is equivalent to a Cauchy distribution when `df = 1`.}
+#' \item{sigma}{Each demographic group has a scale parameter assigned to its log-rate. This is the scale of the annual deviations from the previous year's log-rate. The scale parameters are assigned independent half-Student's t prior distributions (these `half` t distributions are restricted to be positive-valued only).}
 #'
-#' \item{sigma}{Each demographic group has a scale parameter assigned to its log-rate. This is the scale of the annual deviations from the previous year's log-rate. The scale parameters are assigned independent half-Student's t prior distributions (these `half` t distributions are restricted to be positive-valued only).
-#'
-#' For example, with `k=2` demographic groups, the following code will assign priors of `student_t(1, 0, 1)`, to the scale parameters of both series: `prior = list(eta_1 = list(df = c(1, 1), location = c(0, 0), scale = c(1, 1))`.
-#'
-#' The Student's t distribution is equivalent to the Gaussian distribution when `df` is large (e.g., 1,000). Student's t distribution is equivalent to a Cauchy distribution when `df = 1`. Because this is the scale of log-rates, the scale parameter will always be a small value (a small change in the log-rate can translate to a large difference in the rate).}
-#'
-#' \item{omega}{If `corr = TRUE`, an LKJ prior is assigned to the correlation matrix, Omega. This prior has one parameter, !! finish writing !!}
+#' \item{omega}{If `cor = TRUE`, an LKJ prior is assigned to the correlation matrix, Omega.}
 #' }
 #'
 #' 
@@ -42,30 +41,24 @@
 #' @author Connor Donegan (Connor.Donegan@UTSouthwestern.edu)
 #' 
 #' @examples
-#'
-#' library(tidyverse)
+#' \dontrun{
 #'    data(msa)
+#'    dfw <- msa[grep("Dallas", msa$MSA), ]
+#'    fit <- stan_rw(dfw, time = Year, group = Race)
 #'
-#'    dfw <- dplyr::filter(msa, str_detect(MSA, "Dallas"))
-#'    
-#'    fit <- stan_rw(dfw, group = Race, cores = parallel::detectCores())
-#'
-#'  rstan::stan_rhat(fit$samples)
+#' print(fit)
+#' 
+#' # RStan summary
 #'  head(fit$summary)
+#' 
+#' # default plot
 #'  plot(fit)
-#'
-#'  plot(fit) +
-#'    scale_y_continuous(
-#'      breaks = seq(0, 1, by = 20 / 100e3),
-#'      labels = seq(0, 1, by = 20 / 100e3) * 100e3,
-#'      name = "Cases per 100,000 at risk"
-#'    ) +
-#'    scale_x_continuous(breaks = 1:19, labels = 1999:2017, name = NULL)
-#'
+#' }
 #' @export
 #' @importFrom parallel detectCores
-#' @importFrom dplyr `%>%` mutate full_join distinct select group_by ungroup n
+#' @importFrom dplyr `%>%` mutate arrange full_join distinct select group_by ungroup n select
 #' @importFrom tidyr pivot_wider
+#' @importFrom stats quantile
 #' @md
 stan_rw <- function(data,
                     group,
@@ -87,13 +80,13 @@ stan_rw <- function(data,
     stopifnot(inherits(prior, "list"))
     stopifnot(inherits(cor, "logical"))
     if (!missing(group)) {
-        tmp.df <- dplyr::distinct(msa, {{ group }})
+        tmp.df <- dplyr::distinct(data, {{ group }})
         if (!(nrow(tmp.df) > 1)) stop("Grouping variable (group) must contain at least two groups.")       
     }
     ## prep data
     ## force correct order by time
     data <- dplyr::mutate(data, time = as.numeric({{ time }}))
-    data <- dplyr::arrange(data, time)
+    data <- dplyr::arrange(data, .data$time)
     Time.index <- unique(data$time)
     if (missing(group)) {
         cases <- as.matrix(data$Count, ncol = 1)
@@ -104,52 +97,50 @@ stan_rw <- function(data,
     } else {
         cases <- data %>%
             as.data.frame %>%
-            dplyr::select({{ group }}, Count) %>%
+            dplyr::select({{ group }}, .data$Count) %>%
             dplyr::group_by({{ group }}) %>%
             dplyr::mutate(id = 1:dplyr::n()) %>%
             tidyr::pivot_wider(
-                id,
+                .data$id,
                 names_from = {{ group }},
-                values_from = Count
+                values_from = .data$Count
             ) %>%
-            dplyr::select(-c(id))
+            dplyr::select(-c(.data$id))
         at_risk <- data %>%
             as.data.frame %>%
-            dplyr::select({{ group }}, Population) %>%
+            dplyr::select({{ group }}, .data$Population) %>%
             dplyr::group_by({{ group }}) %>%
             dplyr::mutate(id = 1:dplyr::n()) %>%            
             tidyr::pivot_wider(
-                id,
+                .data$id,
                 names_from = {{ group }},
-                values_from = Population
+                values_from = .data$Population
             ) %>%
-            dplyr::select(-c(id))
+            dplyr::select(-c(.data$id))
         group.labels <- colnames(cases)
         group.ids <- 1:length(group.labels)
         group.df <- data.frame(group.index = group.ids, label = group.labels)            
     }
     ## fill in missing priors
-    if (!"eta_1" %in% names(prior)) {
-       # crude <- log( cases / at_risk )        
-       # crude_start <- as.numeric( apply(as.matrix(crude[1:4,]), 2, mean) )        
-        prior$eta_1 <- data.frame(
+    if (!"eta_1" %in% names(prior)) {   
+        prior$eta_1 <- student_t(
             df = rep(20, ncol(cases)),
-            location = -5,
-            scale = 10
+            location = rep(-5, ncol(cases)),
+            scale = rep(10, ncol(cases))
         )
         print("Setting Student t prior(s) for eta_1: ")
-                print(prior$eta_1)                
+                print(student_t(20, -5, 10))                
     }    
     if (!"sigma" %in% names(prior)) {
-        prior$sigma <- data.frame(df = 20,
-                            location = 0, 
+        prior$sigma <- student_t(df = rep(20, times = ncol(cases)),
+                            location = rep(0, times = ncol(cases)), 
                             scale = rep(1, times = ncol(cases))
                             )
         print("\nSetting half-Student t prior for sigma: ")
-        print(prior$sigma)
+        print(student_t(20, 0, 1))
     }
     if (!"omega" %in% names(prior)) {
-        prior$omega <- 1
+        prior$omega <- lkj(2)
         if (cor) print(paste("\nSetting LKJ prior on correlation matrix: ", prior$omega))
     }
     standata <- list(
@@ -163,7 +154,7 @@ stan_rw <- function(data,
         prior_sigma_df = as.array(prior$sigma$df),
         prior_sigma_location = as.array(prior$sigma$location),
         prior_sigma_scale = as.array(prior$sigma$scale),
-        prior_omega = prior$omega
+        prior_omega = prior$omega$eta
     )                
     if (cor) {
         samples <- rstan::sampling(stanmodels$poissonRWCorr,
@@ -190,10 +181,11 @@ stan_rw <- function(data,
     group.names <- colnames(cases)
     eta = rstan::extract(samples, pars = "rate")$rate
     K <- dim(eta)[2]
-    list.df <- lapply(1:K, function(j) {
+    list.df <- list()
+    for (j in 1:K) {
         M <- eta[,j,]
         j.mu <- apply(M, 2, mean)
-        j.ci <- apply(M, 2, quantile, probs = c(0.025, 0.975))
+        j.ci <- apply(M, 2, stats::quantile, probs = c(0.025, 0.975))
         j.df <- data.frame(
             time = Time.index,
             mean = j.mu,
@@ -201,14 +193,13 @@ stan_rw <- function(data,
             upr_97.5 = j.ci["97.5%",]
         )
         if (length(group.labels) > 1) j.df$group = group.labels[j]
-        return( j.df )
-    })
+        list.df[[j]] <- j.df
+    }
     eta.df <- do.call("rbind", list.df)
     data.tmp <- data %>%
         dplyr::group_by({{ group }}) %>%
         dplyr::mutate(
-#            time = 1:dplyr::n(),
-            Crude = Count / Population
+            Crude = .data$Count / .data$Population
         )
     if (!missing(group)) {
         group_char <- rlang::as_label(dplyr::enquo(group))

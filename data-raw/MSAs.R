@@ -1,6 +1,6 @@
 library(tidyverse)
 
-df <- data.table::fread("/home/connor/repo/cancer-ts/data/msa-crc-incidence-50-79.txt", fill = T)
+df <- data.table::fread("msa-crc-incidence-50-79.txt", fill = T)
 df <- df %>%
     dplyr::filter(
                !is.na(Year) &
