@@ -4,7 +4,7 @@ output: rmarkdown::html_vignette
 header-includes:
    - \usepackage{amsmath}
 vignette: >
-  %\VignetteIndexEntry{Introduction}
+  %\VignetteIndexEntry{Public health surveillance with surveil}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 bibliography: bib.bib
@@ -23,7 +23,9 @@ knitr::opts_chunk$set(
 )
 ```
 
-This vignette demonstrates basic usage of **surveil** for public health surveilance. The package leverages the principles of Bayesian inference [@jaynes_2003;@mackay_2003;@harrel_2021] to infer population risk of disease or death given time series data consisting of case counts and population at risk. To facilitate analysis, the package contains special methods for age-standardization, printing and plotting results, as well as for measuring and visualizing inequality.
+This vignette demonstrates basic usage of **surveil** for public health surveilance. **surveil** leverages the principles of Bayesian inference [@jaynes_2003;@mackay_2003] to infer population risk of disease or death given time series data consisting of case counts and population at risk.
+
+The package also contains special methods for age-standardization, printing and plotting model results, and for measuring and visualizing health inequalities.
 
 ## Getting started
 
@@ -38,9 +40,9 @@ theme_set(theme_classic())
 library(knitr)
 ```
 
-Surveillance data should minimally contain case counts, reliable population at risk estimates, and a discrete time period variable. They also may include one or more grouping variables (such as race-ethnicity). 
+Surveillance data minimally contain case counts, reliable population at risk estimates, and a discrete time period variable. They also may include one or more grouping variables, such as race-ethnicity. 
 
-This vignette analyzes colorectal cancer incidence data by race-ethnicity, year, and Texas MSA, obtained through CDC Wonder. The race-ethnicity grouping includes (non-Hispanic) Black, (non-Hispanic) White, and Hispanic, and the MSAs include those centered on the cities of Austin, Dallas, Houston, and San Antonio.
+This vignette analyzes age-specific (ages 50-79) colorectal cancer incidence data by race-ethnicity, year, and Texas MSA, obtained through CDC Wonder. The race-ethnicity grouping includes (non-Hispanic) Black, (non-Hispanic) White, and Hispanic, and the MSAs include those centered on the cities of Austin, Dallas, Houston, and San Antonio.
 
 
 ```{r eval=T}
@@ -49,13 +51,11 @@ head(msa) %>%
         caption = "Glimpse of colorectal cancer incidence data (CDC Wonder)") 
 ```
 
-**surveil**'s model fitting function, `stan_rw`, requires that the user provide a `data.frame` with specific columns. There must be one named `Cases` containing case counts, and `Population` containing population at risk. The user also must provide the name of the column containing the time period, and, optionally, a grouping factor. For the MSA data printed above, the grouping column is Race and the time column is Year.
-
-## Time series surveillance models
+**surveil**'s model fitting function, `stan_rw`, requires that the user provide a `data.frame` with specific column names. There must be one column named `Cases` containing case counts, and another column named `Population`, containing the sizes of the populations at risk. The user also must provide the name of the column containing the time period, and, optionally, a grouping factor. For the MSA data printed above, the grouping column is Race and the time column is Year.
 
 ## Preparing the data
 
-We will first analyze aggregated CRC cases across Texas's top four MSAs. The `msa` data from CDC Wonder already has the necessary format (columns), but the data are dis-aggregated by MSA. So we first group the data by year and race, and then combine cases across MSAs.
+We will first analyze aggregated CRC cases across Texas's top four MSAs. The `msa` data from CDC Wonder already has the necessary format (column names and contents), but the data are dis-aggregated by MSA. So for this analysis, we first group the data by year and race, and then combine cases across MSAs.
 
 The following code chunk aggregates the data using the `dplyr` package:
 
@@ -78,21 +78,27 @@ head(tx.msa) %>%
 
 ### The basics
 
-The base **surveil** model specification is a Poisson random-walk, which is closely related to both state-space and Intrinsic Gaussian Markov random field (IGMRF) models. The Poisson model is used as the likelihood: the probability of observing a given number of cases, $c_t$, conditional on unknown level of risk, $\eta_t$, and known population at risk, $p_t$:
-$$c_t \sim \text{Pois}(p_t \cdot \eta_t)$$
-where $t$ indexes the time period. Since $\eta_t$ is a rate, we build a model for the log-rates, $log(\eta_t) = \phi_t$. The random walk structure states that our expectation for the rate at any time is its previous value, and we assign a Gaussian probability distribution to deviations from the previous value:
-$$\phi_t \sim \text{Gau}(\phi_{t-1}, \tau^2)$$
-This places higher probability on a smooth trend through time, specifically implying that the underlying risk of disease has less variation than we find in the raw observations.
+The base **surveil** model specification is a Poisson random-walk, which is closely related to both state-space and Intrinsic Gaussian Markov random field (IGMRF) models. The Poisson model is used as the likelihood: the probability of observing a given number of cases, $c_t$, conditional on unknown level of risk, $e^{\phi_t}$, and known population at risk, $p_t$:
+$$c_t \sim \text{Pois}(p_t \cdot e^{\phi_t})$$
+where $t$ indexes the time period.
 
-The log-risk for time $t=1$ has no previous value to anchor its expectation; instead, we assign a prior probability distribution directly to $\phi_1$. **surveil** uses a Student's t distribution, which has three parameters: degrees of freedom, location, and scale. When the degrees of freedom are large (even > 20), it is comparable to the Gaussian distribution, otherwise somewhat greater probability is assigned to tail-area observations. The scale parameter, $\tau$, also requires a prior distribution, and again **surveil** uses a Student's t model.
+Next, we build a model for the log-rates, ${\phi_t}$. The random walk structure states that our expectation for the log-rate at any time is its previous value, and we assign a Gaussian probability distribution to deviations from the previous value:
+$$\phi_t \sim \text{Gau}(\phi_{t-1}, \tau^2)$$
+This places higher probability on a smooth trend through time, specifically implying that the underlying risk of disease tends to have less variation than we find in the raw observations.
+
+The log-risk for time $t=1$ has no previous value to anchor its expectation; thus, we assign a prior probability distribution directly to $\phi_1$. For this prior, **surveil** uses a Student's t distribution, which has three parameters: degrees of freedom, location, and scale. When the degrees of freedom are large (even > 20), it is comparable to the Gaussian distribution; otherwise, somewhat greater probability is assigned to tail-area observations. The scale parameter, $\tau$, also requires a prior distribution, and again **surveil** uses a Student's t model.
 
 ### Multiple time series
 
-For multiple time series, **surveil** allows users to add a correlation structure to the model. This allows our inferences about each population to be mutually informed by inferences about all other observed populations. For this model, given $k$ populations, the log-rates, $\boldsymbol \phi_t$, are assigned a multivariate Gaussian model:
+For multiple time series, **surveil** allows users to add a correlation structure to the model. This allows our inferences about each population to be mutually informed by inferences about all other observed populations.
+
+The log-rates for $k$ populations, $\boldsymbol \phi_t$, are assigned a multivariate Gaussian model:
 $$\boldsymbol \phi_t \sim \text{Gau}(\boldsymbol \phi_{t-1}, \boldsymbol \Sigma),$$
-where $\boldsymbol \Sigma$ is a $k \times k$ covariance matrix. The covariance matrix can be decomposed into a diagonal matrix containing scale parameters for each variable, $\boldsymbol \Delta = diag(\tau_1,\dots \tau_k)$, and a symmetric correlation matrix, $\boldsymbol \Omega$:
+where $\boldsymbol \Sigma$ is a $k \times k$ covariance matrix.
+
+The covariance matrix can be decomposed into a diagonal matrix containing scale parameters for each variable, $\boldsymbol \Delta = diag(\tau_1,\dots \tau_k)$, and a symmetric correlation matrix, $\boldsymbol \Omega$:
 $$\boldsymbol \Sigma = \boldsymbol \Delta \boldsymbol \Omega \boldsymbol \Delta$$
-When the correlation structure is added to the model, then a prior distribution is also required for the correlation matrix. **surveil** uses the LKJ model, which has a single shape parameter, $\alpha$.^[You can find more about the LKJ model in the Stan documentation. Note that the manual uses $\eta$ to symbolize the shape parameter.] If $\alpha=1$, the LKJ model will place uniform prior probability on any $k \times k$ correlation matrix; as $\alpha$ increases from one, it expresses ever greater skepticism towards large correlations. When $\alpha <1$, the LKJ model becomes 'concave'---expressing skepticism towards correlations of zero. 
+When the correlation structure is added to the model, then a prior distribution is also required for the correlation matrix. **surveil** uses the LKJ model, which has a single shape parameter, $\eta$.^[You can find more about the LKJ model in the Stan documentation.] If $\eta=1$, the LKJ model will place uniform prior probability on any $k \times k$ correlation matrix; as $\eta$ increases from one, it expresses ever greater skepticism towards large correlations. When $\eta <1$, the LKJ model becomes 'concave'---expressing skepticism towards correlations of zero. 
 
 ## Fitting the model
 
@@ -102,46 +108,41 @@ The time series model is fit by passing surveillance data to the `stan_rw` funct
 fit <- stan_rw(tx.msa, time = Year, group = Race)
 ```
 
-We could add a correlation structure to the data by adding `cor = TRUE`, as opposed to the default, `cor = FALSE`). To speed things up, we could take advantage of parallel processing using the `cores` argument (e.g., `cores = 4` to run on 4 cores simultaneously). Note also that it is important to read and address any warning messages related to Stan's MCMC diagnostics. In this case, the sampling finished without any warnings, so we can proceed with our analysis.
+If we wanted to add a correlation structure to the model, we would add `cor = TRUE` (as opposed to the default, `cor = FALSE`). To speed things up, we could take advantage of parallel processing using the `cores` argument (e.g., by adding `cores = 4` to run on 4 cores simultaneously). Note also that it is important to read and address any warning messages related to Stan's MCMC diagnostics. In this case, the sampling finished without any warnings, so we can proceed with our analysis.
 
 ## Visualizing results
 
-The plotting method for **surveil** models returns a `ggplot` object. We can plot model results using `plot`:
+If we call `plot` on a `surveil` model, we get a `ggplot` object:
 
 ```{r fig.width = 4, fig.height = 3.5}
 plot(fit, scale = 100e3)
 ```
 
-Or, we can store the ``ggplot` in our working environment, and then modify the figure as we please:
+If we like, we can store the ``ggplot` in our working environment and then modify the figure as we please:
 
 ```{r fig.width = 4, fig.height = 3.5}
 fig <- plot(fit, scale = 100e3)
 fig +
-  scale_x_continuous(breaks = 1999:2017, 
-                     name = NULL) +
-  scale_colour_brewer(
-    breaks = c("Black or African American",
-               "Hispanic",
-               "White"),
-    labels = c("Black", 
-               "Hispanic", 
-               "White"),
-    type = "qual",
-    palette = "Dark2"
-  ) +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1)) 
+  scale_color_brewer(breaks = c("Black or African American", "White", "Hispanic"),
+                     labels = c("Black", "White", "Hispanic"),
+		     name = NULL,
+		     type = 'qual')    
 ```
 
 ## Measuring pairwise inequality
 
-A selection of complementary pairwise inequality measures can be calculated using the `group_diff` function. The function requires a fitted **surveil** model and character strings corresponding, respectively, to the target population (indicating which group is the target of our *inference*, typically the overburdened or disadvantaged group), and the reference population. It returns probability distributions and summary statements for the following quantities:
+**surveil** also provides a number of functions and methods for measuring health inequalities.
 
- * Rate Difference (RD): $\text{RD} = \text{Target} - \text{Reference}$, 
- * Population Attributable Risk (PAR): $\text{PAR} = \frac{\text{RD}}{\text{Target}}$, 
- * Rate Ratio (RR): $\text{RR} = \frac{\text{Target}}{\text{Reference}}$, and 
+A selection of complementary pairwise inequality measures can be calculated using the `group_diff` function. The function requires a fitted **surveil** model and character strings corresponding, respectively, to the target population (indicating which group is the target of our inference, typically the overburdened or disadvantaged group), and the reference population. It returns probability distributions and summary statements for the following quantities, where `target` and `reference` indicate disease risk for the respective populations:
+
+ * Rate Difference (RD): $\text{RD} = \text{Target} - \text{Reference}$;
+ * Population Attributable Risk (PAR): $\text{PAR} = \frac{\text{RD}}{\text{Target}}$;
+ * Rate Ratio (RR): $\text{RR} = \frac{\text{Target}}{\text{Reference}}$;
  * Excess Cases (EC): $\text{EC} = \text{RD} \times \text{[At Risk]}$.
  
-In the above equations, Target and Reference indicate the trend level of risk (rate) for the respective populations. Note that the PAR indicates the fraction of risk in the target population that would have been removed had the target rate equaled the reference rate. For $RR \ge 1$, $\text{PAR} = 1 - \text{RR}^{-1}$. 
+Notice that the PAR is simply the rate difference expressed as a fraction of total risk; it indicates the fraction of risk in the target population that would have been removed had the target rate equaled the reference rate.
+
+To calculate all of these measures for two groups in our data, we call `group_diff` on our fitted model:
 
 ```{r}
 gd <- group_diff(fit, target = "Black or African American", reference = "White")
@@ -173,50 +174,6 @@ The time series of Theil's T can be plotted with 95\% credible intervals:
 
 ```{r fig.width = 4, fig.height = 3}
 plot(Ts)
-```
-
-## Nested data structures
-
-```{r eval = FALSE}
-cities <- unique(msa$MSA)
-fit_list <- lapply(cities, function(c) {
-  stan_rw(msa[grepl(c, msa$MSA), ], 
-          time = Year, 
-          group = Race, 
-          cor = TRUE, 
-          cores = 4, 
-          control = list(max_treedepth = 12, adapt_delta = 0.99))
-})
-
-austin <- fit_list[[1]]
-
-df_list <- lapply(fit_list, function(x) x$summary)
-
-bind_rows(df_list) %>%
-  ggplot(aes(time, mean, group = Race)) +
-  geom_line(aes(col = Race)) +
-  geom_ribbon(aes(ymin = lwr_2.5, ymax = upr_97.5),
-              alpha = 0.25,
-              fill = "black"
-              ) +
-  geom_point(aes(time, Crude, col = Race),
-             alpha = 0.5) +
-  scale_y_continuous(name = NULL,
-                    breaks = seq(0, 1, by = 0.0005),
-                    labels = seq(0, 1, by = 0.0005) * 100e3
-                     ) +
-  scale_color_brewer(
-    palette = "Dark2",
-    type = "qual",
-    name = NULL
-  ) +
-  labs(x = NULL) +
-  theme_classic() +
-  theme(legend.position = "bottom") +
-  facet_wrap(~ MSA, nrow = 1)
-
-t <- theil(fit_list)
-plot(t)
 ```
 
 ## References

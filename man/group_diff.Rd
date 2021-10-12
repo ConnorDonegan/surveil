@@ -2,7 +2,7 @@
 % Please edit documentation in R/group-diff.R
 \name{group_diff}
 \alias{group_diff}
-\title{Calculate summary measures of inequality: rate ratios, rate differences, population attributable risk, and excess cases}
+\title{Calculate summary measures of inequality}
 \source{
 Menvielle, G, Kulhanaova, I, Machenbach, JP. Assessing the impact of a public health intervention to reduce social inequalities in cancer. In: Vaccarella, S, Lortet-Tieulent, J, Saracci, R, Conway, D, Straif, K, Wild, CP, editors. Reducing Social Inequalities in Cancer: Evidence and Priorities for Research. Geneva, Switzerland: WHO Press, 2017:185-192.
 }
@@ -31,13 +31,13 @@ If \code{samples = TRUE}, then, in addition to the above items, a list called \c
 }
 }
 \description{
-Calculate pairwise measures of health inequality from a fitted \code{surveil} time series model, with credible intervals and MCMC samples.
+Calculate pairwise measures of health inequality from a fitted \code{surveil} time series model, with credible intervals and MCMC samples. Calculates absolute and fractional rate differences (RD and population attributable risk (PAR)), rate ratios, and excess cases.
 }
 \details{
 For the following calculations, the terms \code{reference} and \code{target} refer to incidence rates for the respective groups; \code{p} is the size of the target population. (Target is the group that is the 'target' of our inferences, so that it is the numerator in rate ratios, etc.) The following measures are calculated by \code{group_diff}:\preformatted{# rate difference
 RD = target - reference
 # population attributable fraction
-PAR = RD / reference = (RR - 1)/RR
+PAR = RD/target = (RR - 1)/RR
 # rate ratio
 RR = target/reference
 # excess cases

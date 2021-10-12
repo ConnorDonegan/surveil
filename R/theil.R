@@ -1,6 +1,57 @@
 
-#' Thiel's T for a non-nested data structure
+#' @title Theil's inequality index
+#' 
+#' @description Theil's entropy-based index of inequality 
+#' @param x A fitted `surveil` model, from \code{\link[surveil]{stan_rw}}; or, a list of fitted `surveil` models, where each model represents a different geographic area (e.g., states).
+#' 
+#' @details
 #'
+#' Theil's index is a good index of inequality in disease and mortality burdens when multiple groups are being considered. It provides a summary measure of inequality across a set of demographic groups that may be tracked over time. Also, it is interesting because it is additive, and thus admits of simple decompositions. 
+#'
+#' The index measures discrepancies between a population's share of the disease burden, `omega`, and their share of the population, `eta`. A situation of zero inequality would imply that each population's share of cases is equal to its population share, or, `omega=eta`. Each population's contribution to total inequality is calculated as:
+#' ```
+#'              T_i = omega_i * [log(omega_i/eta_i)],
+#' ```
+#' the log-ratio of case-share to population-share, weighted by their share of cases. Theil's index for all areas is the sum of each area's T_i:
+#' ```
+#'              T = sum_(i=1)^n T_i.
+#' ```
+#' Theil's T is thus a weighted mean of log-ratios of case shares to population shares, where each log-ratio (which we may describe as a raw inequality score) is weighted by its share of total cases. The index has a minimum of zero and a maximum of `log(N)`, where `N` is the number of units (e.g., number of counties).
+
+#' Theil's index is based on Shannon's information theory and Theil used it to study a variety of topics, including income inequality and racial segregation.
+#'
+#' Theil's index is often of great interest because it is additive across multiple scales. Surveillance data often consist of nested population structures, such as demographic groups nested within states. 
+#'
+#' @source
+#'
+#' Conceicao, P. and P. Ferreira (2000). The young person's guide to the Theil Index: Suggesting intuitive interpretations and exploring analytical applications. University of Texas Inequality Project. UTIP Working Paper Number 14. Accessed May 1, 2021 from \url{https://utip.gov.utexas.edu/papers.html}
+#'
+#' Conceicao, P, Galbraith, JK, Bradford, P. (2001). The Theil Index in sequences of nested and hierarchic grouping structures: implications for the measurement of inequality through time, with data aggregated at different levels of industrial classification. *Eastern Economic Journal*. 27(4): 491-514.
+#' 
+#' Theil, Henri (1972). *Statistical Decomposition Analysis.* Amsterdan, The Netherlands and London, UK: North-Holland Publishing Company.
+#'
+#' Shannon, Claude E. and Weaver, Warren (1963). *The Mathematical Theory of Communication*. Urbana and Chicago, USA: University if Illinois Press.
+#'
+#' @seealso \code{\link[surveil]{plot.theil}} \code{\link[surveil]{print.theil}} \code{\link[surveil]{plot.theil_list}}
+#'
+#' @examples
+#' 
+#' \dontrun{
+#'  dfw <- msa[grep("Dallas", msa$MSA), ]
+#'  fit <- stan_rw(dfw, time = Year, group = Race)
+#'  theil.dfw <- theil(fit)
+#'  plot(theil.dfw)
+#' }
+#' 
+#' 
+#' @export
+#' @md
+theil <- function(x) {
+    UseMethod("theil", x)
+}
+
+
+
 #' @param Count Case counts, integers
 #' @param Population Population at risk, integers
 #' @param rates If `Count` is not provided, then `rates` must be provided (`Count = rates * Population`).
@@ -31,49 +82,6 @@ theil2 <- function(Count, Population, rates, total = TRUE) {
     return (Theil = T)
 }
 
-
-
-#' Theil's inequality index
-#' 
-#' @description Theil's entropy-based inequality index
-#' @param x A fitted `surveil` model, from \code{\link[surveil]{stan_rw}}; or, a list of fitted `surveil` models, where each model represents a different geographic area (e.g., states).
-#' 
-#' @details
-#'
-#' Theil's index is a good index of inequality in disease and mortality burdens when multiple groups are being considered. It provides a summary measure of inequality across a set of demographic groups that may be tracked over time. Also, it is interesting because it is additive, and thus admits of simple decompositions. 
-#'
-#' The index measures discrepancies between a population's share of the disease burden, `omega`, and their share of the population, `eta`. A situation of zero inequality would imply that each population's share of cases is equal to its population share, or, `omega=eta`. Each population's contribution to total inequality is calculated as:
-#' ```
-#'              T_i = omega_i * [log(omega_i/eta_i)],
-#' ```
-#' the log-ratio of case-share to population-share, weighted by their share of cases. Theil's index for all areas is the sum of each area's T_i:
-#' ```
-#'              T = sum_(i=1)^n T_i.
-#' ```
-#' Theil's T is thus a weighted mean of log-ratios of case shares to population shares, where each log-ratio (which we may describe as a raw inequality score) is weighted by its share of total cases. The index has a minimum of zero and a maximum of `log(N)`, where `N` is the number of units (e.g., number of counties).
-
-#' Theil's index is based on Shannon's information theory and Theil used it to study a variety of topics, including income inequality and racial segregation. Theil's index is often of great interest because it is additive across multiple scales, such as when the data has a nested structure to it (e.g., demographic groups within states). 
-#'
-#' @source
-#'
-#' Conceicao, P. and P. Ferreira (2000). The young person's guide to the Theil Index: Suggesting intuitive interpretations and exploring analytical applications. University of Texas Inequality Project. UTIP Working Paper Number 14. Accessed May 1, 2021 from \url{https://utip.gov.utexas.edu/papers.html}
-#'
-#' Conceicao, P, Galbraith, JK, Bradford, P. (2001). The Theil Index in sequences of nested and hierarchic grouping structures: implications for the measurement of inequality through time, with data aggregated at different levels of industrial classification. *Eastern Economic Journal*. 27(4): 491-514.
-#' 
-#' Theil, Henri (1972). *Statistical Decomposition Analysis.* Amsterdan, The Netherlands and London, UK: North-Holland Publishing Company.
-#'
-#' Shannon, Claude E. and Weaver, Warren (1963). *The Mathematical Theory of Communication*. Urbana and Chicago, USA: University if Illinois Press.
-#'
-#' @seealso \code{\link[surveil]{plot.theil}} \code{\link[surveil]{print.theil}} \code{\link[surveil]{plot.theil_list}}
-#' 
-#' @export
-#' @md
-theil <- function(x) {
-    UseMethod("theil", x)
-}
-
-
-#' Theil's inequality index
 #' 
 #' @return
 #' ### theil.surveil
@@ -128,9 +136,6 @@ theil.surveil <- function(x) {
 }
 
 
-#' Theil index
-#'
-#' 
 #' @return
 #' ### theil.list
 #'
@@ -228,21 +233,21 @@ make_cases <- function(x) {
 
 
 
-#' Plot theil's index
+
+#' Methods for reviewing Theil's T results
 #' 
+#' @description Printing and plotting methods for Theil's inequality index
 #' @export
 #' @md
-#' @param x An object of class `theil`, as created by calling \code{\link[surveil]{theil}} on a fitted `surveil` model.
+#' @param x An object of class `thiel' or `theil_list`, as returned by calling `theil` on a list of fitted `surveil` models
+#' @param scale Scale Theil's index by `scale`
+#' @param digits number of digits to print (passed to \code{\link[base]{print.data.frame}})
 #' @param fill Fill color
 #' @param col Line color
-#' @param scale Multiply Theil's T by `scale` for readability
-#' @param labels X-axis labels (time periods)
-#' @param ... additional plot arguments passed to \code{\link[ggplot2]{theme}}
-#' @return
-#' ### plot.theil
-#'
-#' A `ggplot`
-#' 
+#' @param alpha Transparency of credible interval fill color
+#' @param labels x-axis labels (time periods)
+#' @param base_size Passed to `theme_classic` to control size of plot elements (e.g., text)
+#' @param ... additional arguments
 #' @examples
 #'  \dontrun{
 #'  dfw <- msa[grep("Dallas", msa$MSA), ]
@@ -252,15 +257,15 @@ make_cases <- function(x) {
 #' }
 #' @method plot theil
 #' @import ggplot2
-#' @rdname theil
-plot.theil <- function(x, col = "black", fill = "gray80", scale = 100, labels = x$summary$time, ...) {
+#' @rdname theil_methods
+plot.theil <- function(x, col = "black", fill = "gray80", alpha = 0.5, base_size = 14, scale = 100, labels = x$summary$time, ...) {
     ggplot(x$summary) +
         geom_ribbon(
             aes(.data$time,
                 ymin= scale * .data$.lower,
                 ymax= scale * .data$.upper),
             fill = fill,
-            alpha = 0.5
+            alpha = alpha
         ) +
         geom_line(aes(.data$time, scale * .data$Theil),
                   col = col,                
@@ -270,57 +275,16 @@ plot.theil <- function(x, col = "black", fill = "gray80", scale = 100, labels = 
             name = NULL
         ) +
         scale_y_continuous(name = paste0("Theil x ", scale)) +
-        theme_classic() +
+        theme_classic(base_size = base_size) +
         theme(...)
 }
 
 
-#' print Theil's index
-#' @param x Object of class `theil`, as returned by calling `theil` on a fitted `surveil` model
-#' @param scale Scale Theil's index by `scale`
-#' @param digits number of digits to print (passed to \code{\link[base]{print.data.frame}})
-#' @param ... additional print arguments
-#' @method print theil
-#' @rdname theil
-#' @importFrom scales comma percent
-#' @export
-print.theil <- function(x, scale = 100, digits = 3, ...) {    
-    message("Summary of Theil's Inequality Index")    
-    message("Groups: ", paste(x$groups, collapse = ", "))
-    message("Time periods observed: ", length(x$summary$time))
-    pdf <- as.data.frame(x$summary)
-    pdf <- pdf[,c("time", "Theil", ".lower", ".upper")]
-    if (scale != 1) {
-        pdf$Theil <- pdf$Theil * scale
-        pdf$.lower <- pdf$.lower * scale
-        pdf$.upper <- pdf$.upper * scale
-        message("Theil's T (times ", scale, ") with 95% credible intervals")
-    } else {
-        message("Theil's T with 95% credible intervals")
-    }
-    print(pdf, digits = digits, row.names = FALSE, ...)
-}
-
-#' Plot theil's index for nested data
-#'
-#' @description Plot the between geography, within geography, and total (Total = Between + Within) inequality as measured by Theil's index.
-#' 
-#' @param x An object of class `theil_list`, as created by calling \code{\link[surveil]{theil}} on a list of fitted `surveil` models.
-#' @param col Line color
-#' @param fill Fill color for credible intervals
-#' @param alpha Transparency of credible interval fill color
-#' @param scale Multiply Theil's T by `scale` for readability
 #' @param plot If `FALSE`, return a list of `ggplot`s.
-#' @param base_size Passed to `theme_classic` to control size of plot elements (e.g., text)
 #' @param between_title Plot title for the between geography component of Theil's T; defaults to "Between".
 #' @param within_title Plot title for the within geography component of Theil's T; defaults to "Within".
 #' @param total_title Plot title for Theil's index; defaults to "Total".
-#' @param ... additional plot arguments passed to \code{\link[ggplot2]{theme}}
-#' @return
-#' ### plot.theil_list
 #' 
-#' If `plot = FALSE`, returns a list of `ggplot`s; otherwise, the `ggplots` will be drawn to the current plotting device using \code{\link[gridExtra]{grid.arrange}}.
-#'
 #' @method plot theil_list
 #' @import ggplot2
 #' @importFrom ggdist mean_qi
@@ -328,7 +292,7 @@ print.theil <- function(x, scale = 100, digits = 3, ...) {
 #' @importFrom gridExtra grid.arrange
 #' @seealso \code{\link[surveil]{theil}}
 #' @export
-#' @rdname theil
+#' @rdname theil_methods
 #' @md
 plot.theil_list <- function(x,
                             col = "black",
@@ -402,15 +366,34 @@ plot.theil_list <- function(x,
 }
 
 
+
+#' @method print theil
+#' @rdname theil_methods
+#' @importFrom scales comma percent
+#' @export
+print.theil <- function(x, scale = 100, digits = 3, ...) {    
+    message("Summary of Theil's Inequality Index")    
+    message("Groups: ", paste(x$groups, collapse = ", "))
+    message("Time periods observed: ", length(x$summary$time))
+    pdf <- as.data.frame(x$summary)
+    pdf <- pdf[,c("time", "Theil", ".lower", ".upper")]
+    if (scale != 1) {
+        pdf$Theil <- pdf$Theil * scale
+        pdf$.lower <- pdf$.lower * scale
+        pdf$.upper <- pdf$.upper * scale
+        message("Theil's T (times ", scale, ") with 95% credible intervals")
+    } else {
+        message("Theil's T with 95% credible intervals")
+    }
+    print(pdf, digits = digits, row.names = FALSE, ...)
+}
+
+
 #' print Theil's index
-#' @param x Object of class `theil_list`, as returned by calling `theil` on a list of fitted `surveil` models
-#' @param scale Scale Theil's index by `scale` 
-#' @param digits number of digits to print (passed to \code{\link[base]{print.data.frame}})
-#' @param ... additional print arguments
 #' @method print theil_list
 #' @importFrom scales comma percent
 #' @export
-#' @rdname theil
+#' @rdname theil_methods
 print.theil_list <- function(x, scale = 100, digits = 3, ...) {    
     message("Summary of Theil's Inequality Index for Nested Population Structure")    
     message("Areas: ", x$areas) 

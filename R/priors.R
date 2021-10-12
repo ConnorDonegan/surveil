@@ -1,10 +1,14 @@
 #' Prior distributions
+#'
+#' @param df Degrees of freedom (positive numeric)
+#' @param location Location parameter (numeric)
+#' @param scale Scale parameter (positive numeric)
 #' 
 #' @details
 #' 
 #' The prior distribution functions are used to set the values of prior parameters.
 #'
-#' Users can control the values of the parameters, but the distribution (model) itself is fixed. The first log-rate (eta a[t], t=1) and the scale parameters (sigma) are assigned Student's t prior distribution. (The scale parameter, sigma, is constrained to be positive, making it a half-Student's t prior.) For correlated time series, the correlation matrix is assigned the LKJ prior.
+#' Users can control the values of the parameters, but the distribution (model) itself is fixed. The first log-rate (`eta[t]`, `t=1`) and the scale parameters (sigma) are assigned Student's t prior distribution. (The scale parameter, sigma, is constrained to be positive, making it a half-Student's t prior.) For correlated time series, the correlation matrix is assigned the LKJ prior.
 #' 
 #'
 #' ### Parameterizations
@@ -26,19 +30,9 @@
 #' plot(fit)
 #' }
 #'
-#' @name priors
-#' @md
-#' 
-NULL
-
-#'
-#' @param df Degrees of freedom, positive numeric value(s)
-#' @param location Location parameter
-#' @param scale Scale parameter
-#' 
 #' @rdname priors
-#' @export
 #' @md
+#' @export
 student_t <- function(df = 20, location = 0, scale) {
     validate_positive_parameter(scale)
     validate_positive_parameter(df)

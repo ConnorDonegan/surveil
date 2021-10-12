@@ -12,6 +12,6 @@ cancer <- read.table("cancer-incidence.txt",
                      header = TRUE)
 
 cancer <- cancer[,c("Year", "Age.Groups", "Age.Groups.Code", "Count", "Population")]
-names(cancer) <- c("Year", "Age", "Age.Gropus.Code", "Count", "Population")
+names(cancer) <- c("Year", "Age", "Label", "Count", "Population")
 usethis::use_data(cancer, overwrite = TRUE)
 

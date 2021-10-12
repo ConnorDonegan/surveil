@@ -1,8 +1,8 @@
 
 
-#' Calculate summary measures of inequality: rate ratios, rate differences, population attributable risk, and excess cases
+#' Calculate summary measures of inequality
 #'
-#' @description Calculate pairwise measures of health inequality from a fitted `surveil` time series model, with credible intervals and MCMC samples.
+#' @description Calculate pairwise measures of health inequality from a fitted `surveil` time series model, with credible intervals and MCMC samples. Calculates absolute and fractional rate differences (RD and population attributable risk (PAR)), rate ratios, and excess cases.
 #'
 #' @param fit A fitted `surveil` time series model
 #'
@@ -34,7 +34,7 @@
 #' # rate difference
 #' RD = target - reference
 #' # population attributable fraction
-#' PAR = RD / reference = (RR - 1)/RR
+#' PAR = RD/target = (RR - 1)/RR
 #' # rate ratio
 #' RR = target/reference
 #' # excess cases
@@ -134,8 +134,9 @@ plot.surveil_diff <- function(x, col = "black", fill = "gray80", plot = TRUE, sc
         geom_line(aes(.data$time, .data$EC), lwd = 1,
                   col = col
                   ) +
-        scale_x_continuous(
-            name = NULL
+        labs(
+            x = NULL,
+            y = "EC"
         ) +
         geom_hline(yintercept = 0) +
         theme_classic(base_size = base_size) +
@@ -149,8 +150,9 @@ plot.surveil_diff <- function(x, col = "black", fill = "gray80", plot = TRUE, sc
                       col = col,
                       lwd = 1
                       ) +
-            scale_x_continuous(
-                name = NULL
+            labs(
+                x = NULL,
+                y = "PAR"
             ) +
             geom_hline(yintercept = 0) +
             theme_classic(base_size = base_size) +
@@ -164,8 +166,9 @@ plot.surveil_diff <- function(x, col = "black", fill = "gray80", plot = TRUE, sc
                       col = col,
                       lwd = 1
                       ) +
-            scale_x_continuous(
-                name = NULL
+            labs(
+                x = NULL,
+                y = "RR"
             ) +
             geom_hline(yintercept = 0) +            
             theme_classic(base_size = base_size) +
@@ -180,8 +183,9 @@ plot.surveil_diff <- function(x, col = "black", fill = "gray80", plot = TRUE, sc
                   col = col,
                   lwd = 1
                   ) +
-        scale_x_continuous(
-            name = NULL
+        labs(
+            x = NULL,
+            y = "RD"
         ) +
         geom_hline(yintercept = 0) +        
         theme_classic(base_size = base_size) +

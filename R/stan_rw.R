@@ -1,12 +1,12 @@
-#' Time series models for mortality or disease incidence data
+#' Time series models for mortality and disease incidence 
 
 #' @description Model time-varying disease risk given time series of case (or death) counts and population at risk.
 #'
 #' @param data A `data.frame` containing the following columns: \describe{
 #'  \item{Count}{Number of cases or deaths; this column must be named 'Count'.}
 #'  \item{Population}{Size of population at risk; this column must be named 'Population'.}
-#'  \item{time}{Time period indicator; provide the column name using the `time` argument.}
-#'  \item{group}{Optional grouping variable; provide the column name using the `group` argument.}
+#'  \item{time}{Time period indicator. (Provide the (unquoted) column name using the `time` argument.)}
+#'  \item{group}{Optional grouping variable. (Provide the (unquoted) column name using the `group` argument.)}
 #' }
 #'
 #' @param time Specify the (unquoted) name of the time variable in `data`, as in `time = Year`. This variable must be numeric-alike (i.e., `as.numeric(data$time)` will not fail).
@@ -33,8 +33,8 @@
 #' @param cores The number of cores to use when executing the Markov chains in parallel (passed to \code{\link[rstan]{sampling}}).
 #' 
 #' @param iter Total number of MCMC iterations. Warmup draws are automatically half of `iter`.
-#' @param refresh How often to refresh the MCMC sampling progress printed to the console.
-#' @param control A named ‘list’ of parameters to control the Stan sampler's behavior. It defaults to ‘NULL’ so all the default values are used. See \code{\link[rstan]{stan}}. The most common parameters to control are `adapt_delta`, which may be raised to address divergent transitions, and `max_treedepth`. For example, `control = list(adapt_delta = 0.95, max_treedepth = 13)`, may be reasonable specifications.
+#' @param refresh How often to print the MCMC sampling progress to the console.
+#' @param control A named list of parameters to control Stan's sampling behavior. The most common parameters to control are `adapt_delta`, which may be raised to address divergent transitions, and `max_treedepth`. For example, `control = list(adapt_delta = 0.99, max_treedepth = 13)`, may be a reasonable specification to address a divergent transitions or maximum treedepth warning from Stan.
 #'
 #' @param ... Other arguments passed to \code{\link[rstan]{sampling}}.
 #'
@@ -47,12 +47,20 @@
 #'    fit <- stan_rw(dfw, time = Year, group = Race)
 #'
 #' print(fit)
-#' 
-#' # RStan summary
-#'  head(fit$summary)
+#' head(fit$summary)
 #' 
 #' # default plot
 #'  plot(fit)
+#'
+#' # Inequality analysis
+#' Ti <- theil(fit)
+#' plot(Ti)
+#' print(Ti)
+#' 
+#' gd <- group_diff(fit, target = "Black or African American", reference = "White")
+#' plot(gd)
+#' print(gd, scale = 10e3)
+#'
 #' }
 #' @export
 #' @importFrom parallel detectCores

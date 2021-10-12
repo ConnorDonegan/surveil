@@ -2,7 +2,7 @@
 % Please edit documentation in R/stan_rw.R
 \name{stan_rw}
 \alias{stan_rw}
-\title{Time series models for mortality or disease incidence data}
+\title{Time series models for mortality and disease incidence}
 \usage{
 stan_rw(
   data,
@@ -22,8 +22,8 @@ stan_rw(
 \item{data}{A \code{data.frame} containing the following columns: \describe{
 \item{Count}{Number of cases or deaths; this column must be named 'Count'.}
 \item{Population}{Size of population at risk; this column must be named 'Population'.}
-\item{time}{Time period indicator; provide the column name using the \code{time} argument.}
-\item{group}{Optional grouping variable; provide the column name using the \code{group} argument.}
+\item{time}{Time period indicator. (Provide the (unquoted) column name using the \code{time} argument.)}
+\item{group}{Optional grouping variable. (Provide the (unquoted) column name using the \code{group} argument.)}
 }}
 
 \item{group}{If \code{data} is aggregated by demographic group, provide the (unquoted) name of the column in \code{data} containing the grouping structure, such as age brackets or race-ethnicity. E.g., if \code{data} has column names \code{Year}, \code{Race}, \code{Cases}, and \code{Population}, then you would provide \code{group = Race}.}
@@ -50,9 +50,9 @@ For example, with \code{k=2} demographic groups, the following code will assign 
 
 \item{iter}{Total number of MCMC iterations. Warmup draws are automatically half of \code{iter}.}
 
-\item{refresh}{How often to refresh the MCMC sampling progress printed to the console.}
+\item{refresh}{How often to print the MCMC sampling progress to the console.}
 
-\item{control}{A named ‘list’ of parameters to control the Stan sampler's behavior. It defaults to ‘NULL’ so all the default values are used. See \code{\link[rstan]{stan}}. The most common parameters to control are \code{adapt_delta}, which may be raised to address divergent transitions, and \code{max_treedepth}. For example, \code{control = list(adapt_delta = 0.95, max_treedepth = 13)}, may be reasonable specifications.}
+\item{control}{A named list of parameters to control Stan's sampling behavior. The most common parameters to control are \code{adapt_delta}, which may be raised to address divergent transitions, and \code{max_treedepth}. For example, \code{control = list(adapt_delta = 0.99, max_treedepth = 13)}, may be a reasonable specification to address a divergent transitions or maximum treedepth warning from Stan.}
 
 \item{...}{Other arguments passed to \code{\link[rstan]{sampling}}.}
 }
@@ -66,12 +66,20 @@ Model time-varying disease risk given time series of case (or death) counts and 
    fit <- stan_rw(dfw, time = Year, group = Race)
 
 print(fit)
-
-# RStan summary
- head(fit$summary)
+head(fit$summary)
 
 # default plot
  plot(fit)
+
+# Inequality analysis
+Ti <- theil(fit)
+plot(Ti)
+print(Ti)
+
+gd <- group_diff(fit, target = "Black or African American", reference = "White")
+plot(gd)
+print(gd, scale = 10e3)
+
 }
 }
 \author{

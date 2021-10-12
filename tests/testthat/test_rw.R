@@ -77,3 +77,15 @@ test_that("theil.list works", {
     x <- theil(flist)
     expect_s3_class(x, "theil_list")
 })
+
+test_that("stand_surveil works", {
+    fit <- stan_rw(cancer,
+               time = Year,
+               group = Label,
+               iter = iter,
+               chains = 1
+               )
+    x = standardize(fit, label = standard$age, standard$standard_pop)
+    print(x, 10e3)
+    plot(x)
+    })
