@@ -4,7 +4,12 @@
 #'
 #' @param x For the `apc` function, `x` may be a fitted `surviel` model, or standardized rates (a `stand_surveil` object). For print and plot methods, `x` is the `apc_ls` object returned by `apc`.
 #'
-#' @return A data frame containing a summary of the annual and cumulative percent changes in risk. The means of posterior distributions are reported (`apc`, `cumulative`) with 95 percent credible intervals (`apc_lwr`, `apc_upr` and `cum_lwr`, `cum_upr`).
+#' @return A list of two data frames:
+#' \describe{
+#'  \item{apc}{A data frame containing a summary of the posterior distribution for period-specific percent change. This contains the posterior mean (`apc`) 95 percent credible intervals (`lwr` and `upr` bounds).}
+#' \item{cpc}{A data frame containing a summary of the posterior distribution for the cumulative percent change in risk at each time period. This contains the posterior mean (`cpc`) and 95 percent credible interval (`lwr` and `upr` bounds).}
+#'
+#' The means of posterior distributions are reported (`apc`, `cumulative`) with 95 percent credible intervals (`apc_lwr`, `apc_upr` and `cum_lwr`, `cum_upr`).
 #'
 #' @examples
 #' data(cancer)
@@ -16,6 +21,7 @@
 #' }
 #' @seealso \code{\link[surveil]{stan_rw}} \code{\link[surveil]{standardize}}
 #' @md
+#' @export
 #' @rdname apc 
 apc <- function(x) UseMethod("apc", x)
 
@@ -52,7 +58,7 @@ apc.surveil <- function(x) {
         cpc_summary <- data.frame(
             time = time_label[-1],
             group = group_label[g],
-            cumulative = apply(cum.pc, 1, mean),
+            cpc = apply(cum.pc, 1, mean),
             lwr = apply(cum.pc, 1, quantile, probs = 0.025),
             upr = apply(cum.pc, 1, quantile, probs = 0.975)
         )        
@@ -93,7 +99,7 @@ apc.stand_surveil <- function(x) {
     )
     cpc_summary <- data.frame(
         time = time_label[-1],
-        cumulative = apply(cum.pc, 1, mean),
+        cpc = apply(cum.pc, 1, mean),
         lwr = apply(cum.pc, 1, quantile, probs = 0.025),
         upr = apply(cum.pc, 1, quantile, probs = 0.975)
     )        
@@ -133,14 +139,14 @@ print.apc_ls <- function(x, digits = 0, max = 10, ...) {
         x$cpc <- tidyr::pivot_wider(x$cpc,
                                        id_cols = .data$time,
                                        names_from = .data$group,
-                                       values_from = .data$cumulative
+                                       values_from = .data$cpc
                                     )
         message("Cumulative percent change:")
         print.data.frame(x$cpc[nrow(x$cpc), -which(names(x$cpc) == "time")], digits = digits, row.names = FALSE, ...)
         message("\nPeriod percent change")
         print.data.frame(x$apc, digits = digits, max = max * ncol(x$apc), row.names = FALSE, ...)        
     } else {
-        c.est <- round(x$cpc$cumulative[nrow(x$cpc)], digits)
+        c.est <- round(x$cpc$cpc[nrow(x$cpc)], digits)
         lwr <- round(x$cpc$lwr[nrow(x$cpc)], digits)
         upr <- round(x$cpc$upr[nrow(x$cpc)], digits)
         message("Cumulative percent change: ", c.est, " [", lwr, ", ", upr, "]")  
@@ -176,10 +182,22 @@ plot.apc_ls <- function(x,
                         ...
                         ) {
     ylab <- ifelse(cumulative, "Cumulative % Change", "APC")
+    if (length(unique(x$apc$group)) > 1) {
+        x$apc <- dplyr::mutate(x$apc,
+                                   group = factor(group,
+                                                  levels = unique(group),
+                                                  ordered = TRUE)
+                               )
+        x$cpc <- dplyr::mutate(x$cpc,
+                               group = factor(group,
+                                              levels = unique(group),
+                                                  ordered = TRUE)
+                               )        
+    }
     if (cumulative) {        
         gg <- ggplot(x$cpc,
                      aes(.data$time,
-                         y = .data$cumulative,
+                         y = .data$cpc,
                          ymin = .data$lwr,
                          ymax = .data$upr)
                      ) +
@@ -194,13 +212,15 @@ plot.apc_ls <- function(x,
                      ) +
             labs(x = NULL,
                  y = "APC")
-    }    
+    }
     gg <- gg +
         geom_hline(yintercept = 0) +
         geom_ribbon(alpha = alpha, fill = fill) +    
         geom_line(col = col, lwd = lwd) +
-        theme_classic(base_size = base_size)    
-    if (length(unique(x$apc$group)) > 1) gg <- gg + facet_wrap(~ .data$group)    
+        theme_classic(base_size = base_size)
+    if (length(unique(x$apc$group)) > 1) {
+        gg <- gg + facet_wrap(~ .data$group)
+    }    
     gg +
         theme(...)
 }

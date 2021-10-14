@@ -23,7 +23,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-This vignette demonstrates basic usage of **surveil** for public health surveilance. **surveil** leverages the principles of Bayesian inference [@jaynes_2003;@mackay_2003] to infer population risk of disease or death given time series data consisting of case counts and population at risk.
+This vignette demonstrates basic usage of **surveil** for public health surveillance. **surveil** leverages the principles of Bayesian inference [@jaynes_2003;@mackay_2003] to infer population risk of disease or death given time series data consisting of case counts and population at risk. Models were built using the [Stan](https://mc-stan.org/) modeling language, but users only need to be familiar with the R language.
 
 The package also contains special methods for age-standardization, printing and plotting model results, and for measuring and visualizing health inequalities.
 
@@ -35,7 +35,6 @@ library(surveil)
 library(dplyr)
 library(ggplot2)
 theme_set(theme_classic())
-
 ## for the vignette
 library(knitr)
 ```
@@ -135,18 +134,18 @@ fig +
 
 A selection of complementary pairwise inequality measures can be calculated using the `group_diff` function. The function requires a fitted **surveil** model and character strings corresponding, respectively, to the target population (indicating which group is the target of our inference, typically the overburdened or disadvantaged group), and the reference population. It returns probability distributions and summary statements for the following quantities, where `target` and `reference` indicate disease risk for the respective populations:
 
- * Rate Difference (RD): $\text{RD} = \text{Target} - \text{Reference}$;
- * Population Attributable Risk (PAR): $\text{PAR} = \frac{\text{RD}}{\text{Target}}$;
- * Rate Ratio (RR): $\text{RR} = \frac{\text{Target}}{\text{Reference}}$;
- * Excess Cases (EC): $\text{EC} = \text{RD} \times \text{[At Risk]}$.
+ * Rate Difference (RD): $\text{Target} - \text{Reference}$;
+ * Population Attributable Risk (PAR): $\frac{\text{RD}}{\text{Target}}$;
+ * Rate Ratio (RR): $\frac{\text{Target}}{\text{Reference}}$;
+ * Excess Cases (EC): $\text{RD} \times \text{[At Risk]}$.
  
-Notice that the PAR is simply the rate difference expressed as a fraction of total risk; it indicates the fraction of risk in the target population that would have been removed had the target rate equaled the reference rate.
+Notice that the PAR is simply the rate difference expressed as a fraction of total risk; it indicates the fraction of risk in the target population that would have been removed had the target rate equaled the reference rate [@menvielle_2019].
 
 To calculate all of these measures for two groups in our data, we call `group_diff` on our fitted model:
 
 ```{r}
 gd <- group_diff(fit, target = "Black or African American", reference = "White")
-print(gd, rate_scale = 100e3)
+print(gd, scale = 100e3)
 ```
 
 The plot method for `surveil_diff` produces one time series ``ggplot`` each for RD, one of PAR or RR, and EC. The means of the probability distributions for each measure are plotted as lines, while the shading indicates a 95\% credible interval:
@@ -157,7 +156,7 @@ plot(gd, scale = 100e3)
 
 ## Measuring inequality with multiple groups
 
-Pairwise measures are important, but they cannot provide a summary of inequality across multiple socially situated groups. Theil's T is an entropy-based inequality index with many favorable qualities, including that it naturally accommodates complex grouping structures.
+Pairwise measures are important, but they cannot provide a summary of inequality across multiple socially situated groups. Theil's T is an entropy-based inequality index with many favorable qualities, including that it naturally accommodates complex grouping structures [@theil_1972;@conceicao_2000a;@conceicao_2000b].
 
 Theil's T measures the extent to which certain populations are overburdened by disease, meaning precisely that the proportion of cases accounted for by a particular group, $\omega_j$, is higher than the proportion of the population constituted by that same group, $\eta_j$. With $k$ groups, Theil's index is
                                $$T = \sum_{j=1}^k \omega_j \big[ log(\omega_j / \eta_j) \big].$$

@@ -5,7 +5,15 @@
 \alias{print.surveil}
 \title{Plot disease risk time trends}
 \usage{
-\method{plot}{surveil}(x, scale = 1, base_size = 14, ...)
+\method{plot}{surveil}(
+  x,
+  scale = 1,
+  facet = FALSE,
+  base_size = 14,
+  palette = c("Dark2", "Accent", "Paired", "Pastel1", "Pastel2", "Set1", "Set2",
+    "set3"),
+  ...
+)
 
 \method{print}{surveil}(x, scale = 1, ...)
 }
@@ -14,7 +22,11 @@
 
 \item{scale}{Scale the rates by this amount; e.g., \code{scale = 100e3} will print rates per 100,000 at risk.}
 
+\item{facet}{Logical value to indicate how groups are differentiated. If \code{facet = TRUE}, \code{\link[ggplot2]{facet_wrap}} will be used instead of differentiating by line color.}
+
 \item{base_size}{Passed to \code{theme_classic()} to control size of plot components (text).}
+
+\item{palette}{For multiple groups, choose the color palette. Options are the \code{qualitative} palettes available from \code{\link[ggplot2]{scale_color_brewer}}}
 
 \item{...}{additional arguments passed to \code{\link[base]{print.data.frame}}}
 }

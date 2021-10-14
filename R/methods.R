@@ -26,6 +26,8 @@
 #' @param x A fitted `surveil` model
 #' @param base_size Passed to `theme_classic()` to control size of plot components (text).
 #' @param scale Scale the rates by this amount; e.g., `scale = 100e3` will print rates per 100,000 at risk.
+#' @param facet Logical value to indicate how groups are differentiated. If \code{facet = TRUE}, \code{\link[ggplot2]{facet_wrap}} will be used instead of differentiating by line color.
+#' @param palette For multiple groups, choose the color palette. Options are the `qualitative` palettes available from \code{\link[ggplot2]{scale_color_brewer}}
 #' @param ... additional arguments will be passed to `\code{\link[ggplot2]{theme}}
 #' 
 #' @export 
@@ -35,13 +37,38 @@
 #' @importFrom scales comma
 #' @import ggplot2
 #' @importFrom rlang parse_expr
-plot.surveil <- function(x, scale = 1, base_size = 14, ...) {
+#' @importFrom dplyr mutate
+plot.surveil <- function(x,
+                  scale = 1,
+                  facet = FALSE,
+                  base_size = 14,
+                  palette = c("Dark2", "Accent", "Paired", "Pastel1", "Pastel2", "Set1", "Set2",
+                  "set3"),
+                  ...) {
+    palette <- match.arg(palette, c("Dark2", "Accent", "Paired", "Pastel1", "Pastel2", "Set1", "Set2",
+                  "set3"))
     if (inherits(x$group, "list")) {
-        group <- rlang::parse_expr(x$group$group)    
-        gg <- ggplot(x$summary,
+        group <- rlang::parse_expr(x$group$group)
+        x$summary <- dplyr::mutate(x$summary,
+                                   group = factor({{ group }},
+                                                  levels = unique({{ group }}),
+                                                  ordered = TRUE)
+                                   )
+        if (facet) {
+            gform <- as.formula(paste0("~ ", x$group$group))
+            gg <- ggplot(x$summary) +
+                facet_wrap( ~ group , scale = "free" )
+        } else {            
+            gg <- ggplot(x$summary,
                      aes(group = {{ group }},
                          col = {{ group }} )
-                     )
+                     ) +
+                scale_color_brewer(
+            palette = palette,
+            type ="qual",
+            name = NULL
+        )    
+        }
     } else {
         gg <- ggplot(x$summary)
     }
@@ -62,11 +89,6 @@ plot.surveil <- function(x, scale = 1, base_size = 14, ...) {
                    ) +
         scale_x_continuous(name = NULL) +
         scale_y_continuous(name = NULL) +
-        scale_color_brewer(
-            palette = "Dark2",
-            type ="qual",
-            name = NULL
-        ) +     
         theme_classic(base_size = base_size) +
         theme(legend.position = "bottom",
               ...)
