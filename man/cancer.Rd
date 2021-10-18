@@ -5,7 +5,13 @@
 \alias{cancer}
 \title{US cancer incidence by age, 1999-2017}
 \format{
-An object of class \code{data.frame} with 361 rows and 5 columns.
+A data frame with the following columns:
+\describe{
+\item{Year}{Year of diagnosis}
+\item{Age}{Age group}
+\item{Count}{Number of cancer cases}
+\item{Population}{Age-specific population estimates}
+}
 }
 \source{
 United States Cancer Statistics - Incidence: 1999 - 2017, WONDER Online Database. United States Department of Health and Human Services, Centers for Disease Control and Prevention and National Cancer Institute; 2020. Accessed at \url{http://wonder.cdc.gov/cancer-v2017.html} on Oct 6, 2021 12:38:09 PM

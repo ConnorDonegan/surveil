@@ -61,14 +61,13 @@ Model time-varying disease risk given time series of case (or death) counts and 
 }
 \examples{
 \dontrun{
-   data(msa)
-   dfw <- msa[grep("Dallas", msa$MSA), ]
-   fit <- stan_rw(dfw, time = Year, group = Race)
+data(msa)
+dfw <- msa[grep("Dallas", msa$MSA), ]
+fit <- stan_rw(dfw, time = Year, group = Race)
 
 print(fit)
 head(fit$summary)
 
-# default plot
  plot(fit)
 
 # Inequality analysis
@@ -80,6 +79,22 @@ gd <- group_diff(fit, target = "Black or African American", reference = "White")
 plot(gd)
 print(gd, scale = 10e3)
 
+# age-specific rates and cumulative percent change
+data(cancer)
+fit <- stan_rw(cancer,
+               time = Year,
+               group = Age
+               )
+fit_apc <- apc(fit)
+plot(fit_apc, cumulative = TRUE)
+
+# age-standardized rates
+data(standard)
+fit_stands <- standardize(fit, label = standard$age, standard_pop = standard$standard_pop)
+print(fit_stands)
+plot(fit_stands)
+fit_stands_apc <- apc(fit_stands)
+plot(fit_stands_apc)
 }
 }
 \author{

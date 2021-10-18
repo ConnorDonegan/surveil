@@ -77,8 +77,8 @@ head(tx.msa) %>%
 
 ### The basics
 
-The base **surveil** model specification is a Poisson random-walk, which is closely related to both state-space and Intrinsic Gaussian Markov random field (IGMRF) models. The Poisson model is used as the likelihood: the probability of observing a given number of cases, $c_t$, conditional on unknown level of risk, $e^{\phi_t}$, and known population at risk, $p_t$:
-$$c_t \sim \text{Pois}(p_t \cdot e^{\phi_t})$$
+The base **surveil** model specification is a Poisson random-walk, which is closely related to both state-space and Intrinsic Gaussian Markov random field (IGMRF) models. The Poisson model is used as the likelihood: the probability of observing a given number of cases, $y_t$, conditional on unknown level of risk, $e^{\phi_t}$, and known population at risk, $p_t$:
+$$y_t \sim \text{Pois}(p_t \cdot e^{\phi_t})$$
 where $t$ indexes the time period.
 
 Next, we build a model for the log-rates, ${\phi_t}$. The random walk structure states that our expectation for the log-rate at any time is its previous value, and we assign a Gaussian probability distribution to deviations from the previous value:
@@ -117,7 +117,7 @@ If we call `plot` on a `surveil` model, we get a `ggplot` object:
 plot(fit, scale = 100e3)
 ```
 
-If we like, we can store the ``ggplot` in our working environment and then modify the figure as we please:
+Instead of viewing the default plot, we can first store the ``ggplot` in our working environment and then modify the figure as we please:
 
 ```{r fig.width = 4, fig.height = 3.5}
 fig <- plot(fit, scale = 100e3)
@@ -148,10 +148,18 @@ gd <- group_diff(fit, target = "Black or African American", reference = "White")
 print(gd, scale = 100e3)
 ```
 
-The plot method for `surveil_diff` produces one time series ``ggplot`` each for RD, one of PAR or RR, and EC. The means of the probability distributions for each measure are plotted as lines, while the shading indicates a 95\% credible interval:
+All of the **surveil** plotting and printing methods provide an option to scale rates by a custom value. By setting `scale = 100e3` (100,000), the RD is printed as cases per 100,000. Note that none of the other inequality measures (PAR, RR, EC) are ever impacted by this choice.
+
+The plot method for `surveil_diff` produces one time series ``ggplot`` each for RD, PAR, and EC. The means of the probability distributions for each measure are plotted as lines, while the shading indicates a 95\% credible interval:
 
 ```{r fig.width = 3.5, fig.height = 4.5}
 plot(gd, scale = 100e3)
+```
+
+If we wanted to replace the plot of the PAR with one of the RR, we would set the `PAR` option to `FALSE`:
+
+```{r eval = FALSE}
+plot(gd, scale = 100e3, PAR = FALSE)
 ```
 
 ## Measuring inequality with multiple groups
@@ -174,6 +182,10 @@ The time series of Theil's T can be plotted with 95\% credible intervals:
 ```{r fig.width = 4, fig.height = 3}
 plot(Ts)
 ```
+
+While the minimum of Theil's index is always zero, the maximum value varies with the structure of the population under observation. The index is useful for comparisons such as monitoring change over time, and should generally not be used as a indication of the absolute level of inequality. 
+
+The index also has interesting extensions; for example, given disease data for a nested population structure---such as racial-ethnic groups within states---Theil's index can provide a measure of geographic inequality across states (between-state inequality), and social inequality within states (within-state inequality). For details, see `?theil`.
 
 ## References
 

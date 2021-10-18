@@ -73,7 +73,7 @@ print.prior <- function(x, digits = 2, ...) {
     message("Distribution: ", nm)
     if (nm == "student_t") df <- as.data.frame(x[c('df', 'location', 'scale')])
     if (nm == "lkj") df <- data.frame(eta = x$eta)
-    print(df, digits = digits, ...)           
+    print(df, digits = digits, row.names = FALSE, ...)           
 }
 
 #' @noRd

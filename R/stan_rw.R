@@ -42,14 +42,13 @@
 #' 
 #' @examples
 #' \dontrun{
-#'    data(msa)
-#'    dfw <- msa[grep("Dallas", msa$MSA), ]
-#'    fit <- stan_rw(dfw, time = Year, group = Race)
+#' data(msa)
+#' dfw <- msa[grep("Dallas", msa$MSA), ]
+#' fit <- stan_rw(dfw, time = Year, group = Race)
 #'
 #' print(fit)
 #' head(fit$summary)
 #' 
-#' # default plot
 #'  plot(fit)
 #'
 #' # Inequality analysis
@@ -61,6 +60,22 @@
 #' plot(gd)
 #' print(gd, scale = 10e3)
 #'
+#' # age-specific rates and cumulative percent change
+#' data(cancer)
+#' fit <- stan_rw(cancer,
+#'                time = Year,
+#'                group = Age
+#'                )
+#' fit_apc <- apc(fit)
+#' plot(fit_apc, cumulative = TRUE)
+#'
+#' # age-standardized rates
+#' data(standard)
+#' fit_stands <- standardize(fit, label = standard$age, standard_pop = standard$standard_pop)
+#' print(fit_stands)
+#' plot(fit_stands)
+#' fit_stands_apc <- apc(fit_stands)
+#' plot(fit_stands_apc)
 #' }
 #' @export
 #' @importFrom parallel detectCores
@@ -95,7 +110,11 @@ stan_rw <- function(data,
     ## force correct order by time
     data <- dplyr::mutate(data, time = as.numeric({{ time }}))
     data <- dplyr::arrange(data, .data$time)
-    Time.index <- unique(data$time)
+    time_labels <- unique(data$time)
+    time_df <- data.frame(time.index = 1:length(time_labels),
+                          label = time_labels)
+    time_list <- list(time = rlang::as_label(dplyr::enquo(time)),
+                      time.df = time_df)
     if (missing(group)) {
         cases <- as.matrix(data$Count, ncol = 1)
         at_risk <- as.matrix(data$Population, ncol = 1)
@@ -195,7 +214,7 @@ stan_rw <- function(data,
         j.mu <- apply(M, 2, mean)
         j.ci <- apply(M, 2, stats::quantile, probs = c(0.025, 0.975))
         j.df <- data.frame(
-            time = Time.index,
+            time = time_labels,
             mean = j.mu,
             lwr_2.5 = j.ci["2.5%",],
             upr_97.5 = j.ci["97.5%",]
@@ -220,10 +239,11 @@ stan_rw <- function(data,
     out <- list(summary = res.df,
                 samples = samples,
                 cor = cor,
+                time = time_list,
                 data = list(cases = cases,
                             at_risk = at_risk,
                             prior = prior,
-                            time = Time.index)
+                            time = time_labels)
                 )
     if (!missing(group)) out$group <- list(group = group_char, group.df = group.df)
     class(out) <- append("surveil", class(out))    

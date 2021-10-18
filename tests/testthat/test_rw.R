@@ -81,7 +81,7 @@ test_that("theil.list works", {
 test_that("stand_surveil works", {
     fit <- stan_rw(cancer,
                time = Year,
-               group = Label,
+               group = Age,
                iter = iter,
                chains = 1
                )

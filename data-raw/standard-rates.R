@@ -10,8 +10,8 @@ usethis::use_data(standard, overwrite = TRUE)
 cancer <- read.table("cancer-incidence.txt", 
                      comment.char = "#", 
                      header = TRUE)
-
 cancer <- cancer[,c("Year", "Age.Groups", "Age.Groups.Code", "Count", "Population")]
-names(cancer) <- c("Year", "Age", "Label", "Count", "Population")
+names(cancer) <- c("Year", "Age.long", "Age", "Count", "Population")
+cancer <- cancer[,c("Year", "Age", "Count", "Population")]
 usethis::use_data(cancer, overwrite = TRUE)
 

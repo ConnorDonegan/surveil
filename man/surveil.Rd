@@ -8,10 +8,11 @@
 \method{plot}{surveil}(
   x,
   scale = 1,
+  style = c("mean_qi", "lines"),
   facet = FALSE,
   base_size = 14,
-  palette = c("Dark2", "Accent", "Paired", "Pastel1", "Pastel2", "Set1", "Set2",
-    "set3"),
+  palette = "Dark2",
+  M = 250,
   ...
 )
 
@@ -26,7 +27,9 @@
 
 \item{base_size}{Passed to \code{theme_classic()} to control size of plot components (text).}
 
-\item{palette}{For multiple groups, choose the color palette. Options are the \code{qualitative} palettes available from \code{\link[ggplot2]{scale_color_brewer}}}
+\item{palette}{For multiple groups, choose the color palette. For a list of options, see \code{\link[ggplot2]{scale_color_brewer}}. The default is \code{palette = "Dark2"}.}
+
+\item{M}{If \code{style = "lines"}, then \code{M} is the number of samples from the posterior distribution that will be plotted; the default is \code{M = 250}.}
 
 \item{...}{additional arguments passed to \code{\link[base]{print.data.frame}}}
 }

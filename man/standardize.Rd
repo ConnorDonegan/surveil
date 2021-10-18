@@ -14,7 +14,7 @@ standardize(x, label, standard_pop)
 \item{standard_pop}{Standard population values corresponding to the age groups specified by \code{label}}
 }
 \value{
-A list, also of class "stand_surveil", containing a summary data frame (mean and 95 percent credible intervals) (\code{summary}), a data frame of MCMC samples of standardized rates per time period (\code{samples}), and the user-provided labels and standard population sizes (\code{label}, \code{standard_pop}).
+A list, also of class "stand_surveil", containing a summary data frame (mean and 95 percent credible intervals) (named \code{summary}), a data frame of MCMC samples of standardized rates per time period (named \code{samples}), and the user-provided labels and standard population sizes (named \code{label} and \code{standard_pop}). In addition, all of the items from the user-provided \code{surveil} model are automatically appended to the list.
 }
 \description{
 Convert \code{surveil} model results to age standardized rates using a fixed age distribution
@@ -29,7 +29,7 @@ head(cancer)
 \dontrun{
 fit <- stan_rw(cancer,
               time = Year,
-              group = Label
+              group = Age
               )
 
 stands <- standardize(fit, label = standard$age, standard_pop = standard$standard_pop)

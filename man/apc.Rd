@@ -49,7 +49,11 @@ apc(x)
 \item{lwd}{Line width}
 }
 \value{
-A data frame containing a summary of the annual and cumulative percent changes in risk. The means of posterior distributions are reported (\code{apc}, \code{cumulative}) with 95 percent credible intervals (\code{apc_lwr}, \code{apc_upr} and \code{cum_lwr}, \code{cum_upr}).
+A list of two data frames:
+\describe{
+\item{apc}{A data frame containing a summary of the posterior distribution for period-specific percent change. This contains the posterior mean (\code{apc}) 95 percent credible intervals (\code{lwr} and \code{upr} bounds).}
+\item{cpc}{A data frame containing a summary of the posterior distribution for the cumulative percent change in risk at each time period. This contains the posterior mean (\code{cpc}) and 95 percent credible interval (\code{lwr} and \code{upr} bounds).}
+}
 }
 \description{
 Summarize annual and cumulative percent change in risk
@@ -68,7 +72,7 @@ Any additional arguments (\code{...}) will be passed to \code{\link[ggplot2]{the
 \examples{
 data(cancer)
 \dontrun{
- fit <- stan_rw(cancer, time = Year, group = Label)
+ fit <- stan_rw(cancer, time = Year, group = Age)
  x <- apc(fit)
  print(x, rate = 10e3)
  plot(x, cumulative = TRUE)

@@ -8,13 +8,12 @@
 #' \describe{
 #'  \item{apc}{A data frame containing a summary of the posterior distribution for period-specific percent change. This contains the posterior mean (`apc`) 95 percent credible intervals (`lwr` and `upr` bounds).}
 #' \item{cpc}{A data frame containing a summary of the posterior distribution for the cumulative percent change in risk at each time period. This contains the posterior mean (`cpc`) and 95 percent credible interval (`lwr` and `upr` bounds).}
-#'
-#' The means of posterior distributions are reported (`apc`, `cumulative`) with 95 percent credible intervals (`apc_lwr`, `apc_upr` and `cum_lwr`, `cum_upr`).
+#' }
 #'
 #' @examples
 #' data(cancer)
 #' \dontrun{
-#'  fit <- stan_rw(cancer, time = Year, group = Label)
+#'  fit <- stan_rw(cancer, time = Year, group = Age)
 #'  x <- apc(fit)
 #'  print(x, rate = 10e3)
 #'  plot(x, cumulative = TRUE)
@@ -25,14 +24,13 @@
 #' @rdname apc 
 apc <- function(x) UseMethod("apc", x)
 
-
 #' @method apc surveil
 #' @export
 #' @rdname apc
 apc.surveil <- function(x) {
     ## S x G x T array
     a.samples <- rstan::extract(x$samples, pars = "rate")$rate
-    time_label <- x$data$time
+    time_label <- x$time$time.df$label
     GG <- dim(a.samples)[2]
     if (GG > 1) {
         group_label <- colnames(x$data$cases)

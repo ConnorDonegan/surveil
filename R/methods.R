@@ -27,7 +27,8 @@
 #' @param base_size Passed to `theme_classic()` to control size of plot components (text).
 #' @param scale Scale the rates by this amount; e.g., `scale = 100e3` will print rates per 100,000 at risk.
 #' @param facet Logical value to indicate how groups are differentiated. If \code{facet = TRUE}, \code{\link[ggplot2]{facet_wrap}} will be used instead of differentiating by line color.
-#' @param palette For multiple groups, choose the color palette. Options are the `qualitative` palettes available from \code{\link[ggplot2]{scale_color_brewer}}
+#' @param palette For multiple groups, choose the color palette. For a list of options, see \code{\link[ggplot2]{scale_color_brewer}}. The default is `palette = "Dark2"`.
+#' @param M If `style = "lines"`, then `M` is the number of samples from the posterior distribution that will be plotted; the default is `M = 250`.
 #' @param ... additional arguments will be passed to `\code{\link[ggplot2]{theme}}
 #' 
 #' @export 
@@ -39,14 +40,73 @@
 #' @importFrom rlang parse_expr
 #' @importFrom dplyr mutate
 plot.surveil <- function(x,
-                  scale = 1,
-                  facet = FALSE,
-                  base_size = 14,
-                  palette = c("Dark2", "Accent", "Paired", "Pastel1", "Pastel2", "Set1", "Set2",
-                  "set3"),
-                  ...) {
-    palette <- match.arg(palette, c("Dark2", "Accent", "Paired", "Pastel1", "Pastel2", "Set1", "Set2",
-                  "set3"))
+                         scale = 1,
+                         style = c("mean_qi", "lines"),
+                         facet = FALSE,
+                         base_size = 14,
+                         palette = "Dark2",
+                         M = 250,
+                         ...) {
+    style <- match.arg(style, c("mean_qi", "lines"))    
+    if (style == "lines") {
+        eta <- rstan::extract(x$samples, pars = "rate")$rate
+        K <- dim(eta)[2]
+        TT <- dim(eta)[3]
+        n_samples <- dim(eta)[1]
+        draw_id_start <- 1
+        draw_id_end <- M
+        list_df <- list()
+        for (j in 1:K) {    
+            Sj <- eta[sample(n_samples, M),j,]
+            Sj <- Sj %>%
+                as.data.frame() %>% 
+                tidyr::pivot_longer(
+                           everything(),        
+                           names_to = "time.index",
+                           values_to = "rate"
+                       ) %>%
+                dplyr::mutate(group.index = j,
+                              time.index = as.numeric(gsub("[A-z]", "", .data$time.index)),
+                              draw = rep(draw_id_start:draw_id_end, each = TT)
+                              )
+            list_df[[j]] <- Sj    
+            draw_id_start <- draw_id_end + 1
+            draw_id_end <- M * (j + 1)
+        }
+        s_df <- do.call("rbind", list_df)
+        s_df <- dplyr::left_join(s_df, x$group$group.df, by = "group.index")
+        s_df <- dplyr::left_join(s_df, x$time$time.df, by = "time.index", suffix = c("_group", "_time"))
+        s_df$label_group <- factor(s_df$label_group, ordered = TRUE, levels = unique(s_df$label_group))
+        if (facet) {
+            gg <- ggplot(s_df, aes(time.index, rate,
+                                   group = factor(draw))
+                         ) +
+                facet_wrap(~ label_group, scale = "free" )
+        } else {
+            s_df$label_group <- factor(s_df$label_group, ordered = TRUE, levels = unique(s_df$label_group))
+            gg <- ggplot(s_df, aes(time.index, rate * scale,
+                                   group = factor(draw),
+                                   col = label_group)
+                         )
+            if (K > 8) {
+                warning("You have too many groups to use scale_color_brewer palettes; you may want to use facet = TRUE")
+            } else {
+                gg <- gg +
+                    scale_color_brewer(palette = palette,
+                                       name = NULL)
+            }
+        }
+        gg <- gg +
+            geom_line(alpha = 0.7, lwd = 0.05) +
+            scale_x_continuous(
+                breaks = x$time$time.df$time.index,
+                labels = x$time$time.df$label,
+                name = NULL
+            ) +
+            scale_y_continuous(name = NULL) +    
+            theme_classic()
+        return (gg)
+    }
     if (inherits(x$group, "list")) {
         group <- rlang::parse_expr(x$group$group)
         x$summary <- dplyr::mutate(x$summary,
@@ -57,23 +117,27 @@ plot.surveil <- function(x,
         if (facet) {
             gform <- as.formula(paste0("~ ", x$group$group))
             gg <- ggplot(x$summary) +
-                facet_wrap( ~ group , scale = "free" )
+                facet_wrap(gform, scale = "free" )
         } else {            
             gg <- ggplot(x$summary,
                      aes(group = {{ group }},
                          col = {{ group }} )
-                     ) +
-                scale_color_brewer(
-            palette = palette,
-            type ="qual",
-            name = NULL
-        )    
+                     )
+            if (length(x$group$group.df$group.index) > 8) {
+                warning("You have too many groups to use scale_color_brewer palettes; you may want to use facet = TRUE")
+            } else {
+                gg <- gg +
+                    scale_color_brewer(
+                        palette = palette,
+                        name = NULL
+                    )
+            }
         }
     } else {
         gg <- ggplot(x$summary)
     }
     if (scale != 1) message("Plotted rates are per ", scales::comma(scale))
-    gg +
+    gg <- gg +
         geom_ribbon(aes(.data$time,
                         ymin = scale * .data$lwr_2.5,
                         ymax = scale * .data$upr_97.5
@@ -85,13 +149,15 @@ plot.surveil <- function(x,
                     ) +
         geom_line(aes(.data$time, scale * .data$mean)) +
         geom_point(aes(.data$time, scale * .data$Crude),
-                   alpha = 0.75
+                   alpha = 0.75,
+                   size = 0.5
                    ) +
         scale_x_continuous(name = NULL) +
         scale_y_continuous(name = NULL) +
         theme_classic(base_size = base_size) +
         theme(legend.position = "bottom",
               ...)
+    return (gg)
 }
 
 #' Print `surveil` model results
@@ -130,7 +196,7 @@ print.surveil <- function(x, scale = 1, ...) {
 #' @param label Labels (character strings) for the age groups that correspond to the values of `stand_pop`. The labels must match the grouping variable used to fit the model (i.e., `all(label %in% names(x$data$cases))` must be true).
 #' @param standard_pop Standard population values corresponding to the age groups specified by `label`
 #'
-#' @return A list, also of class "stand_surveil", containing a summary data frame (mean and 95 percent credible intervals) (`summary`), a data frame of MCMC samples of standardized rates per time period (`samples`), and the user-provided labels and standard population sizes (`label`, `standard_pop`).
+#' @return A list, also of class "stand_surveil", containing a summary data frame (mean and 95 percent credible intervals) (named `summary`), a data frame of MCMC samples of standardized rates per time period (named `samples`), and the user-provided labels and standard population sizes (named `label` and `standard_pop`). In addition, all of the items from the user-provided `surveil` model are automatically appended to the list.
 #' 
 #' @examples
 #' data(cancer)
@@ -142,7 +208,7 @@ print.surveil <- function(x, scale = 1, ...) {
 #' \dontrun{
 #' fit <- stan_rw(cancer,
 #'               time = Year,
-#'               group = Label
+#'               group = Age
 #'               )
 #'
 #' stands <- standardize(fit, label = standard$age, standard_pop = standard$standard_pop)
@@ -163,7 +229,7 @@ standardize <- function(x, label, standard_pop) {
     id_df <- data.frame(group_index = ids, label = names(x$data$cases))
     stand_df <- dplyr::left_join(id_df, stand_df, by = "label")
     # time period labels
-    time_labels <- x$data$time
+    time_labels <- x$time$time.df$label
     time_df <- data.frame(time_index = 1:length(time_labels), time_label = time_labels)
     # samples of standardized rates
     stand_samples <- x$samples %>%
