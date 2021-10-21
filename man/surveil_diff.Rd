@@ -4,7 +4,7 @@
 \alias{surveil_diff}
 \alias{plot.surveil_diff}
 \alias{print.surveil_diff}
-\title{Plot surveil_diff objects for analyses of inequality}
+\title{Methods for \code{surveil_diff} objects}
 \usage{
 \method{plot}{surveil_diff}(
   x,
@@ -37,7 +37,7 @@
 \item{...}{additional print arguments}
 }
 \description{
-Plot surveil_diff objects for analyses of inequality
+Methods for \code{surveil_diff} objects
 
 print surveil_diff objects for analyses of inequality
 }

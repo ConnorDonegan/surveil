@@ -166,9 +166,10 @@ stan_rw <- function(data,
         print("\nSetting half-Student t prior for sigma: ")
         print(student_t(20, 0, 1))
     }
-    if (!"omega" %in% names(prior)) {
+    if (cor && !"omega" %in% names(prior)) {
         prior$omega <- lkj(2)
-        if (cor) print(paste("\nSetting LKJ prior on correlation matrix: ", prior$omega))
+        print(paste("\nSetting LKJ prior on correlation matrix: "))
+        print(lkj(2))
     }
     standata <- list(
         TT = nrow(cases),

@@ -1,4 +1,4 @@
-#' Plot disease risk time trends
+#' Methods for fitted `surveil` models
 #'
 #' @description Plotting method for `surveil` model results
 #' @return a `ggplot` object
@@ -29,16 +29,15 @@
 #' @param facet Logical value to indicate how groups are differentiated. If \code{facet = TRUE}, \code{\link[ggplot2]{facet_wrap}} will be used instead of differentiating by line color.
 #' @param palette For multiple groups, choose the color palette. For a list of options, see \code{\link[ggplot2]{scale_color_brewer}}. The default is `palette = "Dark2"`.
 #' @param M If `style = "lines"`, then `M` is the number of samples from the posterior distribution that will be plotted; the default is `M = 250`.
+#' @param alpha For `style = "lines"`; numeric value from zero to one indicating transparency of lines. Passed to \code{\link[ggplot2]{geom_line}}
+#' @param lwd For `style = "lines"`; numeric value indicating linewidth. Passed to \code{\link[ggplot2]{geom_line}}
 #' @param ... additional arguments will be passed to `\code{\link[ggplot2]{theme}}
 #' 
 #' @export 
 #' @import graphics
+#' @import ggplot2
 #' @rdname surveil
 #' @method plot surveil
-#' @importFrom scales comma
-#' @import ggplot2
-#' @importFrom rlang parse_expr
-#' @importFrom dplyr mutate
 plot.surveil <- function(x,
                          scale = 1,
                          style = c("mean_qi", "lines"),
@@ -46,10 +45,77 @@ plot.surveil <- function(x,
                          base_size = 14,
                          palette = "Dark2",
                          M = 250,
+                         alpha = 0.7,
+                         lwd = 0.05,
                          ...) {
-    style <- match.arg(style, c("mean_qi", "lines"))    
-    if (style == "lines") {
-        eta <- rstan::extract(x$samples, pars = "rate")$rate
+    stopifnot(is.logical(facet))    
+    style <- match.arg(style, c("mean_qi", "lines"))
+    if (style == "lines") return(plot_lines(x, scale, facet, base_size, palette, M, alpha, lwd, ...))
+    if (style == "mean_qi") return(plot_mean_qi(x, scale, facet, base_size, palette, ...))
+}
+
+#' @import ggplot2
+#' @importFrom rlang parse_expr
+plot_mean_qi <- function(x, scale, facet, base_size, palette, M, ...) {
+    if (!inherits(x$group, "list")) {
+        gg <- ggplot(x$summary)
+    } else {
+        group <- rlang::parse_expr(x$group$group)
+        x$summary <- dplyr::mutate(x$summary,
+                                   group = factor({{ group }}, levels = unique({{ group }}), ordered = TRUE))
+        if (facet) {
+            gform <- as.formula(paste0("~ ", x$group$group))
+                gg <- ggplot(x$summary) +
+                    facet_wrap(gform, scale = "free" )
+            } else {            
+                gg <- ggplot(x$summary,
+                             aes(group = {{ group }},
+                                 col = {{ group }} )
+                             )
+                if (length(x$group$group.df$group.index) > 8) {
+                    warning("You have too many groups to use scale_color_brewer palettes; you may want to use facet = TRUE")
+                } else {
+                    gg <- gg +
+                        scale_color_brewer(
+                            palette = palette,
+                            name = NULL
+                        )
+                }
+            }
+    } 
+    if (scale != 1) message("Plotted rates are per ", scales::comma(scale))
+    gg <- gg +
+        geom_ribbon(aes(.data$time,
+                        ymin = scale * .data$lwr_2.5,
+                        ymax = scale * .data$upr_97.5
+                        ),
+                    alpha = 0.5,
+                    fill = 'gray80',
+                    col = 'gray80',
+                    lwd = 0
+                    ) +
+        geom_line(aes(.data$time, scale * .data$mean)) +
+        geom_point(aes(.data$time, scale * .data$Crude),
+                   alpha = 0.75,
+                   size = 0.5
+                   ) +
+        scale_x_continuous(name = NULL) +
+        scale_y_continuous(name = NULL) +
+        theme_classic(base_size = base_size) +
+        theme(legend.position = "bottom",
+              ...)
+    return (gg)
+
+    }
+
+#' @importFrom scales comma
+#' @importFrom rstan extract
+#' @importFrom dplyr %>% mutate left_join
+#' @importFrom tidyr pivot_longer
+#' @import ggplot2
+#' @noRd
+plot_lines <- function(x, scale, facet, base_size, palette, M, alpha, lwd, ...) {
+    eta <- rstan::extract(x$samples, pars = "rate")$rate
         K <- dim(eta)[2]
         TT <- dim(eta)[3]
         n_samples <- dim(eta)[1]
@@ -74,92 +140,67 @@ plot.surveil <- function(x,
             draw_id_end <- M * (j + 1)
         }
         s_df <- do.call("rbind", list_df)
+        if (scale != 1) message("Plotted rates are per ", scales::comma(scale))
+        s_df$rate <- s_df$rate * scale
+        if (K == 1) {
+            gg <- ggplot(s_df, aes(.data$time.index, .data$rate,
+                                   group = factor(.data$draw))
+                         ) +
+                facet_wrap(~ .data$label, scale = "free" ) +
+                geom_line(alpha = alpha, lwd = lwd) +
+                scale_x_continuous(
+                    breaks = x$time$time.df$time.index,
+                    labels = x$time$time.df$label,
+                    name = NULL
+                ) +
+                scale_y_continuous(name = NULL) +    
+                theme_classic() +
+                theme(...)
+            return (gg)
+        }        
         s_df <- dplyr::left_join(s_df, x$group$group.df, by = "group.index")
-        s_df <- dplyr::left_join(s_df, x$time$time.df, by = "time.index", suffix = c("_group", "_time"))
-        s_df$label_group <- factor(s_df$label_group, ordered = TRUE, levels = unique(s_df$label_group))
-        if (facet) {
-            gg <- ggplot(s_df, aes(time.index, rate,
+        s_df$label <- factor(s_df$label, ordered = TRUE, levels = unique(s_df$label))
+        if (facet) {            
+            gg <- ggplot(s_df, aes(.data$time.index, .data$rate,
                                    group = factor(draw))
                          ) +
-                facet_wrap(~ label_group, scale = "free" )
-        } else {
-            s_df$label_group <- factor(s_df$label_group, ordered = TRUE, levels = unique(s_df$label_group))
-            gg <- ggplot(s_df, aes(time.index, rate * scale,
-                                   group = factor(draw),
-                                   col = label_group)
-                         )
-            if (K > 8) {
-                warning("You have too many groups to use scale_color_brewer palettes; you may want to use facet = TRUE")
-            } else {
-                gg <- gg +
-                    scale_color_brewer(palette = palette,
-                                       name = NULL)
-            }
-        }
-        gg <- gg +
-            geom_line(alpha = 0.7, lwd = 0.05) +
+                geom_line(alpha = alpha, lwd = lwd) +
+            scale_x_continuous(
+                breaks = x$time$time.df$time.index,
+                labels = x$time$time.df$label,
+                name = NULL
+            ) +
+                scale_y_continuous(name = NULL) +    
+                theme_classic() +
+                theme(...) +
+                facet_wrap(~ label, scale = "free" )
+            return(gg)
+        }        
+        gg <- ggplot(s_df, aes(.data$time.index, .data$rate,
+                               group = factor(.data$draw),
+                               col = .data$label)) +
+            geom_line(alpha = alpha, lwd = lwd) +
             scale_x_continuous(
                 breaks = x$time$time.df$time.index,
                 labels = x$time$time.df$label,
                 name = NULL
             ) +
             scale_y_continuous(name = NULL) +    
-            theme_classic()
-        return (gg)
-    }
-    if (inherits(x$group, "list")) {
-        group <- rlang::parse_expr(x$group$group)
-        x$summary <- dplyr::mutate(x$summary,
-                                   group = factor({{ group }},
-                                                  levels = unique({{ group }}),
-                                                  ordered = TRUE)
-                                   )
-        if (facet) {
-            gform <- as.formula(paste0("~ ", x$group$group))
-            gg <- ggplot(x$summary) +
-                facet_wrap(gform, scale = "free" )
-        } else {            
-            gg <- ggplot(x$summary,
-                     aes(group = {{ group }},
-                         col = {{ group }} )
-                     )
-            if (length(x$group$group.df$group.index) > 8) {
-                warning("You have too many groups to use scale_color_brewer palettes; you may want to use facet = TRUE")
-            } else {
-                gg <- gg +
-                    scale_color_brewer(
-                        palette = palette,
-                        name = NULL
-                    )
-            }
+            theme_classic() +
+            guides(color = guide_legend(override.aes = list(size = 2))) +
+            theme(legend.position = "bottom",
+                  ...)
+        if (K < 8) {
+            gg <- gg +
+                scale_color_brewer(palette = palette,
+                                   name = NULL)
+        } else {
+            warning("You have too many groups to use scale_color_brewer palettes; you may want to use facet = TRUE")
         }
-    } else {
-        gg <- ggplot(x$summary)
-    }
-    if (scale != 1) message("Plotted rates are per ", scales::comma(scale))
-    gg <- gg +
-        geom_ribbon(aes(.data$time,
-                        ymin = scale * .data$lwr_2.5,
-                        ymax = scale * .data$upr_97.5
-                        ),
-                    alpha = 0.5,
-                    fill = 'gray80',
-                    col = 'gray80',
-                    lwd = 0
-                    ) +
-        geom_line(aes(.data$time, scale * .data$mean)) +
-        geom_point(aes(.data$time, scale * .data$Crude),
-                   alpha = 0.75,
-                   size = 0.5
-                   ) +
-        scale_x_continuous(name = NULL) +
-        scale_y_continuous(name = NULL) +
-        theme_classic(base_size = base_size) +
-        theme(legend.position = "bottom",
-              ...)
-    return (gg)
+        return (gg)
 }
 
+    
 #' Print `surveil` model results
 #'
 #' @description Print a summary of `surveil` model results to the console
@@ -255,7 +296,7 @@ standardize <- function(x, label, standard_pop) {
 standardize_rate <- function(rate, stand_pop) sum(rate * stand_pop) / sum(stand_pop)
 
 
-#' stand_surveil methods
+#' Methods for standardized rates
 #'
 #' @description Print and plot methods for `stand_surveil` (standardized rates obtained from a fitted `surveil` model)
 #'
@@ -327,7 +368,7 @@ plot.stand_surveil <- function(x, scale = 1, base_size = 14, col = 'black', fill
 
 
 
-#' WAIC
+#' Widely Applicable Information Criteria
 #'
 #' @description Widely Application Information Criteria (WAIC) for model comparison
 #' 

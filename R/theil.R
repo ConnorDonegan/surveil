@@ -234,7 +234,7 @@ make_cases <- function(x) {
 
 
 
-#' Methods for reviewing Theil's T results
+#' Methods for Theil's index
 #' 
 #' @description Printing and plotting methods for Theil's inequality index
 #' @export

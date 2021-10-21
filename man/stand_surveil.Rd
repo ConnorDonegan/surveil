@@ -3,7 +3,7 @@
 \name{print.stand_surveil}
 \alias{print.stand_surveil}
 \alias{plot.stand_surveil}
-\title{stand_surveil methods}
+\title{Methods for standardized rates}
 \usage{
 \method{print}{stand_surveil}(x, scale = 1, digits = 3, ...)
 

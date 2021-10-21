@@ -1,6 +1,4 @@
-
-
-#' Calculate summary measures of inequality
+#' Measures of pairwise inequality
 #'
 #' @description Calculate pairwise measures of health inequality from a fitted `surveil` time series model, with credible intervals and MCMC samples. Calculates absolute and fractional rate differences (RD and population attributable risk (PAR)), rate ratios, and excess cases.
 #'
@@ -110,7 +108,7 @@ group_diff <- function(fit, target, reference, samples = FALSE) {
     return( return.list )
 }
 
-#' Plot surveil_diff objects for analyses of inequality
+#' Methods for `surveil_diff` objects
 #'
 #' @param x Object of class `surveil_diff`, as returned by calling `group_diff` on a fitted `surveil` model
 #' @param col Line color

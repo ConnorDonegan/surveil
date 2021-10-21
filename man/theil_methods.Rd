@@ -5,7 +5,7 @@
 \alias{plot.theil_list}
 \alias{print.theil}
 \alias{print.theil_list}
-\title{Methods for reviewing Theil's T results}
+\title{Methods for Theil's index}
 \usage{
 \method{plot}{theil}(
   x,

@@ -5,7 +5,7 @@ Surveil
 
 <img src="man/figures/logo.png" align="right" width="160" />
 
-### Models for routine public health surveillance
+### Public health surveillance
 
 #### Measure and monitor health inequalities
 

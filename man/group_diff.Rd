@@ -2,7 +2,7 @@
 % Please edit documentation in R/group-diff.R
 \name{group_diff}
 \alias{group_diff}
-\title{Calculate summary measures of inequality}
+\title{Measures of pairwise inequality}
 \source{
 Menvielle, G, Kulhanaova, I, Machenbach, JP. Assessing the impact of a public health intervention to reduce social inequalities in cancer. In: Vaccarella, S, Lortet-Tieulent, J, Saracci, R, Conway, D, Straif, K, Wild, CP, editors. Reducing Social Inequalities in Cancer: Evidence and Priorities for Research. Geneva, Switzerland: WHO Press, 2017:185-192.
 }

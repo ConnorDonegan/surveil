@@ -6,3 +6,36 @@ destination: docs
 url: https://connordonegan.github.io/surveil/
 home:
   title: Public Health Surveillance
+reference:
+- title: "Package overview"
+- contents:
+  - surveil-package
+- title: "Time series models"
+  desc: Model-fitting function and methods
+- contents:
+  - stan_rw
+  - plot.surveil
+  - waic
+- title: "Rate adjustments"
+- contents:
+  - apc
+  - print.apc_ls
+  - standardize
+  - print.stand_surveil  
+- title: "Inequality"
+  desc: Functions and methods for measuring health inequalities
+- contents:
+  - group_diff
+  - matches("surveil_diff")  
+  - theil
+  - plot.theil
+- title: "Prior distributions"
+  desc: Functions to set parameters for prior distributions
+- contents:
+  - student_t
+- title: "Data"
+- contents:
+  - standard
+  - cancer
+  - msa
+

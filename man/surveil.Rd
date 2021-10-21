@@ -3,7 +3,7 @@
 \name{plot.surveil}
 \alias{plot.surveil}
 \alias{print.surveil}
-\title{Plot disease risk time trends}
+\title{Methods for fitted \code{surveil} models}
 \usage{
 \method{plot}{surveil}(
   x,
@@ -13,6 +13,8 @@
   base_size = 14,
   palette = "Dark2",
   M = 250,
+  alpha = 0.7,
+  lwd = 0.05,
   ...
 )
 
@@ -30,6 +32,10 @@
 \item{palette}{For multiple groups, choose the color palette. For a list of options, see \code{\link[ggplot2]{scale_color_brewer}}. The default is \code{palette = "Dark2"}.}
 
 \item{M}{If \code{style = "lines"}, then \code{M} is the number of samples from the posterior distribution that will be plotted; the default is \code{M = 250}.}
+
+\item{alpha}{For \code{style = "lines"}; numeric value from zero to one indicating transparency of lines. Passed to \code{\link[ggplot2]{geom_line}}}
+
+\item{lwd}{For \code{style = "lines"}; numeric value indicating linewidth. Passed to \code{\link[ggplot2]{geom_line}}}
 
 \item{...}{additional arguments passed to \code{\link[base]{print.data.frame}}}
 }

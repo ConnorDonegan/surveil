@@ -4,7 +4,7 @@
 #'
 #' @param x For the `apc` function, `x` may be a fitted `surviel` model, or standardized rates (a `stand_surveil` object). For print and plot methods, `x` is the `apc_ls` object returned by `apc`.
 #'
-#' @return A list of two data frames:
+#' @return An `apc_ls` (list) object containing two data frames:
 #' \describe{
 #'  \item{apc}{A data frame containing a summary of the posterior distribution for period-specific percent change. This contains the posterior mean (`apc`) 95 percent credible intervals (`lwr` and `upr` bounds).}
 #' \item{cpc}{A data frame containing a summary of the posterior distribution for the cumulative percent change in risk at each time period. This contains the posterior mean (`cpc`) and 95 percent credible interval (`lwr` and `upr` bounds).}
@@ -107,15 +107,16 @@ apc.stand_surveil <- function(x) {
     }
 
 
-
+#' Methods for APC objects
+#' @param x An `apc_ls` object returned by \code{\link[surveil]{apc}}
 #' @param digits Print this many digits (passed to \code{\link[base]{print.data.frame}})
 #' @param max Print this many rows
 #' @param ... additional arguments
 #' @details
 #' 
-#' ### print.apc_df
+#' ### print.apc_ls
 #'
-#' Any additional arguments (`...`) will be  passed to \code{\link[base]{print.data.frame}}
+#' Any additional arguments (`...`) to the print method will be  passed to \code{\link[base]{print.data.frame}}
 #' 
 #' @param max Maximum number of time periods (rows) to print 
 #' @importFrom scales comma
@@ -123,7 +124,7 @@ apc.stand_surveil <- function(x) {
 #' @method print apc_ls
 #' @export
 #' @md
-#' @rdname apc
+#' @rdname apc_ls
 print.apc_ls <- function(x, digits = 0, max = 10, ...) {    
     message("Summary of per-period and cumulative percent change")
     message("Time periods: ", length(unique(x$apc$time)))    
@@ -163,8 +164,9 @@ print.apc_ls <- function(x, digits = 0, max = 10, ...) {
 #' @md
 #' @import ggplot2
 #' @method plot apc_ls
-#' @rdname apc
+#' @rdname apc_ls
 #' @export
+#' 
 #' @details
 #' ### plot.apc_ls
 #' 

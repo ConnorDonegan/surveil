@@ -4,8 +4,6 @@
 \alias{apc}
 \alias{apc.surveil}
 \alias{apc.stand_surveil}
-\alias{print.apc_ls}
-\alias{plot.apc_ls}
 \title{Annual and cumulative percent change}
 \usage{
 apc(x)
@@ -13,43 +11,12 @@ apc(x)
 \method{apc}{surveil}(x)
 
 \method{apc}{stand_surveil}(x)
-
-\method{print}{apc_ls}(x, digits = 0, max = 10, ...)
-
-\method{plot}{apc_ls}(
-  x,
-  cumulative = FALSE,
-  col = "black",
-  fill = "black",
-  alpha = 0.5,
-  base_size = 14,
-  lwd = 1,
-  ...
-)
 }
 \arguments{
 \item{x}{For the \code{apc} function, \code{x} may be a fitted \code{surviel} model, or standardized rates (a \code{stand_surveil} object). For print and plot methods, \code{x} is the \code{apc_ls} object returned by \code{apc}.}
-
-\item{digits}{Print this many digits (passed to \code{\link[base]{print.data.frame}})}
-
-\item{max}{Maximum number of time periods (rows) to print}
-
-\item{...}{Additional arguments}
-
-\item{cumulative}{Plot cumulative percent change? Defaults to \code{cumulative = FALSE}}
-
-\item{col}{Line color}
-
-\item{fill}{Fill color for the 95 percent credible interval}
-
-\item{alpha}{Transparency (defaults to \code{alpha = 0.5}) for the credible interval (passed to \code{\link[ggplot2]{geom_ribbon}}).}
-
-\item{base_size}{Size of plot attributes, passed to `\code{\link[ggplot2]{theme_classic}}}
-
-\item{lwd}{Line width}
 }
 \value{
-A list of two data frames:
+An \code{apc_ls} (list) object containing two data frames:
 \describe{
 \item{apc}{A data frame containing a summary of the posterior distribution for period-specific percent change. This contains the posterior mean (\code{apc}) 95 percent credible intervals (\code{lwr} and \code{upr} bounds).}
 \item{cpc}{A data frame containing a summary of the posterior distribution for the cumulative percent change in risk at each time period. This contains the posterior mean (\code{cpc}) and 95 percent credible interval (\code{lwr} and \code{upr} bounds).}
@@ -57,17 +24,6 @@ A list of two data frames:
 }
 \description{
 Summarize annual and cumulative percent change in risk
-}
-\details{
-\subsection{print.apc_df}{
-
-Any additional arguments (\code{...}) will be  passed to \code{\link[base]{print.data.frame}}
-}
-
-\subsection{plot.apc_ls}{
-
-Any additional arguments (\code{...}) will be passed to \code{\link[ggplot2]{theme}}.
-}
 }
 \examples{
 data(cancer)
