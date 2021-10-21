@@ -25,6 +25,7 @@
 apc <- function(x) UseMethod("apc", x)
 
 #' @method apc surveil
+#' @importFrom tidyr pivot_longer
 #' @export
 #' @rdname apc
 apc.surveil <- function(x) {
@@ -39,13 +40,14 @@ apc.surveil <- function(x) {
     }
     apc_list <- list()
     cpc_list <- list()
+    s_apc_list <- list()
+    s_cpc_list <- list()
     for (g in 1:GG) {
         g.samples <- a.samples[,g,]
         res.s <- matrix(nrow = nrow(g.samples), ncol = ncol(g.samples) - 1)
         for (i in 2:ncol(g.samples)) {
             res.s[,i-1] <- 100 * (g.samples[,i] / g.samples[,i-1] - 1)
         }
-        cum.pc = apply(res.s, 1, cumsum)
         apc_summary <- data.frame(
             time = time_label[-1],
             group = group_label[g],
@@ -53,20 +55,46 @@ apc.surveil <- function(x) {
             lwr = apply(res.s, 2, quantile, probs = 0.025),
             upr = apply(res.s, 2, quantile, probs = 0.975)
         )
+        cum.pc = t(apply(res.s, 1, cumsum))
         cpc_summary <- data.frame(
             time = time_label[-1],
             group = group_label[g],
-            cpc = apply(cum.pc, 1, mean),
-            lwr = apply(cum.pc, 1, quantile, probs = 0.025),
-            upr = apply(cum.pc, 1, quantile, probs = 0.975)
+            cpc = apply(cum.pc, 2, mean),
+            lwr = apply(cum.pc, 2, quantile, probs = 0.025),
+            upr = apply(cum.pc, 2, quantile, probs = 0.975)
         )        
         apc_list[[g]] <- apc_summary
         cpc_list[[g]] <- cpc_summary
+
+        apc_samples<- as.data.frame(res.s)
+        names(apc_samples) <- time_label[-1]
+        apc_samples$.draw <- 1:nrow(apc_samples)
+        apc_samples$group <- group_label[g]
+        apc_samples <- tidyr::pivot_longer(apc_samples,
+                                  -c(.draw, group),
+                                  names_to = "time",
+                                  values_to = "value")
+        apc_samples$time <- as.numeric(apc_samples$time)
+        s_apc_list[[g]] <- apc_samples
+
+        cpc_samples<- as.data.frame(cum.pc)
+        names(cpc_samples) <- time_label[-1]
+        cpc_samples$.draw <- 1:nrow(cpc_samples)
+        cpc_samples$group <- group_label[g]
+        cpc_samples <- tidyr::pivot_longer(cpc_samples,
+                                  -c(.draw, group),
+                                  names_to = "time",
+                                  values_to = "value")
+        cpc_samples$time <- as.numeric(cpc_samples$time)        
+        s_cpc_list[[g]] <- cpc_samples
+
     }
     apc_df <- do.call("rbind", apc_list)
     cpc_df <- do.call("rbind", cpc_list)
+    apc_samples <- do.call("rbind", s_apc_list)
+    cpc_samples <- do.call("rbind", s_cpc_list)
     if (GG == 1) apc_df$group <- cpc_df$group <- NULL
-    res <- list(apc = apc_df, cpc = cpc_df)
+    res <- list(apc = apc_df, cpc = cpc_df, time = x$time$time.df, apc_samples = apc_samples, cpc_samples = cpc_samples)
     class(res) <- append("apc_ls", class(res))
     return (res)
 }
@@ -76,7 +104,7 @@ apc.surveil <- function(x) {
 #' @method apc stand_surveil
 #' @export
 apc.stand_surveil <- function(x) {
-    time_label <- x$data$time
+    time_label <- x$time$time.df$label
     s.wide <- tidyr::pivot_wider(x$standard_samples,
                                  id_cols = .data$.draw,
                                  names_from = .data$time_index,
@@ -88,20 +116,20 @@ apc.stand_surveil <- function(x) {
     for (i in 2:ncol(s.wide)) {
         res.s[,i-1] <- 100 * ((s.wide[,i] / s.wide[,i-1]) - 1)
     }    
-    cum.pc = apply(res.s, 1, cumsum)
     apc_summary <- data.frame(
         time = time_label[-1],
         apc = apply(res.s, 2, mean),
         lwr = apply(res.s, 2, quantile, probs = 0.025),
         upr = apply(res.s, 2, quantile, probs = 0.975)
     )
+    cum.pc = apply(res.s, 1, cumsum)
     cpc_summary <- data.frame(
         time = time_label[-1],
         cpc = apply(cum.pc, 1, mean),
         lwr = apply(cum.pc, 1, quantile, probs = 0.025),
         upr = apply(cum.pc, 1, quantile, probs = 0.975)
     )        
-    res <- list(apc = apc_summary, cpc = cpc_summary)
+    res <- list(apc = apc_summary, cpc = cpc_summary, time = x$time$time.df$label, samples = res.s)
     class(res) <- append("apc_ls", class(res))
     return (res)
     }
@@ -125,8 +153,8 @@ apc.stand_surveil <- function(x) {
 #' @export
 #' @md
 #' @rdname apc_ls
-print.apc_ls <- function(x, digits = 0, max = 10, ...) {    
-    message("Summary of per-period and cumulative percent change")
+print.apc_ls <- function(x, digits = 1, max = 10, ...) {    
+    message("Summary of cumulative and per-period percent change")
     message("Time periods: ", length(unique(x$apc$time)))    
     GG <- length(unique(x$apc$group))
     if (GG > 1) {
@@ -141,7 +169,7 @@ print.apc_ls <- function(x, digits = 0, max = 10, ...) {
                                        values_from = .data$cpc
                                     )
         message("Cumulative percent change:")
-        print.data.frame(x$cpc[nrow(x$cpc), -which(names(x$cpc) == "time")], digits = digits, row.names = FALSE, ...)
+        print.data.frame(x$cpc[nrow(x$cpc), -which(names(x$cpc) == "time")], digits = digits, row.names = FALSE, ...)        
         message("\nPeriod percent change")
         print.data.frame(x$apc, digits = digits, max = max * ncol(x$apc), row.names = FALSE, ...)        
     } else {
@@ -155,9 +183,12 @@ print.apc_ls <- function(x, digits = 0, max = 10, ...) {
 }
 
 #' @param cumulative Plot cumulative percent change? Defaults to `cumulative = FALSE`
+#' @param style If `style = "mean_qi"`, then the posterior mean and 95 percent credible interval will be plotted; if `style = "lines"`, then `M` samples from the joint probability distribution of the annual rates will be plotted.
+#' @param M If `style = "lines"`, then `M` is the number of samples from the posterior distribution that will be plotted; the default is `M = 250`.
 #' @param col Line color
 #' @param fill Fill color for the 95 percent credible interval
-#' @param alpha Transparency (defaults to `alpha = 0.5`) for the credible interval (passed to \code{\link[ggplot2]{geom_ribbon}}).
+#' @param alpha For `style = "mean_qi"`, this controls the transparency for the credible interval (passed to \code{\link[ggplot2]{geom_ribbon}}) and defaults to `alpha = 0.5`; for `style = "lines"`, this controls the transparency of the lines and defaults to `alpha = 0.7`.
+#' @param lwd Line width; for `style = "mean_qi"`, the default is `lwd = 1`; for `style = "lines"`, the default is `lwd = 0.05`.
 #' @param base_size Size of plot attributes, passed to `\code{\link[ggplot2]{theme_classic}}
 #' @param lwd Line width
 #' @param ... Additional arguments
@@ -174,14 +205,46 @@ print.apc_ls <- function(x, digits = 0, max = 10, ...) {
 #' 
 plot.apc_ls <- function(x,
                         cumulative = FALSE,
+                        style = c("mean_qi", "lines"),
+                        M = 250,                        
                         col = 'black',
                         fill = 'black',
-                        alpha = 0.5,
+                        alpha = ifelse(style == "mean_qi", 0.5, 0.7),
+                        lwd = ifelse(style == "mean_qi", 1, 0.05),                    
                         base_size = 14,
-                        lwd = 1,
                         ...
                         ) {
+    style <- match.arg(style, c("mean_qi", "lines"))
     ylab <- ifelse(cumulative, "Cumulative % Change", "APC")
+    if (style == "lines") {
+        if (cumulative) {
+            s_df <- x$cpc_samples
+        } else {
+            s_df <- x$apc_samples
+        }
+        s_df <- dplyr::filter(s_df, .draw %in% sample(max(.data$.draw), size = M))
+        if (length(unique(s_df$group)) > 1) s_df$group <- factor(s_df$group, ordered = TRUE, levels = unique(s_df$group))
+        gg <- ggplot(s_df, aes(.data$time, .data$value,
+                               group = factor(.data$.draw))
+                     ) +
+            geom_line(col = col,
+                      alpha = alpha,
+                      lwd = lwd) +
+            scale_x_continuous(
+                breaks = x$time$time.df$time.index,
+                labels = x$time$time.df$label,
+                name = NULL
+            ) +
+            geom_hline(yintercept = 0) +
+            scale_y_continuous(name = ylab) +    
+            theme_classic(base_size) +
+            theme(...)
+        if (length(unique(s_df$group)) > 1) {
+            gg <- gg +
+                facet_wrap(~ group, scale = "free" )
+        }
+        return (gg)
+    }
     if (length(unique(x$apc$group)) > 1) {
         x$apc <- dplyr::mutate(x$apc,
                                    group = factor(group,
@@ -215,8 +278,10 @@ plot.apc_ls <- function(x,
     }
     gg <- gg +
         geom_hline(yintercept = 0) +
-        geom_ribbon(alpha = alpha, fill = fill) +    
-        geom_line(col = col, lwd = lwd) +
+        geom_ribbon(alpha = alpha,
+                    fill = fill) +    
+        geom_line(col = col,
+                  lwd = lwd) +
         theme_classic(base_size = base_size)
     if (length(unique(x$apc$group)) > 1) {
         gg <- gg + facet_wrap(~ .data$group)

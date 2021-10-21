@@ -7,7 +7,18 @@
 \usage{
 \method{print}{stand_surveil}(x, scale = 1, digits = 3, ...)
 
-\method{plot}{stand_surveil}(x, scale = 1, base_size = 14, col = "black", fill = "gray80", ...)
+\method{plot}{stand_surveil}(
+  x,
+  scale = 1,
+  style = c("mean_qi", "lines"),
+  M = 250,
+  base_size = 14,
+  col = "black",
+  fill = "gray80",
+  alpha = 0.7,
+  lwd = 0.05,
+  ...
+)
 }
 \arguments{
 \item{x}{An object of \code{stand_surveil} obtained by calling \code{\link[surveil]{standardize}} on a fitted \code{surveil} model}
@@ -17,6 +28,10 @@
 \item{digits}{Number of digits to print}
 
 \item{...}{additional arguments}
+
+\item{style}{If \code{style = "mean_qi"}, then the posterior means and 95 percent credible intervals will be plotted; if \code{style = "lines"}, then \code{M} samples from the joint posterior distribution will be plotted.}
+
+\item{M}{Number of samples to plot when \code{style = "lines"}}
 
 \item{base_size}{Passed to \code{theme_classic()} to control size of plot components (text).}
 

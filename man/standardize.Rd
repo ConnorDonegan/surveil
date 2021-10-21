@@ -37,3 +37,6 @@ print(stands)
 plot(stands)
 }
 }
+\seealso{
+\code{\link[surveil]{stan_rw}}  \code{\link[surveil]{plot.stand_surveil}} \code{\link[surveil]{print.stand_surveil}}
+}

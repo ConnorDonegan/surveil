@@ -101,7 +101,7 @@ theil2 <- function(Count, Population, rates, total = TRUE) {
 #' @method theil surveil
 #' @export
 theil.surveil <- function(x) {
-    if (inherits(x$group, "NULL")) stop("There is no grouping variable stored in x$group but the purpose of Theil's T is to measure inequality across group.")
+    if (inherits(x$group, "NULL")) stop("There is no grouping variable stored in the model (x$group); the purpose of Theil's T is to measure inequality across group.")
     rate <- group.index <- time.index <- NULL # global binding
     group.df <- x$group$group.df
     group.df$group.index <- as.integer(group.df$group.index)

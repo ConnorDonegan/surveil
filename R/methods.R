@@ -26,6 +26,7 @@
 #' @param x A fitted `surveil` model
 #' @param base_size Passed to `theme_classic()` to control size of plot components (text).
 #' @param scale Scale the rates by this amount; e.g., `scale = 100e3` will print rates per 100,000 at risk.
+#' @param style If `style = "mean_qi"`, then the posterior mean and 95 percent credible interval will be plotted; if `style = "lines"`, then `M` samples from the joint probability distribution of the annual rates will be plotted.
 #' @param facet Logical value to indicate how groups are differentiated. If \code{facet = TRUE}, \code{\link[ggplot2]{facet_wrap}} will be used instead of differentiating by line color.
 #' @param palette For multiple groups, choose the color palette. For a list of options, see \code{\link[ggplot2]{scale_color_brewer}}. The default is `palette = "Dark2"`.
 #' @param M If `style = "lines"`, then `M` is the number of samples from the posterior distribution that will be plotted; the default is `M = 250`.
@@ -116,69 +117,36 @@ plot_mean_qi <- function(x, scale, facet, base_size, palette, M, ...) {
 #' @noRd
 plot_lines <- function(x, scale, facet, base_size, palette, M, alpha, lwd, ...) {
     eta <- rstan::extract(x$samples, pars = "rate")$rate
-        K <- dim(eta)[2]
-        TT <- dim(eta)[3]
-        n_samples <- dim(eta)[1]
-        draw_id_start <- 1
-        draw_id_end <- M
-        list_df <- list()
-        for (j in 1:K) {    
-            Sj <- eta[sample(n_samples, M),j,]
-            Sj <- Sj %>%
-                as.data.frame() %>% 
-                tidyr::pivot_longer(
-                           everything(),        
-                           names_to = "time.index",
-                           values_to = "rate"
-                       ) %>%
-                dplyr::mutate(group.index = j,
-                              time.index = as.numeric(gsub("[A-z]", "", .data$time.index)),
-                              draw = rep(draw_id_start:draw_id_end, each = TT)
-                              )
-            list_df[[j]] <- Sj    
-            draw_id_start <- draw_id_end + 1
-            draw_id_end <- M * (j + 1)
-        }
-        s_df <- do.call("rbind", list_df)
-        if (scale != 1) message("Plotted rates are per ", scales::comma(scale))
-        s_df$rate <- s_df$rate * scale
-        if (K == 1) {
-            gg <- ggplot(s_df, aes(.data$time.index, .data$rate,
-                                   group = factor(.data$draw))
-                         ) +
-                facet_wrap(~ .data$label, scale = "free" ) +
-                geom_line(alpha = alpha, lwd = lwd) +
-                scale_x_continuous(
-                    breaks = x$time$time.df$time.index,
-                    labels = x$time$time.df$label,
-                    name = NULL
-                ) +
-                scale_y_continuous(name = NULL) +    
-                theme_classic() +
-                theme(...)
-            return (gg)
-        }        
-        s_df <- dplyr::left_join(s_df, x$group$group.df, by = "group.index")
-        s_df$label <- factor(s_df$label, ordered = TRUE, levels = unique(s_df$label))
-        if (facet) {            
-            gg <- ggplot(s_df, aes(.data$time.index, .data$rate,
-                                   group = factor(draw))
-                         ) +
-                geom_line(alpha = alpha, lwd = lwd) +
-            scale_x_continuous(
-                breaks = x$time$time.df$time.index,
-                labels = x$time$time.df$label,
-                name = NULL
-            ) +
-                scale_y_continuous(name = NULL) +    
-                theme_classic() +
-                theme(...) +
-                facet_wrap(~ label, scale = "free" )
-            return(gg)
-        }        
+    K <- dim(eta)[2]
+    TT <- dim(eta)[3]
+    n_samples <- dim(eta)[1]
+    draw_id_start <- 1
+    draw_id_end <- M
+    list_df <- list()
+    for (j in 1:K) {    
+        Sj <- eta[sample(n_samples, M),j,]
+        Sj <- Sj %>%
+            as.data.frame() %>% 
+            tidyr::pivot_longer(
+                       everything(),        
+                       names_to = "time.index",
+                       values_to = "rate"
+                   ) %>%
+            dplyr::mutate(group.index = j,
+                          time.index = as.numeric(gsub("[A-z]", "", .data$time.index)),
+                          draw = rep(draw_id_start:draw_id_end, each = TT)
+                          )
+        list_df[[j]] <- Sj    
+        draw_id_start <- draw_id_end + 1
+        draw_id_end <- M * (j + 1)
+    }
+    s_df <- do.call("rbind", list_df)
+    if (scale != 1) message("Plotted rates are per ", scales::comma(scale))
+    s_df$rate <- s_df$rate * scale
+    if (K == 1) {
         gg <- ggplot(s_df, aes(.data$time.index, .data$rate,
-                               group = factor(.data$draw),
-                               col = .data$label)) +
+                               group = factor(.data$draw))
+                     ) +
             geom_line(alpha = alpha, lwd = lwd) +
             scale_x_continuous(
                 breaks = x$time$time.df$time.index,
@@ -187,16 +155,48 @@ plot_lines <- function(x, scale, facet, base_size, palette, M, alpha, lwd, ...) 
             ) +
             scale_y_continuous(name = NULL) +    
             theme_classic() +
-            guides(color = guide_legend(override.aes = list(size = 2))) +
-            theme(legend.position = "bottom",
-                  ...)
-        if (K < 8) {
-            gg <- gg +
-                scale_color_brewer(palette = palette,
-                                   name = NULL)
-        } else {
-            warning("You have too many groups to use scale_color_brewer palettes; you may want to use facet = TRUE")
-        }
+            theme(...)
+        return (gg)
+    }        
+    s_df <- dplyr::left_join(s_df, x$group$group.df, by = "group.index")
+    s_df$label <- factor(s_df$label, ordered = TRUE, levels = unique(s_df$label))
+    if (facet) {            
+        gg <- ggplot(s_df, aes(.data$time.index, .data$rate,
+                               group = factor(.data$draw))
+                         ) +
+            geom_line(alpha = alpha, lwd = lwd) +
+            scale_x_continuous(
+                breaks = x$time$time.df$time.index,
+                labels = x$time$time.df$label,
+                name = NULL
+            ) +
+            scale_y_continuous(name = NULL) +    
+            theme_classic() +
+            theme(...) +
+            facet_wrap(~ label, scale = "free" )
+        return(gg)
+    }        
+    gg <- ggplot(s_df, aes(.data$time.index, .data$rate,
+                           group = factor(.data$draw),
+                           col = .data$label)) +
+        geom_line(alpha = alpha, lwd = lwd) +
+        scale_x_continuous(
+            breaks = x$time$time.df$time.index,
+            labels = x$time$time.df$label,
+            name = NULL
+            ) +
+        scale_y_continuous(name = NULL) +    
+        theme_classic() +
+        guides(color = guide_legend(override.aes = list(size = 2))) +
+        theme(legend.position = "bottom",
+              ...)
+    if (K < 8) {
+        gg <- gg +
+            scale_color_brewer(palette = palette,
+                               name = NULL)
+    } else {
+        warning("You have too many groups to use scale_color_brewer palettes; you may want to use facet = TRUE")
+    }
         return (gg)
 }
 
@@ -256,6 +256,7 @@ print.surveil <- function(x, scale = 1, ...) {
 #' print(stands)
 #' plot(stands)
 #' }
+#' @seealso \code{\link[surveil]{stan_rw}}  \code{\link[surveil]{plot.stand_surveil}} \code{\link[surveil]{print.stand_surveil}} 
 #' @md
 #' @export
 #' @importFrom dplyr `%>%` left_join select group_by summarise
@@ -327,7 +328,8 @@ print.stand_surveil <- function(x, scale = 1, digits = 3, ...) {
 }
 
 
-#' 
+#' @param style If `style = "mean_qi"`, then the posterior means and 95 percent credible intervals will be plotted; if `style = "lines"`, then `M` samples from the joint posterior distribution will be plotted.
+#' @param M Number of samples to plot when `style = "lines"`
 #' @param base_size Passed to `theme_classic()` to control size of plot components (text).
 #' @param col Line color
 #' @param fill Fill color for the 95 percent credible intervals
@@ -346,24 +348,58 @@ print.stand_surveil <- function(x, scale = 1, digits = 3, ...) {
 #' @rdname stand_surveil
 #' @method plot stand_surveil
 #' 
-plot.stand_surveil <- function(x, scale = 1, base_size = 14, col = 'black', fill = 'gray80', ...) {
+plot.stand_surveil <- function(x,
+                               scale = 1,
+                               style = c("mean_qi", "lines"),
+                               M = 250,
+                               base_size = 14,
+                               col = 'black',
+                               fill = 'gray80',
+                               alpha = 0.7,
+                               lwd = 0.05,
+                               ...) {
+    style <- match.arg(style, c("mean_qi", "lines"))
     if (scale != 1) message("Plotted rates are per ", scales::comma(scale))
-    ggplot(x$standard_summary) +
-        geom_ribbon(aes(.data$time_label,
-                        ymin = scale * .data$.lower,
-                        ymax = scale * .data$.upper
-                        ),
-                    alpha = 0.5,
-                    fill = fill,
-                    col = fill,
+    if (style == "mean_qi") {
+        gg <- ggplot(x$standard_summary) +
+            geom_ribbon(aes(.data$time_label,
+                            ymin = scale * .data$.lower,
+                            ymax = scale * .data$.upper
+                            ),
+                        alpha = 0.5,
+                        fill = fill,
+                        col = fill,
                     lwd = 0
                     ) +
-        geom_line(aes(.data$time_label, scale * .data$stand_rate),
-                  col = col) +
-        scale_x_continuous(name = NULL) +
-        scale_y_continuous(name = NULL) +
-        theme_classic(base_size = base_size) +
-        theme(...)
+            geom_line(aes(.data$time_label, scale * .data$stand_rate),
+                      col = col) +
+            scale_x_continuous(name = NULL) +
+            scale_y_continuous(name = NULL) +
+            theme_classic(base_size = base_size) +
+            theme(...)
+        return (gg)
+    }
+    if (style == "lines") {
+        df <- x$standard_samples
+        df <- dplyr::filter(df, .data$.draw <= M)
+        TT <- max(df$time_index)        
+        df$draw <- rep(1:M, each = TT)
+        df$stand_rate * scale
+        gg <- ggplot(df, aes(.data$time_index, .data$stand_rate,
+                             group = factor(.data$draw))
+                     ) +
+            geom_line(alpha = alpha,
+                      lwd = lwd) +
+            scale_x_continuous(
+                breaks = x$time$time.df$time.index,
+                labels = x$time$time.df$label,
+                name = NULL
+            ) +
+            scale_y_continuous(name = NULL) +    
+            theme_classic() +
+            theme(...)
+        return (gg)
+    }
 }
 
 
