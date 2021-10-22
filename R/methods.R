@@ -57,6 +57,7 @@ plot.surveil <- function(x,
 
 #' @import ggplot2
 #' @importFrom rlang parse_expr
+#' @importFrom stats as.formula
 plot_mean_qi <- function(x, scale, facet, base_size, palette, M, ...) {
     if (!inherits(x$group, "list")) {
         gg <- ggplot(x$summary)
@@ -65,9 +66,9 @@ plot_mean_qi <- function(x, scale, facet, base_size, palette, M, ...) {
         x$summary <- dplyr::mutate(x$summary,
                                    group = factor({{ group }}, levels = unique({{ group }}), ordered = TRUE))
         if (facet) {
-            gform <- as.formula(paste0("~ ", x$group$group))
+            gform <- stats::as.formula(paste0("~ ", x$group$group))
                 gg <- ggplot(x$summary) +
-                    facet_wrap(gform, scale = "free" )
+                    facet_wrap(gform, scales = "free" )
             } else {            
                 gg <- ggplot(x$summary,
                              aes(group = {{ group }},
@@ -112,7 +113,7 @@ plot_mean_qi <- function(x, scale, facet, base_size, palette, M, ...) {
 #' @importFrom scales comma
 #' @importFrom rstan extract
 #' @importFrom dplyr %>% mutate left_join
-#' @importFrom tidyr pivot_longer
+#' @importFrom tidyr pivot_longer everything
 #' @import ggplot2
 #' @noRd
 plot_lines <- function(x, scale, facet, base_size, palette, M, alpha, lwd, ...) {
@@ -128,7 +129,7 @@ plot_lines <- function(x, scale, facet, base_size, palette, M, alpha, lwd, ...) 
         Sj <- Sj %>%
             as.data.frame() %>% 
             tidyr::pivot_longer(
-                       everything(),        
+                       tidyr::everything(),        
                        names_to = "time.index",
                        values_to = "rate"
                    ) %>%
@@ -173,7 +174,7 @@ plot_lines <- function(x, scale, facet, base_size, palette, M, alpha, lwd, ...) 
             scale_y_continuous(name = NULL) +    
             theme_classic() +
             theme(...) +
-            facet_wrap(~ label, scale = "free" )
+            facet_wrap(~ label, scales = "free" )
         return(gg)
     }        
     gg <- ggplot(s_df, aes(.data$time.index, .data$rate,
@@ -333,7 +334,8 @@ print.stand_surveil <- function(x, scale = 1, digits = 3, ...) {
 #' @param base_size Passed to `theme_classic()` to control size of plot components (text).
 #' @param col Line color
 #' @param fill Fill color for the 95 percent credible intervals
-#'
+#' @param alpha For `style = "mean_qi"`, this controls the transparency for the credible interval (passed to \code{\link[ggplot2]{geom_ribbon}}) and defaults to `alpha = 0.5`; for `style = "lines"`, this controls the transparency of the lines and defaults to `alpha = 0.7`.
+#' @param lwd Line width; for `style = "mean_qi"`, the default is `lwd = 1`; for `style = "lines"`, the default is `lwd = 0.05`.
 #' @details
 #' 
 #' ### plot.stand_surveil
@@ -355,8 +357,8 @@ plot.stand_surveil <- function(x,
                                base_size = 14,
                                col = 'black',
                                fill = 'gray80',
-                               alpha = 0.7,
-                               lwd = 0.05,
+                               alpha = ifelse(style == "mean_qi", 0.5, 0.7),
+                               lwd = ifelse(style == "mean_qi", 1, 0.05),       
                                ...) {
     style <- match.arg(style, c("mean_qi", "lines"))
     if (scale != 1) message("Plotted rates are per ", scales::comma(scale))
@@ -388,7 +390,8 @@ plot.stand_surveil <- function(x,
         gg <- ggplot(df, aes(.data$time_index, .data$stand_rate,
                              group = factor(.data$draw))
                      ) +
-            geom_line(alpha = alpha,
+            geom_line(col = col,
+                      alpha = alpha,
                       lwd = lwd) +
             scale_x_continuous(
                 breaks = x$time$time.df$time.index,

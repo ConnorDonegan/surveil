@@ -15,8 +15,8 @@
   base_size = 14,
   col = "black",
   fill = "gray80",
-  alpha = 0.7,
-  lwd = 0.05,
+  alpha = ifelse(style == "mean_qi", 0.5, 0.7),
+  lwd = ifelse(style == "mean_qi", 1, 0.05),
   ...
 )
 }
@@ -38,6 +38,10 @@
 \item{col}{Line color}
 
 \item{fill}{Fill color for the 95 percent credible intervals}
+
+\item{alpha}{For \code{style = "mean_qi"}, this controls the transparency for the credible interval (passed to \code{\link[ggplot2]{geom_ribbon}}) and defaults to \code{alpha = 0.5}; for \code{style = "lines"}, this controls the transparency of the lines and defaults to \code{alpha = 0.7}.}
+
+\item{lwd}{Line width; for \code{style = "mean_qi"}, the default is \code{lwd = 1}; for \code{style = "lines"}, the default is \code{lwd = 0.05}.}
 }
 \description{
 Print and plot methods for \code{stand_surveil} (standardized rates obtained from a fitted \code{surveil} model)

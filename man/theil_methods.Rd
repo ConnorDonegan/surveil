@@ -9,9 +9,12 @@
 \usage{
 \method{plot}{theil}(
   x,
+  style = c("mean_qi", "lines"),
+  M = 250,
   col = "black",
-  fill = "gray80",
-  alpha = 0.5,
+  fill = "black",
+  alpha = ifelse(style == "mean_qi", 0.5, 0.7),
+  lwd = ifelse(style == "mean_qi", 1, 0.05),
   base_size = 14,
   scale = 100,
   labels = x$summary$time,
@@ -20,9 +23,12 @@
 
 \method{plot}{theil_list}(
   x,
+  style = c("mean_qi", "lines"),
+  M = 250,
   col = "black",
   fill = "black",
-  alpha = 0.25,
+  alpha = ifelse(style == "mean_qi", 0.5, 0.7),
+  lwd = ifelse(style == "mean_qi", 1, 0.05),
   between_title = "Between",
   within_title = "Within",
   total_title = "Total",
@@ -39,11 +45,17 @@
 \arguments{
 \item{x}{An object of class \verb{thiel' or }theil_list\verb{, as returned by calling }theil\verb{on a list of fitted}surveil` models}
 
+\item{style}{If \code{style = "mean_qi"}, then the posterior mean and 95 percent credible interval will be plotted; if \code{style = "lines"}, then \code{M} samples from the joint probability distribution will be plotted.}
+
+\item{M}{If \code{style = "lines"}, then \code{M} is the number of samples from the posterior distribution that will be plotted; the default is \code{M = 250}.}
+
 \item{col}{Line color}
 
 \item{fill}{Fill color}
 
-\item{alpha}{Transparency of credible interval fill color}
+\item{alpha}{For \code{style = "mean_qi"}, this controls the transparency for the credible interval (passed to \code{\link[ggplot2]{geom_ribbon}}) and defaults to \code{alpha = 0.5}; for \code{style = "lines"}, this controls the transparency of the lines and defaults to \code{alpha = 0.7}.}
+
+\item{lwd}{Line width; for \code{style = "mean_qi"}, the default is \code{lwd = 1}; for \code{style = "lines"}, the default is \code{lwd = 0.05}.}
 
 \item{base_size}{Passed to \code{theme_classic} to control size of plot elements (e.g., text)}
 
@@ -59,7 +71,7 @@
 
 \item{total_title}{Plot title for Theil's index; defaults to "Total".}
 
-\item{plot}{If \code{FALSE}, return a list of \code{ggplot}s.}
+\item{plot}{If \code{FALSE}, return a list of \code{ggplot}s. Not used when \code{style = "lines"}.}
 
 \item{digits}{number of digits to print (passed to \code{\link[base]{print.data.frame}})}
 }

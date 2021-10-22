@@ -240,11 +240,14 @@ make_cases <- function(x) {
 #' @export
 #' @md
 #' @param x An object of class `thiel' or `theil_list`, as returned by calling `theil` on a list of fitted `surveil` models
+#' @param style If `style = "mean_qi"`, then the posterior mean and 95 percent credible interval will be plotted; if `style = "lines"`, then `M` samples from the joint probability distribution will be plotted.
+#' @param M If `style = "lines"`, then `M` is the number of samples from the posterior distribution that will be plotted; the default is `M = 250`.
+#' @param alpha For `style = "mean_qi"`, this controls the transparency for the credible interval (passed to \code{\link[ggplot2]{geom_ribbon}}) and defaults to `alpha = 0.5`; for `style = "lines"`, this controls the transparency of the lines and defaults to `alpha = 0.7`.
+#' @param lwd Line width; for `style = "mean_qi"`, the default is `lwd = 1`; for `style = "lines"`, the default is `lwd = 0.05`.
 #' @param scale Scale Theil's index by `scale`
 #' @param digits number of digits to print (passed to \code{\link[base]{print.data.frame}})
 #' @param fill Fill color
 #' @param col Line color
-#' @param alpha Transparency of credible interval fill color
 #' @param labels x-axis labels (time periods)
 #' @param base_size Passed to `theme_classic` to control size of plot elements (e.g., text)
 #' @param ... additional arguments
@@ -258,7 +261,39 @@ make_cases <- function(x) {
 #' @method plot theil
 #' @import ggplot2
 #' @rdname theil_methods
-plot.theil <- function(x, col = "black", fill = "gray80", alpha = 0.5, base_size = 14, scale = 100, labels = x$summary$time, ...) {
+plot.theil <- function(x,
+                       style = c("mean_qi", "lines"),
+                       M = 250,                      
+                       col = "black",
+                       fill = "black",
+                       alpha = ifelse(style == "mean_qi", 0.5, 0.7),
+                       lwd = ifelse(style == "mean_qi", 1, 0.05),                
+                       base_size = 14,
+                       scale = 100,
+                       labels = x$summary$time,
+                       ...) {
+    style <- match.arg(style, c("mean_qi", "lines"))
+    if (style == "lines") {
+        s_df <- x$samples
+        max_M <- max(s_df$.draw)
+        M <- min(M, max_M)
+        idx <- which(s_df$.draw %in% sample(max_M, M))
+        s_df <- s_df[idx,]
+        gg <- ggplot(s_df, aes(.data$time, .data$Theil,
+                         group = .data$.draw
+                         )
+               ) +
+            geom_line(alpha = alpha,
+                      lwd = lwd,
+                      col = col) +
+            scale_x_continuous(
+                name = NULL
+            ) +
+            scale_y_continuous(name = NULL) +    
+            theme_classic() +
+            theme(...)
+        return (gg)
+    }
     ggplot(x$summary) +
         geom_ribbon(
             aes(.data$time,
@@ -280,7 +315,7 @@ plot.theil <- function(x, col = "black", fill = "gray80", alpha = 0.5, base_size
 }
 
 
-#' @param plot If `FALSE`, return a list of `ggplot`s.
+#' @param plot If `FALSE`, return a list of `ggplot`s. Not used when `style = "lines"`.
 #' @param between_title Plot title for the between geography component of Theil's T; defaults to "Between".
 #' @param within_title Plot title for the within geography component of Theil's T; defaults to "Within".
 #' @param total_title Plot title for Theil's index; defaults to "Total".
@@ -288,16 +323,20 @@ plot.theil <- function(x, col = "black", fill = "gray80", alpha = 0.5, base_size
 #' @method plot theil_list
 #' @import ggplot2
 #' @importFrom ggdist mean_qi
-#' @importFrom dplyr `%>%` group_by mutate summarise 
+#' @importFrom dplyr `%>%` group_by mutate summarise filter
+#' @importFrom tidyr pivot_longer
 #' @importFrom gridExtra grid.arrange
 #' @seealso \code{\link[surveil]{theil}}
 #' @export
 #' @rdname theil_methods
 #' @md
 plot.theil_list <- function(x,
+                            style = c("mean_qi", "lines"),
+                            M = 250,
                             col = "black",
                             fill = "black",
-                            alpha = 0.25,
+                            alpha = ifelse(style == "mean_qi", 0.5, 0.7),
+                            lwd = ifelse(style == "mean_qi", 1, 0.05),                    
                             between_title = "Between",
                             within_title = "Within",
                             total_title = "Total",
@@ -306,10 +345,35 @@ plot.theil_list <- function(x,
                             base_size = 14,
                             ...) {
     if (scale != 1) message("y-axis scale is T times ", scale)
+    style <- match.arg(style, c("mean_qi", "lines"))
+    if (style == "lines") {
+        s_df <- x$samples
+        s_df <- dplyr::filter(s_df, .data$.draw %in% sample(max(.data$.draw), size = M))
+        s_df <- tidyr::pivot_longer(s_df,
+                                    -c(.data$time, .data$.draw),
+                                    names_to = "component",
+                                    values_to = "value"
+                                    )
+        s_df$component <- gsub("Theil_within", "Within", s_df$component)
+        s_df$component <- gsub("Theil_between", "Between", s_df$component)
+        s_df$component <- gsub("Theil", "Total", s_df$component)
+        s_df$component <- factor(s_df$component, ordered = TRUE, levels = c("Within", "Between", "Total"))                                   
+        gg <- ggplot(s_df, aes(.data$time, .data$value * scale,
+                               group = factor(.data$.draw))
+                     ) +
+            geom_line(alpha = alpha,
+                      lwd = lwd,
+                      col = col) +
+            scale_x_continuous(name = NULL) +
+            scale_y_continuous(name = NULL) +    
+            theme_classic(base_size = base_size) +
+            facet_wrap(~ component ) +
+            theme(...)    
+        return(gg)
+    }    
     max.val <- x$summary %>%
         dplyr::summarise(max.val = max(.data$Theil.upper))
     max.val <- as.numeric(max.val$max.val) * scale
-    print(max.val)
     ## between geography inequality
     g1 <- ggplot(x$summary,
                  aes(x = .data$time,                     
@@ -317,7 +381,8 @@ plot.theil_list <- function(x,
                      ymin = .data$Theil_between.lower * scale,
                      ymax = .data$Theil_between.upper * scale)
                      ) +
-        geom_line(col = col) +
+        geom_line(col = col,
+                  lwd = lwd) +
         geom_ribbon(alpha = alpha,
                     fill = fill
                     ) +
@@ -330,7 +395,8 @@ plot.theil_list <- function(x,
     g2 <- ggplot(x$summary,
                  aes(.data$time,
                      .data$Theil_within * scale)) +
-        geom_line(col = col) +
+        geom_line(col = col,
+                  lwd = lwd) +
         geom_ribbon(aes(ymin = .data$Theil_within.lower * scale,
                         ymax = .data$Theil_within.upper * scale),
                     alpha = alpha,
@@ -347,7 +413,8 @@ plot.theil_list <- function(x,
     g3 <- ggplot(x$summary,
                  aes(.data$time,
                      .data$Theil * scale)) +
-        geom_line(col = col) +
+        geom_line(col = col,
+                  lwd = lwd) +
         geom_ribbon(aes(ymin = .data$Theil.lower * scale,
                         ymax = .data$Theil.upper * scale),
                     alpha = alpha,

@@ -31,7 +31,7 @@
 
 \item{cumulative}{Plot cumulative percent change? Defaults to \code{cumulative = FALSE}}
 
-\item{style}{If \code{style = "mean_qi"}, then the posterior mean and 95 percent credible interval will be plotted; if \code{style = "lines"}, then \code{M} samples from the joint probability distribution of the annual rates will be plotted.}
+\item{style}{If \code{style = "mean_qi"}, then the posterior mean and 95 percent credible interval will be plotted; if \code{style = "lines"}, then \code{M} samples from the joint probability distribution will be plotted.}
 
 \item{M}{If \code{style = "lines"}, then \code{M} is the number of samples from the posterior distribution that will be plotted; the default is \code{M = 250}.}
 

@@ -71,7 +71,7 @@ apc.surveil <- function(x) {
         apc_samples$.draw <- 1:nrow(apc_samples)
         apc_samples$group <- group_label[g]
         apc_samples <- tidyr::pivot_longer(apc_samples,
-                                  -c(.draw, group),
+                                  -c(.data$.draw, .data$group),
                                   names_to = "time",
                                   values_to = "value")
         apc_samples$time <- as.numeric(apc_samples$time)
@@ -82,7 +82,7 @@ apc.surveil <- function(x) {
         cpc_samples$.draw <- 1:nrow(cpc_samples)
         cpc_samples$group <- group_label[g]
         cpc_samples <- tidyr::pivot_longer(cpc_samples,
-                                  -c(.draw, group),
+                                  -c(.data$.draw, .data$group),
                                   names_to = "time",
                                   values_to = "value")
         cpc_samples$time <- as.numeric(cpc_samples$time)        
@@ -183,7 +183,7 @@ print.apc_ls <- function(x, digits = 1, max = 10, ...) {
 }
 
 #' @param cumulative Plot cumulative percent change? Defaults to `cumulative = FALSE`
-#' @param style If `style = "mean_qi"`, then the posterior mean and 95 percent credible interval will be plotted; if `style = "lines"`, then `M` samples from the joint probability distribution of the annual rates will be plotted.
+#' @param style If `style = "mean_qi"`, then the posterior mean and 95 percent credible interval will be plotted; if `style = "lines"`, then `M` samples from the joint probability distribution will be plotted.
 #' @param M If `style = "lines"`, then `M` is the number of samples from the posterior distribution that will be plotted; the default is `M = 250`.
 #' @param col Line color
 #' @param fill Fill color for the 95 percent credible interval
@@ -222,7 +222,7 @@ plot.apc_ls <- function(x,
         } else {
             s_df <- x$apc_samples
         }
-        s_df <- dplyr::filter(s_df, .draw %in% sample(max(.data$.draw), size = M))
+        s_df <- dplyr::filter(s_df, .data$.draw %in% sample(max(.data$.draw), size = M))
         if (length(unique(s_df$group)) > 1) s_df$group <- factor(s_df$group, ordered = TRUE, levels = unique(s_df$group))
         gg <- ggplot(s_df, aes(.data$time, .data$value,
                                group = factor(.data$.draw))
@@ -237,25 +237,17 @@ plot.apc_ls <- function(x,
             ) +
             geom_hline(yintercept = 0) +
             scale_y_continuous(name = ylab) +    
-            theme_classic(base_size) +
+            theme_classic(base_size = base_size) +
             theme(...)
         if (length(unique(s_df$group)) > 1) {
             gg <- gg +
-                facet_wrap(~ group, scale = "free" )
+                facet_wrap(~ .data$group )
         }
         return (gg)
     }
     if (length(unique(x$apc$group)) > 1) {
-        x$apc <- dplyr::mutate(x$apc,
-                                   group = factor(group,
-                                                  levels = unique(group),
-                                                  ordered = TRUE)
-                               )
-        x$cpc <- dplyr::mutate(x$cpc,
-                               group = factor(group,
-                                              levels = unique(group),
-                                                  ordered = TRUE)
-                               )        
+        x$apc$group <- factor(x$apc$group, levels = unique(x$apc$group), ordered = TRUE)
+        x$cpc$group <- factor(x$cpc$group, levels = unique(x$cpc$group), ordered = TRUE)
     }
     if (cumulative) {        
         gg <- ggplot(x$cpc,
