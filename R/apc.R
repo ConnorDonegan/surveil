@@ -2,12 +2,14 @@
 #'
 #' @description Summarize annual and cumulative percent change in risk
 #'
-#' @param x For the `apc` function, `x` may be a fitted `surviel` model, or standardized rates (a `stand_surveil` object). For print and plot methods, `x` is the `apc_ls` object returned by `apc`.
+#' @param x A fitted `surviel` model, or standardized rates (a `stand_surveil` object). 
 #'
-#' @return An `apc_ls` (list) object containing two data frames:
+#' @return An `apc_ls` (list) object containing the following data frames:
 #' \describe{
 #'  \item{apc}{A data frame containing a summary of the posterior distribution for period-specific percent change. This contains the posterior mean (`apc`) 95 percent credible intervals (`lwr` and `upr` bounds).}
 #' \item{cpc}{A data frame containing a summary of the posterior distribution for the cumulative percent change in risk at each time period. This contains the posterior mean (`cpc`) and 95 percent credible interval (`lwr` and `upr` bounds).}
+#' \item{apc_samples}{MCMC samples from the posterior distribution for period percent change}
+#' \item{cpc_samples}{MCMC samples from the posterior distribution for cumulative percent change}
 #' }
 #'
 #' @examples

@@ -32,7 +32,9 @@ fit <- stan_rw(cancer,
               group = Age
               )
 
-stands <- standardize(fit, label = standard$age, standard_pop = standard$standard_pop)
+stands <- standardize(fit,
+                      label = standard$age,
+                      standard_pop = standard$standard_pop)
 print(stands)
 plot(stands)
 }

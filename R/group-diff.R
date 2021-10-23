@@ -8,7 +8,6 @@
 #'
 #' @param reference The name (character string) of the reference group to which `target` will be compared.
 #'
-#' @param samples If `TRUE`, return MCMC samples for the inequality measures. The default is `FALSE`.
 #'
 #' @return
 #'
@@ -16,11 +15,8 @@
 #' \item{summary}{A tibble with a summary of posterior distributions (mean and 95 percent cred. intervals) for the target group incidence rate, the RD, RR, PAR, and excess cases.}
 #' \item{cumulative_cases}{Summary of the posterior distribution for the cumulative number of excess cases and the PAR (mean and 95 percent cred. intervals)}
 #' \item{groups}{Character string with target and reference population names}
-#' }
-#' If `samples = TRUE`, then, in addition to the above items, a list called `samples` is returned; it contains:
-#' \describe{
-#' \item{annual}{A data frame of MCMC samples for each quantity of interest (target and reference rates, RD, RR, PAR, and EC, as well as `Trend_Cases = Rate * Population`. Indexed by time.}
-#' \item{cumulative_cases}{MCMC samples of the cumulative number of excess cases.}
+#' \item{samples}{A data frame of MCMC samples for each quantity of interest (target and reference rates, RD, RR, PAR, and EC, as well as `Trend_Cases = Rate * Population`). Indexed by time.}
+#' \item{cum_samples}{MCMC samples of the cumulative number of excess cases.}
 #' }
 #' @author Connor Donegan (Connor.Donegan@UTSouthwestern.edu)
 #'
@@ -52,12 +48,11 @@
 #' @export
 #' @md
 #' 
-group_diff <- function(fit, target, reference, samples = FALSE) {
+group_diff <- function(fit, target, reference) {
     stopifnot(inherits(fit, "surveil"))
     stopifnot(inherits(target, "character"))
     stopifnot(inherits(reference, "character"))
     stopifnot(all(c(target, reference) %in% names(fit$data$at_risk)))
-    stopifnot(inherits(as.logical(samples), "logical"))
     lambda = rstan::extract(fit$samples, pars = "rate")$rate
     ref.idx <- which(names(fit$data$at_risk) == reference)
     target.idx <- which(names(fit$data$at_risk) == target)
@@ -68,12 +63,14 @@ group_diff <- function(fit, target, reference, samples = FALSE) {
         ref.rate <- lambda[, ref.idx, t]        
         at.risk <- as.numeric(fit$data$at_risk[t, target.idx])
         target.rate <- lambda[, target.idx, t]
+        M <- length(target.rate)
         RD <- target.rate - ref.rate
         RR <- target.rate / ref.rate
         PAR <- RD / target.rate
         actual.cases <- target.rate * at.risk
         excess.cases <- RD * at.risk
-        res <- data.frame(Rate = target.rate,
+        res <- data.frame(.draw = 1:M,
+                          Rate = target.rate,
                           Reference_Rate = ref.rate,
                           RD = RD,
                           RR = RR,
@@ -101,9 +98,10 @@ group_diff <- function(fit, target, reference, samples = FALSE) {
     return.list <- list(
         summary = res.summary,
         cumulative_cases = EC.cumulative.summary,
+        samples = res.df,
+        cum_samples = EC.cumulative.samples,        
         groups = c(target = target, reference = reference)
     )
-    if (samples) return.list$samples <- list(annual = res.df, cumulative_cases = EC.cumulative.samples)
     class(return.list) <- append("surveil_diff", class(return.list))
     return( return.list )
 }
@@ -111,10 +109,14 @@ group_diff <- function(fit, target, reference, samples = FALSE) {
 #' Methods for `surveil_diff` objects
 #'
 #' @param x Object of class `surveil_diff`, as returned by calling `group_diff` on a fitted `surveil` model
+#' @param style If `style = "mean_qi"`, then the posterior mean and 95 percent credible interval will be plotted; if `style = "lines"`, then `M` samples from the joint probability distribution of the annual rates will be plotted.
+#' @param M If `style = "lines"`, then `M` is the number of samples from the posterior distribution that will be plotted; the default is `M = 250`.
 #' @param col Line color
 #' @param fill Fill color for credible intervals, passed to `geom_ribbon`
 #' @param plot If `plot = FALSE`, a list of `ggplot`s will be returned
 #' @param scale Scale rates by this amount (`rate * scale`)
+#' @param lwd Linewidth
+#' @param alpha transparency; for `style = "mean_qi", controls the credible interval shading; for `style = "lines"`, this is applied to the lines
 #' @param PAR Return population attributable risk? IF `FALSE`, then the rate ratio will be used instead of PAR.
 #' @param base_size Passed to `theme_classic` to control size of plot elements (e.g., text)
 #' @param ... additional plot arguments passed to \code{\link[ggplot2]{theme}}
@@ -124,12 +126,66 @@ group_diff <- function(fit, target, reference, samples = FALSE) {
 #' @import ggplot2
 #' @name surveil_diff
 #' @export
-plot.surveil_diff <- function(x, col = "black", fill = "gray80", plot = TRUE, scale = 100e3, PAR = TRUE, base_size = 14, ...) {
+plot.surveil_diff <- function(x,
+                              style = c("mean_qi", "lines"),
+                              M = 250,                              
+                              col = "black",
+                              fill = "gray80",
+                              lwd,
+                              alpha,
+                              plot = TRUE,
+                              scale = 100e3,
+                              PAR = TRUE,
+                              base_size = 14,
+                              ...) {
+    style <- match.arg(style, c("mean_qi", "lines"))
+    if (missing(lwd)) lwd <- ifelse(style == "mean_qi", 1, 0.05)
+    if (missing(alpha)) alpha <- ifelse(style == "mean_qi", 0.5, 0.7)
+    message("Rate differences (RD) are per ", scales::comma(scale), " at risk")    
+    if (style == "lines") {        
+        s_df <- x$samples
+        s_df$RD <- s_df$RD * scale        
+        TT <- max(s_df$time)
+        n_samples <- nrow(s_df) / TT
+        cols <- c("time", ".draw", "RD", "EC")
+        if (PAR) {
+            cols <- c("time", ".draw", "RD", "PAR", "EC")
+        } else {
+            cols <- c("time", ".draw", "RD", "RR", "EC")
+        }
+        s_df <- s_df[,cols]        
+        s_df <- tidyr::pivot_longer(s_df,
+                                    -c(.data$time, .data$.draw),
+                                    names_to = "measure",
+                                    values_to = "value"
+                                    )
+        s_df <- arrange(s_df, time)
+        n_samples <- max(s_df$.draw)
+        s_df <- s_df[which(s_df$.draw %in% sample(n_samples, size = M)),]
+        gg <- ggplot(s_df) +
+            geom_line(
+                aes(.data$time, .data$value,
+                    group = factor(.data$.draw)),
+                lwd = lwd,
+                col = col,
+                alpha = alpha
+            ) +
+            facet_wrap(~ measure,
+                       scales = "free",
+                       ncol = 1) +
+            labs(x = NULL,
+                 y = NULL) +
+            theme_classic(base_size = base_size) +
+            theme(...)
+        return (gg)
+    }    
     gg.ec <- ggplot(x$summary) +
         geom_ribbon(aes(.data$time, ymin = .data$EC.lower, ymax = .data$EC.upper),
                     fill = fill,
-                    alpha = 0.5) +
-        geom_line(aes(.data$time, .data$EC), lwd = 1,
+                    alpha = alpha) +
+        geom_line(aes(.data$time,
+                      .data$EC),
+                  lwd = lwd,
                   col = col
                   ) +
         labs(
@@ -143,10 +199,10 @@ plot.surveil_diff <- function(x, col = "black", fill = "gray80", plot = TRUE, sc
         gg.relative <- ggplot(x$summary) +
             geom_ribbon(aes(.data$time, ymin = .data$PAR.lower, ymax = .data$PAR.upper),
                         fill = fill,
-                        alpha = 0.5) +
+                        alpha = alpha) +
             geom_line(aes(.data$time, .data$PAR),
                       col = col,
-                      lwd = 1
+                      lwd = lwd
                       ) +
             labs(
                 x = NULL,
@@ -159,10 +215,11 @@ plot.surveil_diff <- function(x, col = "black", fill = "gray80", plot = TRUE, sc
         gg.relative <- ggplot(x$summary) +
             geom_ribbon(aes(.data$time, ymin = .data$RR.lower, ymax = .data$RR.upper),
                         fill = fill,
-                        alpha = 0.5) +
+                        alpha = alpha
+                        ) +
             geom_line(aes(.data$time, .data$RR),
                       col = col,
-                      lwd = 1
+                      lwd = lwd
                       ) +
             labs(
                 x = NULL,
@@ -176,10 +233,10 @@ plot.surveil_diff <- function(x, col = "black", fill = "gray80", plot = TRUE, sc
     gg.rd <- ggplot(x$summary) +
         geom_ribbon(aes(.data$time, ymin = .data$RD.lower, ymax = .data$RD.upper),
                     fill = fill,
-                    alpha = 0.5) +
+                    alpha = alpha) +
         geom_line(aes(.data$time, .data$RD),
                   col = col,
-                  lwd = 1
+                  lwd = lwd
                   ) +
         labs(
             x = NULL,
@@ -189,7 +246,6 @@ plot.surveil_diff <- function(x, col = "black", fill = "gray80", plot = TRUE, sc
         theme_classic(base_size = base_size) +
         scale_y_continuous(labels = f.lab) +
         theme(...)
-    message("Rate differences (RD) are per ", scales::comma(scale), " at-risk")    
     if (plot) {
         return ( gridExtra::grid.arrange(gg.rd,  gg.relative, gg.ec, ncol = 1) )
     } else return (list(RD = gg.rd, Relative = gg.relative, EC = gg.ec))

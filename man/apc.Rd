@@ -13,13 +13,15 @@ apc(x)
 \method{apc}{stand_surveil}(x)
 }
 \arguments{
-\item{x}{For the \code{apc} function, \code{x} may be a fitted \code{surviel} model, or standardized rates (a \code{stand_surveil} object). For print and plot methods, \code{x} is the \code{apc_ls} object returned by \code{apc}.}
+\item{x}{A fitted \code{surviel} model, or standardized rates (a \code{stand_surveil} object).}
 }
 \value{
-An \code{apc_ls} (list) object containing two data frames:
+An \code{apc_ls} (list) object containing the following data frames:
 \describe{
 \item{apc}{A data frame containing a summary of the posterior distribution for period-specific percent change. This contains the posterior mean (\code{apc}) 95 percent credible intervals (\code{lwr} and \code{upr} bounds).}
 \item{cpc}{A data frame containing a summary of the posterior distribution for the cumulative percent change in risk at each time period. This contains the posterior mean (\code{cpc}) and 95 percent credible interval (\code{lwr} and \code{upr} bounds).}
+\item{apc_samples}{MCMC samples from the posterior distribution for period percent change}
+\item{cpc_samples}{MCMC samples from the posterior distribution for cumulative percent change}
 }
 }
 \description{

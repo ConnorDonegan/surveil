@@ -13,8 +13,8 @@
   base_size = 14,
   palette = "Dark2",
   M = 250,
-  alpha = 0.7,
-  lwd = 0.05,
+  alpha,
+  lwd,
   ...
 )
 
@@ -27,15 +27,15 @@
 
 \item{style}{If \code{style = "mean_qi"}, then the posterior mean and 95 percent credible interval will be plotted; if \code{style = "lines"}, then \code{M} samples from the joint probability distribution of the annual rates will be plotted.}
 
-\item{facet}{Logical value to indicate how groups are differentiated. If \code{facet = TRUE}, \code{\link[ggplot2]{facet_wrap}} will be used instead of differentiating by line color.}
+\item{facet}{If \code{facet = TRUE}, \code{\link[ggplot2]{facet_wrap}} will be used instead of differentiating by line color.}
 
 \item{base_size}{Passed to \code{theme_classic()} to control size of plot components (text).}
 
-\item{palette}{For multiple groups, choose the color palette. For a list of options, see \code{\link[ggplot2]{scale_color_brewer}}. The default is \code{palette = "Dark2"}.}
+\item{palette}{For multiple groups, choose the color palette. For a list of options, see \code{\link[ggplot2]{scale_color_brewer}}. The default is \code{palette = "Dark2"}. Not used if \code{facet = TRUE}.}
 
 \item{M}{If \code{style = "lines"}, then \code{M} is the number of samples from the posterior distribution that will be plotted; the default is \code{M = 250}.}
 
-\item{alpha}{For \code{style = "lines"}; numeric value from zero to one indicating transparency of lines. Passed to \code{\link[ggplot2]{geom_line}}}
+\item{alpha}{For \code{style = "lines"}; numeric value from zero to one indicating transparency of lines; passed to \code{\link[ggplot2]{geom_line}}. For `style = "mean_qi", this controls the transparency of the shaded credible interval; passed to \code{\link[ggplot2]{geom_ribbon}}.}
 
 \item{lwd}{For \code{style = "lines"}; numeric value indicating linewidth. Passed to \code{\link[ggplot2]{geom_line}}}
 

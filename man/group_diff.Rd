@@ -7,7 +7,7 @@
 Menvielle, G, Kulhanaova, I, Machenbach, JP. Assessing the impact of a public health intervention to reduce social inequalities in cancer. In: Vaccarella, S, Lortet-Tieulent, J, Saracci, R, Conway, D, Straif, K, Wild, CP, editors. Reducing Social Inequalities in Cancer: Evidence and Priorities for Research. Geneva, Switzerland: WHO Press, 2017:185-192.
 }
 \usage{
-group_diff(fit, target, reference, samples = FALSE)
+group_diff(fit, target, reference)
 }
 \arguments{
 \item{fit}{A fitted \code{surveil} time series model}
@@ -15,19 +15,14 @@ group_diff(fit, target, reference, samples = FALSE)
 \item{target}{The name (character string) of the disadvantaged group that is the target of inference.}
 
 \item{reference}{The name (character string) of the reference group to which \code{target} will be compared.}
-
-\item{samples}{If \code{TRUE}, return MCMC samples for the inequality measures. The default is \code{FALSE}.}
 }
 \value{
 A list, also of class "surveil_diff", with the following elements: \describe{
 \item{summary}{A tibble with a summary of posterior distributions (mean and 95 percent cred. intervals) for the target group incidence rate, the RD, RR, PAR, and excess cases.}
 \item{cumulative_cases}{Summary of the posterior distribution for the cumulative number of excess cases and the PAR (mean and 95 percent cred. intervals)}
 \item{groups}{Character string with target and reference population names}
-}
-If \code{samples = TRUE}, then, in addition to the above items, a list called \code{samples} is returned; it contains:
-\describe{
-\item{annual}{A data frame of MCMC samples for each quantity of interest (target and reference rates, RD, RR, PAR, and EC, as well as \code{Trend_Cases = Rate * Population}. Indexed by time.}
-\item{cumulative_cases}{MCMC samples of the cumulative number of excess cases.}
+\item{samples}{A data frame of MCMC samples for each quantity of interest (target and reference rates, RD, RR, PAR, and EC, as well as \code{Trend_Cases = Rate * Population}). Indexed by time.}
+\item{cum_samples}{MCMC samples of the cumulative number of excess cases.}
 }
 }
 \description{

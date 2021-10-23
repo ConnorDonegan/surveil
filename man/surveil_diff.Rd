@@ -8,8 +8,12 @@
 \usage{
 \method{plot}{surveil_diff}(
   x,
+  style = c("mean_qi", "lines"),
+  M = 250,
   col = "black",
   fill = "gray80",
+  lwd,
+  alpha,
   plot = TRUE,
   scale = 1e+05,
   PAR = TRUE,
@@ -22,9 +26,17 @@
 \arguments{
 \item{x}{Object of class \code{surveil_diff}, as returned by calling \code{group_diff} on a fitted \code{surveil} model}
 
+\item{style}{If \code{style = "mean_qi"}, then the posterior mean and 95 percent credible interval will be plotted; if \code{style = "lines"}, then \code{M} samples from the joint probability distribution of the annual rates will be plotted.}
+
+\item{M}{If \code{style = "lines"}, then \code{M} is the number of samples from the posterior distribution that will be plotted; the default is \code{M = 250}.}
+
 \item{col}{Line color}
 
 \item{fill}{Fill color for credible intervals, passed to \code{geom_ribbon}}
+
+\item{lwd}{Linewidth}
+
+\item{alpha}{transparency; for \verb{style = "mean_qi", controls the credible interval shading; for }style = "lines"`, this is applied to the lines}
 
 \item{plot}{If \code{plot = FALSE}, a list of \code{ggplot}s will be returned}
 

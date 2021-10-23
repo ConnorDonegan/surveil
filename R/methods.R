@@ -27,11 +27,13 @@
 #' @param base_size Passed to `theme_classic()` to control size of plot components (text).
 #' @param scale Scale the rates by this amount; e.g., `scale = 100e3` will print rates per 100,000 at risk.
 #' @param style If `style = "mean_qi"`, then the posterior mean and 95 percent credible interval will be plotted; if `style = "lines"`, then `M` samples from the joint probability distribution of the annual rates will be plotted.
-#' @param facet Logical value to indicate how groups are differentiated. If \code{facet = TRUE}, \code{\link[ggplot2]{facet_wrap}} will be used instead of differentiating by line color.
-#' @param palette For multiple groups, choose the color palette. For a list of options, see \code{\link[ggplot2]{scale_color_brewer}}. The default is `palette = "Dark2"`.
 #' @param M If `style = "lines"`, then `M` is the number of samples from the posterior distribution that will be plotted; the default is `M = 250`.
-#' @param alpha For `style = "lines"`; numeric value from zero to one indicating transparency of lines. Passed to \code{\link[ggplot2]{geom_line}}
+#' @param facet If \code{facet = TRUE}, \code{\link[ggplot2]{facet_wrap}} will be used instead of differentiating by line color.
+#' @param palette For multiple groups, choose the color palette. For a list of options, see \code{\link[ggplot2]{scale_color_brewer}}. The default is `palette = "Dark2"`. Not used if `facet = TRUE`.
+#' 
+#' @param alpha For `style = "lines"`; numeric value from zero to one indicating transparency of lines; passed to \code{\link[ggplot2]{geom_line}}. For `style = "mean_qi", this controls the transparency of the shaded credible interval; passed to \code{\link[ggplot2]{geom_ribbon}}.
 #' @param lwd For `style = "lines"`; numeric value indicating linewidth. Passed to \code{\link[ggplot2]{geom_line}}
+#' 
 #' @param ... additional arguments will be passed to `\code{\link[ggplot2]{theme}}
 #' 
 #' @export 
@@ -46,19 +48,28 @@ plot.surveil <- function(x,
                          base_size = 14,
                          palette = "Dark2",
                          M = 250,
-                         alpha = 0.7,
-                         lwd = 0.05,
+                         alpha,
+                         lwd,
                          ...) {
     stopifnot(is.logical(facet))    
     style <- match.arg(style, c("mean_qi", "lines"))
+    if (missing(lwd)) lwd <- ifelse(style == "mean_qi", 1, 0.05)
+    if (missing(alpha)) alpha <- ifelse(style == "mean_qi", 0.5, 0.7)
     if (style == "lines") return(plot_lines(x, scale, facet, base_size, palette, M, alpha, lwd, ...))
-    if (style == "mean_qi") return(plot_mean_qi(x, scale, facet, base_size, palette, ...))
+    if (style == "mean_qi") return(plot_mean_qi(x, scale, facet, base_size, palette, alpha, lwd, ...))
 }
 
 #' @import ggplot2
 #' @importFrom rlang parse_expr
 #' @importFrom stats as.formula
-plot_mean_qi <- function(x, scale, facet, base_size, palette, M, ...) {
+plot_mean_qi <- function(x,
+                         scale,
+                         facet,
+                         base_size,
+                         palette,
+                         alpha,
+                         lwd,                         
+                         ...) {
     if (!inherits(x$group, "list")) {
         gg <- ggplot(x$summary)
     } else {
@@ -91,14 +102,14 @@ plot_mean_qi <- function(x, scale, facet, base_size, palette, M, ...) {
                         ymin = scale * .data$lwr_2.5,
                         ymax = scale * .data$upr_97.5
                         ),
-                    alpha = 0.5,
-                    fill = 'gray80',
-                    col = 'gray80',
+                    alpha = alpha,
+                    fill = 'black',
                     lwd = 0
                     ) +
-        geom_line(aes(.data$time, scale * .data$mean)) +
+        geom_line(aes(.data$time, scale * .data$mean),
+                  lwd = lwd) +
         geom_point(aes(.data$time, scale * .data$Crude),
-                   alpha = 0.75,
+                   alpha = 0.65,
                    size = 0.5
                    ) +
         scale_x_continuous(name = NULL) +
@@ -116,7 +127,15 @@ plot_mean_qi <- function(x, scale, facet, base_size, palette, M, ...) {
 #' @importFrom tidyr pivot_longer everything
 #' @import ggplot2
 #' @noRd
-plot_lines <- function(x, scale, facet, base_size, palette, M, alpha, lwd, ...) {
+plot_lines <- function(x,
+                       scale,
+                       facet,
+                       base_size,
+                       palette,
+                       M,
+                       alpha,
+                       lwd,
+                       ...) {    
     eta <- rstan::extract(x$samples, pars = "rate")$rate
     K <- dim(eta)[2]
     TT <- dim(eta)[3]
@@ -165,7 +184,8 @@ plot_lines <- function(x, scale, facet, base_size, palette, M, alpha, lwd, ...) 
         gg <- ggplot(s_df, aes(.data$time.index, .data$rate,
                                group = factor(.data$draw))
                          ) +
-            geom_line(alpha = alpha, lwd = lwd) +
+            geom_line(alpha = alpha,
+                      lwd = lwd) +
             scale_x_continuous(
                 breaks = x$time$time.df$time.index,
                 labels = x$time$time.df$label,
@@ -180,7 +200,8 @@ plot_lines <- function(x, scale, facet, base_size, palette, M, alpha, lwd, ...) 
     gg <- ggplot(s_df, aes(.data$time.index, .data$rate,
                            group = factor(.data$draw),
                            col = .data$label)) +
-        geom_line(alpha = alpha, lwd = lwd) +
+        geom_line(alpha = alpha,
+                  lwd = lwd) +
         scale_x_continuous(
             breaks = x$time$time.df$time.index,
             labels = x$time$time.df$label,
@@ -253,7 +274,9 @@ print.surveil <- function(x, scale = 1, ...) {
 #'               group = Age
 #'               )
 #'
-#' stands <- standardize(fit, label = standard$age, standard_pop = standard$standard_pop)
+#' stands <- standardize(fit,
+#'                       label = standard$age,
+#'                       standard_pop = standard$standard_pop)
 #' print(stands)
 #' plot(stands)
 #' }
