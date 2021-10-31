@@ -33,7 +33,7 @@ apc <- function(x) UseMethod("apc", x)
 apc.surveil <- function(x) {
     ## S x G x T array
     a.samples <- rstan::extract(x$samples, pars = "rate")$rate
-    time_label <- x$time$time.df$label
+    time_label <- x$time$time.df$time.label
     GG <- dim(a.samples)[2]
     if (GG > 1) {
         group_label <- colnames(x$data$cases)
@@ -46,29 +46,30 @@ apc.surveil <- function(x) {
     s_cpc_list <- list()
     for (g in 1:GG) {
         g.samples <- a.samples[,g,]
-        res.s <- matrix(nrow = nrow(g.samples), ncol = ncol(g.samples) - 1)
+        res.apc <- matrix(nrow = nrow(g.samples), ncol = ncol(g.samples) - 1)
+        res.cum <- matrix(nrow = nrow(g.samples), ncol = ncol(g.samples) - 1)
         for (i in 2:ncol(g.samples)) {
-            res.s[,i-1] <- 100 * (g.samples[,i] / g.samples[,i-1] - 1)
+            res.apc[,i-1] <- 100 * (g.samples[,i] / g.samples[,i-1] - 1)
+            res.cum[,i-1] <- 100 * (g.samples[,i] / g.samples[,1] - 1)
         }
         apc_summary <- data.frame(
             time = time_label[-1],
             group = group_label[g],
-            apc = apply(res.s, 2, mean),
-            lwr = apply(res.s, 2, quantile, probs = 0.025),
-            upr = apply(res.s, 2, quantile, probs = 0.975)
+            apc = apply(res.apc, 2, mean),
+            lwr = apply(res.apc, 2, quantile, probs = 0.025),
+            upr = apply(res.apc, 2, quantile, probs = 0.975)
         )
-        cum.pc = t(apply(res.s, 1, cumsum))
         cpc_summary <- data.frame(
             time = time_label[-1],
             group = group_label[g],
-            cpc = apply(cum.pc, 2, mean),
-            lwr = apply(cum.pc, 2, quantile, probs = 0.025),
-            upr = apply(cum.pc, 2, quantile, probs = 0.975)
+            cpc = apply(res.cum, 2, mean),
+            lwr = apply(res.cum, 2, quantile, probs = 0.025),
+            upr = apply(res.cum, 2, quantile, probs = 0.975)
         )        
         apc_list[[g]] <- apc_summary
         cpc_list[[g]] <- cpc_summary
 
-        apc_samples<- as.data.frame(res.s)
+        apc_samples <- as.data.frame(res.apc)
         names(apc_samples) <- time_label[-1]
         apc_samples$.draw <- 1:nrow(apc_samples)
         apc_samples$group <- group_label[g]
@@ -79,7 +80,7 @@ apc.surveil <- function(x) {
         apc_samples$time <- as.numeric(apc_samples$time)
         s_apc_list[[g]] <- apc_samples
 
-        cpc_samples<- as.data.frame(cum.pc)
+        cpc_samples<- as.data.frame(res.cum)
         names(cpc_samples) <- time_label[-1]
         cpc_samples$.draw <- 1:nrow(cpc_samples)
         cpc_samples$group <- group_label[g]
@@ -89,14 +90,18 @@ apc.surveil <- function(x) {
                                   values_to = "value")
         cpc_samples$time <- as.numeric(cpc_samples$time)        
         s_cpc_list[[g]] <- cpc_samples
-
     }
     apc_df <- do.call("rbind", apc_list)
     cpc_df <- do.call("rbind", cpc_list)
     apc_samples <- do.call("rbind", s_apc_list)
     cpc_samples <- do.call("rbind", s_cpc_list)
     if (GG == 1) apc_df$group <- cpc_df$group <- NULL
-    res <- list(apc = apc_df, cpc = cpc_df, time = x$time$time.df, apc_samples = apc_samples, cpc_samples = cpc_samples)
+    res <- list(apc = apc_df,
+                cpc = cpc_df,
+                apc_samples = apc_samples,
+                cpc_samples = cpc_samples,
+                time = x$time,
+                group = x$group)
     class(res) <- append("apc_ls", class(res))
     return (res)
 }
@@ -106,7 +111,7 @@ apc.surveil <- function(x) {
 #' @method apc stand_surveil
 #' @export
 apc.stand_surveil <- function(x) {
-    time_label <- x$time$time.df$label
+    time_label <- x$time$time.df$time.label
     s.wide <- tidyr::pivot_wider(x$standard_samples,
                                  id_cols = .data$.draw,
                                  names_from = .data$time_index,
@@ -114,24 +119,29 @@ apc.stand_surveil <- function(x) {
                                  )
     s.wide$.draw <- NULL                   
     s.wide <- as.matrix(s.wide)
-    res.s <- matrix(NA, nrow = nrow(s.wide), ncol = ncol(s.wide) - 1)
+    res.apc <- matrix(NA, nrow = nrow(s.wide), ncol = ncol(s.wide) - 1)
+    res.cum <- matrix(NA, nrow = nrow(s.wide), ncol = ncol(s.wide) - 1)    
     for (i in 2:ncol(s.wide)) {
-        res.s[,i-1] <- 100 * ((s.wide[,i] / s.wide[,i-1]) - 1)
+        res.apc[,i-1] <- 100 * ((s.wide[,i] / s.wide[,i-1]) - 1)
+        res.cum[,i-1] <- 100 * ((s.wide[,i] / s.wide[,1]) - 1)
     }    
     apc_summary <- data.frame(
         time = time_label[-1],
-        apc = apply(res.s, 2, mean),
-        lwr = apply(res.s, 2, quantile, probs = 0.025),
-        upr = apply(res.s, 2, quantile, probs = 0.975)
+        apc = apply(res.apc, 2, mean),
+        lwr = apply(res.apc, 2, quantile, probs = 0.025),
+        upr = apply(res.apc, 2, quantile, probs = 0.975)
     )
-    cum.pc = apply(res.s, 1, cumsum)
     cpc_summary <- data.frame(
         time = time_label[-1],
-        cpc = apply(cum.pc, 1, mean),
-        lwr = apply(cum.pc, 1, quantile, probs = 0.025),
-        upr = apply(cum.pc, 1, quantile, probs = 0.975)
+        cpc = apply(res.cum, 2, mean),
+        lwr = apply(res.cum, 2, quantile, probs = 0.025),
+        upr = apply(res.cum, 2, quantile, probs = 0.975)
     )        
-    res <- list(apc = apc_summary, cpc = cpc_summary, time = x$time$time.df$label, samples = res.s)
+    res <- list(apc = apc_summary,
+                cpc = cpc_summary,
+                apc_samples = res.apc,
+                cpc_samples = res.cum,
+                time = x$time)
     class(res) <- append("apc_ls", class(res))
     return (res)
     }
@@ -157,8 +167,8 @@ apc.stand_surveil <- function(x) {
 #' @rdname apc_ls
 print.apc_ls <- function(x, digits = 1, max = 10, ...) {    
     message("Summary of cumulative and per-period percent change")
-    message("Time periods: ", length(unique(x$apc$time)))    
-    GG <- length(unique(x$apc$group))
+    message("Time periods: ", length(unique(x$time$time.df$time.label)))
+    GG <- !is.null(x$apc$group)
     if (GG > 1) {
         x$apc <- tidyr::pivot_wider(x$apc,
                                      id_cols = .data$time,
@@ -211,12 +221,14 @@ plot.apc_ls <- function(x,
                         M = 250,                        
                         col = 'black',
                         fill = 'black',
-                        alpha = ifelse(style == "mean_qi", 0.5, 0.7),
-                        lwd = ifelse(style == "mean_qi", 1, 0.05),                    
+                        alpha,
+                        lwd,
                         base_size = 14,
                         ...
                         ) {
     style <- match.arg(style, c("mean_qi", "lines"))
+    if (missing(lwd)) lwd <- ifelse(style == "mean_qi", 1, 0.05)
+    if (missing(alpha)) alpha <- ifelse(style == "mean_qi", 0.5, 0.7)    
     ylab <- ifelse(cumulative, "Cumulative % Change", "APC")
     if (style == "lines") {
         if (cumulative) {
@@ -232,13 +244,9 @@ plot.apc_ls <- function(x,
             geom_line(col = col,
                       alpha = alpha,
                       lwd = lwd) +
-            scale_x_continuous(
-                breaks = x$time$time.df$time.index,
-                labels = x$time$time.df$label,
-                name = NULL
-            ) +
             geom_hline(yintercept = 0) +
-            scale_y_continuous(name = ylab) +    
+            labs(y = ylab,
+                 x = NULL) +
             theme_classic(base_size = base_size) +
             theme(...)
         if (length(unique(s_df$group)) > 1) {

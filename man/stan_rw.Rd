@@ -3,6 +3,13 @@
 \name{stan_rw}
 \alias{stan_rw}
 \title{Time series models for mortality and disease incidence}
+\source{
+Brandt P, Williams JT. Multiple time series models. Thousand Oaks, CA: SAGE Publications, 2007.
+
+Clayton, DG. Generalized linear mixed models. In: Gilks WR, Richardson S, Spiegelhalter DJ, editors. Markov Chain Monte Carlo in Practice: Interdisciplinary Statistics. Boca Raton, FL: CRC Press, 1996. p. 275-302.
+
+Stan Development Team. Stan Modeling Language Users Guide and Reference Manual, 2.28. 2021. https://mc-stan.org
+}
 \usage{
 stan_rw(
   data,
@@ -35,11 +42,11 @@ stan_rw(
 \item{prior}{Optionally provide a named \code{list} with prior parameters. If any of the following items are missing, default priors will be assigned and printed to the console.
 
 \describe{
-\item{eta_1}{The first value of log-risk in each series must be assigned a Student's t prior probability distribution. Provide the degrees of freedom (df), location, and scale parameters for each demographic group in a list, where each parameter is a \code{k}-length vector.
+\item{eta_1}{The first value of log-risk in each series must be assigned a Gaussian prior probability distribution. Provide the location and scale parameters for each demographic group in a list, where each parameter is a \code{k}-length vector.
 
-For example, with \code{k=2} demographic groups, the following code will assign priors of \code{student_t(10, -5, 5)} to the starting values of both series: \verb{prior = list(eta_1 = student_t(df = c(10, 10), location = c(-6.5, -6.5), scale = c(5, 5))}. Note, \code{eta} is the log-rate, so centering the prior for \code{eta_1} on \code{-5} is equivalent to centering the prior rate on \verb{exp(-6.5)*100,000 = 150} cases per 100,000 person-years at risk.}
+For example, with \code{k=2} demographic groups, the following code will assign priors of \code{normal(-5, 5)} to the starting values of both series: \verb{prior = list(eta_1 = normal(location = -6.5, scale = 5, k = 2)}. Note, \code{eta} is the log-rate, so centering the prior for \code{eta_1} on \code{-5} is equivalent to centering the prior rate on \verb{exp(-6.5)*100,000 = 150} cases per 100,000 person-years at risk.}
 
-\item{sigma}{Each demographic group has a scale parameter assigned to its log-rate. This is the scale of the annual deviations from the previous year's log-rate. The scale parameters are assigned independent half-Student's t prior distributions (these \code{half} t distributions are restricted to be positive-valued only).}
+\item{sigma}{Each demographic group has a scale parameter assigned to its log-rate. This is the scale of the annual deviations from the previous year's log-rate. The scale parameters are assigned independent half-normal prior distributions (these \code{half} normal distributions are restricted to be positive-valued only).}
 
 \item{omega}{If \code{cor = TRUE}, an LKJ prior is assigned to the correlation matrix, Omega.}
 }}
@@ -58,6 +65,25 @@ For example, with \code{k=2} demographic groups, the following code will assign 
 }
 \description{
 Model time-varying disease risk given time series of case (or death) counts and population at risk.
+}
+\details{
+For time t = 1,...n, the models have Poisson likelihoods for the case counts, given log-risk \code{eta} and population at tirks P; the log-risk is modeled using the first-difference prior (a.k.a. a random-walk).\preformatted{       y_t ~ Poisson(p_t * exp(eta_t))
+       eta_t ~ Normal(eta_\{t-1\}, sigma)
+       eta_1 ~ Normal(-5, 10)
+       sigma ~ Normal(0, 1) (0, Inf]
+}
+
+This style of model has been discussed in Bayesian (bio)statistics for quite some time. See Clayton (1996).
+
+The above model can be used for multiple distinct groups; in that case, each group will have its own independent time series model. However, it is also possible to add a correlation structure to that set of models. Let \code{Y_t} be a k-length vector of observations for each of k groups at time t (the capital letter now indicates a vector), then:\preformatted{       Y_t ~ Poisson(P_t * exp(Eta_t))
+       Eta_t ~ MVNormal(Eta_\{t-1\}, Sigma)
+       Eta_1 ~ Normal(-5, 10)
+       Sigma = diag(sigma) Omega diag(sigma)
+       Omega ~ LKJ(2)
+       sigma ~ Normal(0, 1) (0, Inf)
+}
+
+where \code{Omega} is a correlation matrix and \code{diag(sigma)} is a diagonal matrix with scale parameters on the diagonal. This was adopted from Brandt and Williams (2007); for the LKJ prior, see the Stan Users Guide and Reference Manual.
 }
 \examples{
 \dontrun{

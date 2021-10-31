@@ -4,10 +4,8 @@ data {
   int<lower=1> K;   // J outcomes
   int y[K, TT]; // outcome data
   vector[TT] log_E[K];
-  vector[K] prior_eta_1_df;
   vector[K] prior_eta_1_location;
   vector[K] prior_eta_1_scale;  
-  vector[K] prior_sigma_df;
   vector[K] prior_sigma_location;
   vector[K] prior_sigma_scale;
 }
@@ -23,10 +21,10 @@ transformed parameters {
 }
 
 model {
-  target += student_t_lpdf(sigma | prior_sigma_df, prior_sigma_location, prior_sigma_scale);    
+  target += normal_lpdf(sigma | prior_sigma_location, prior_sigma_scale);    
   for (j in 1:K) {
     target += poisson_log_lpmf(y[j] | mu[j]);
-    target += student_t_lpdf(eta[j, 1] | prior_eta_1_df[j], prior_eta_1_location[j], prior_eta_1_scale[j]);
+    target += normal_lpdf(eta[j, 1] | prior_eta_1_location[j], prior_eta_1_scale[j]);
     target += normal_lpdf(eta[j, 2:TT] | eta[j, 1:(TT-1)], sigma[j]);
   }
 }

@@ -31,9 +31,10 @@
 #' @param facet If \code{facet = TRUE}, \code{\link[ggplot2]{facet_wrap}} will be used instead of differentiating by line color.
 #' @param palette For multiple groups, choose the color palette. For a list of options, see \code{\link[ggplot2]{scale_color_brewer}}. The default is `palette = "Dark2"`. Not used if `facet = TRUE`.
 #' 
-#' @param alpha For `style = "lines"`; numeric value from zero to one indicating transparency of lines; passed to \code{\link[ggplot2]{geom_line}}. For `style = "mean_qi", this controls the transparency of the shaded credible interval; passed to \code{\link[ggplot2]{geom_ribbon}}.
-#' @param lwd For `style = "lines"`; numeric value indicating linewidth. Passed to \code{\link[ggplot2]{geom_line}}
-#' 
+#' @param alpha Numeric value from zero to one. When `style = "lines"`,  this controls transparency of lines; passed to \code{\link[ggplot2]{geom_line}}. For `style = "mean_qi", this controls the transparency of the shaded credible interval; passed to \code{\link[ggplot2]{geom_ribbon}}.
+#' @param lwd Numeric value indicating linewidth. Passed to \code{\link[ggplot2]{geom_line}}
+#' @param fill Color for the shaded credible intervalsl; only used when `style = "mean_qi"`.
+#' @param size Positive numeric value. For `style = "mean_qi"`, this controls the size of the points representing crude rates. To exclude these points from the plot altogether, use `size = 0`.
 #' @param ... additional arguments will be passed to `\code{\link[ggplot2]{theme}}
 #' 
 #' @export 
@@ -50,13 +51,15 @@ plot.surveil <- function(x,
                          M = 250,
                          alpha,
                          lwd,
+                         fill = "gray80",
+                         size = 1.5,
                          ...) {
     stopifnot(is.logical(facet))    
     style <- match.arg(style, c("mean_qi", "lines"))
     if (missing(lwd)) lwd <- ifelse(style == "mean_qi", 1, 0.05)
     if (missing(alpha)) alpha <- ifelse(style == "mean_qi", 0.5, 0.7)
     if (style == "lines") return(plot_lines(x, scale, facet, base_size, palette, M, alpha, lwd, ...))
-    if (style == "mean_qi") return(plot_mean_qi(x, scale, facet, base_size, palette, alpha, lwd, ...))
+    if (style == "mean_qi") return(plot_mean_qi(x, scale, facet, base_size, palette, alpha, lwd, fill, size, ...))
 }
 
 #' @import ggplot2
@@ -68,7 +71,9 @@ plot_mean_qi <- function(x,
                          base_size,
                          palette,
                          alpha,
-                         lwd,                         
+                         lwd,
+                         fill,
+                         size,
                          ...) {
     if (!inherits(x$group, "list")) {
         gg <- ggplot(x$summary)
@@ -103,20 +108,23 @@ plot_mean_qi <- function(x,
                         ymax = scale * .data$upr_97.5
                         ),
                     alpha = alpha,
-                    fill = 'black',
+                    fill = fill,
                     lwd = 0
                     ) +
         geom_line(aes(.data$time, scale * .data$mean),
                   lwd = lwd) +
-        geom_point(aes(.data$time, scale * .data$Crude),
-                   alpha = 0.65,
-                   size = 0.5
-                   ) +
-        scale_x_continuous(name = NULL) +
-        scale_y_continuous(name = NULL) +
+        labs(x = NULL,
+             y = NULL) +
         theme_classic(base_size = base_size) +
         theme(legend.position = "bottom",
               ...)
+    if (size) {
+        gg <- gg +
+            geom_point(aes(.data$time, scale * .data$Crude),
+                       alpha = 0.75,
+                       size = size
+                       )
+    }
     return (gg)
 
     }
@@ -163,51 +171,40 @@ plot_lines <- function(x,
     s_df <- do.call("rbind", list_df)
     if (scale != 1) message("Plotted rates are per ", scales::comma(scale))
     s_df$rate <- s_df$rate * scale
+    s_df <- dplyr::left_join(s_df, x$time$time.df, by = "time.index")
     if (K == 1) {
-        gg <- ggplot(s_df, aes(.data$time.index, .data$rate,
+        gg <- ggplot(s_df, aes(.data$time.label, .data$rate,
                                group = factor(.data$draw))
                      ) +
             geom_line(alpha = alpha, lwd = lwd) +
-            scale_x_continuous(
-                breaks = x$time$time.df$time.index,
-                labels = x$time$time.df$label,
-                name = NULL
-            ) +
-            scale_y_continuous(name = NULL) +    
+            labs(y = NULL,
+                 x = NULL) +
             theme_classic() +
             theme(...)
         return (gg)
     }        
     s_df <- dplyr::left_join(s_df, x$group$group.df, by = "group.index")
-    s_df$label <- factor(s_df$label, ordered = TRUE, levels = unique(s_df$label))
+    s_df$group.label <- factor(s_df$group.label, ordered = TRUE, levels = unique(s_df$group.label))
     if (facet) {            
-        gg <- ggplot(s_df, aes(.data$time.index, .data$rate,
+        gg <- ggplot(s_df, aes(.data$time.label, .data$rate,
                                group = factor(.data$draw))
                          ) +
             geom_line(alpha = alpha,
                       lwd = lwd) +
-            scale_x_continuous(
-                breaks = x$time$time.df$time.index,
-                labels = x$time$time.df$label,
-                name = NULL
-            ) +
-            scale_y_continuous(name = NULL) +    
+            labs(x = NULL,
+                 y = NULL) +
             theme_classic() +
             theme(...) +
-            facet_wrap(~ label, scales = "free" )
+            facet_wrap(~ group.label, scales = "free" )
         return(gg)
     }        
-    gg <- ggplot(s_df, aes(.data$time.index, .data$rate,
+    gg <- ggplot(s_df, aes(.data$time.label, .data$rate,
                            group = factor(.data$draw),
-                           col = .data$label)) +
+                           col = .data$group.label)) +
         geom_line(alpha = alpha,
                   lwd = lwd) +
-        scale_x_continuous(
-            breaks = x$time$time.df$time.index,
-            labels = x$time$time.df$label,
-            name = NULL
-            ) +
-        scale_y_continuous(name = NULL) +    
+        labs(x = NULL,
+             y = NULL) +
         theme_classic() +
         guides(color = guide_legend(override.aes = list(size = 2))) +
         theme(legend.position = "bottom",
@@ -291,11 +288,11 @@ standardize <- function(x, label, standard_pop) {
     rate <- group_index <- time_index <- NULL # global bindings
     ids <- 1:ncol(x$data$cases)
     # proper order
-    stand_df <- data.frame(label=label, standard_pop = standard_pop)
+    stand_df <- data.frame(label = label, standard_pop = standard_pop)
     id_df <- data.frame(group_index = ids, label = names(x$data$cases))
     stand_df <- dplyr::left_join(id_df, stand_df, by = "label")
     # time period labels
-    time_labels <- x$time$time.df$label
+    time_labels <- x$time$time.df$time.label
     time_df <- data.frame(time_index = 1:length(time_labels), time_label = time_labels)
     # samples of standardized rates
     stand_samples <- x$samples %>%
@@ -303,7 +300,8 @@ standardize <- function(x, label, standard_pop) {
         dplyr::select(.data$group_index, .data$time_index, .data$.draw, .data$.value) %>%
         dplyr::left_join(stand_df, by = c("group_index")) %>%
         dplyr::group_by(.data$.draw, .data$time_index) %>%
-        dplyr::summarise(stand_rate = standardize_rate(.data$.value, .data$standard_pop))
+        dplyr::summarise(stand_rate = standardize_rate(.data$.value, .data$standard_pop)) %>%
+        dplyr::left_join(time_df, by ="time_index")
     # summary of marginal posterior distributions
     stand_summary <- stand_samples %>%
         dplyr::group_by(.data$time_index) %>%
@@ -380,10 +378,12 @@ plot.stand_surveil <- function(x,
                                base_size = 14,
                                col = 'black',
                                fill = 'gray80',
-                               alpha = ifelse(style == "mean_qi", 0.5, 0.7),
-                               lwd = ifelse(style == "mean_qi", 1, 0.05),       
+                               alpha,
+                               lwd,
                                ...) {
     style <- match.arg(style, c("mean_qi", "lines"))
+    if (missing(lwd)) lwd <- ifelse(style == "mean_qi", 1, 0.05)
+    if (missing(alpha)) alpha <- ifelse(style == "mean_qi", 0.5, 0.7)
     if (scale != 1) message("Plotted rates are per ", scales::comma(scale))
     if (style == "mean_qi") {
         gg <- ggplot(x$standard_summary) +
@@ -398,8 +398,8 @@ plot.stand_surveil <- function(x,
                     ) +
             geom_line(aes(.data$time_label, scale * .data$stand_rate),
                       col = col) +
-            scale_x_continuous(name = NULL) +
-            scale_y_continuous(name = NULL) +
+            labs(x = NULL,
+                 y = NULL) +
             theme_classic(base_size = base_size) +
             theme(...)
         return (gg)
@@ -410,18 +410,14 @@ plot.stand_surveil <- function(x,
         TT <- max(df$time_index)        
         df$draw <- rep(1:M, each = TT)
         df$stand_rate * scale
-        gg <- ggplot(df, aes(.data$time_index, .data$stand_rate,
+        gg <- ggplot(df, aes(.data$time_label, .data$stand_rate,
                              group = factor(.data$draw))
                      ) +
             geom_line(col = col,
                       alpha = alpha,
                       lwd = lwd) +
-            scale_x_continuous(
-                breaks = x$time$time.df$time.index,
-                labels = x$time$time.df$label,
-                name = NULL
-            ) +
-            scale_y_continuous(name = NULL) +    
+            labs(x = NULL,
+                 y = NULL) +
             theme_classic() +
             theme(...)
         return (gg)

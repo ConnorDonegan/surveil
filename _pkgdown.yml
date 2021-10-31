@@ -32,7 +32,7 @@ reference:
 - title: "Prior distributions"
   desc: Functions to set parameters for prior distributions
 - contents:
-  - student_t
+  - normal
 - title: "Data"
 - contents:
   - standard

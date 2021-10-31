@@ -30,7 +30,7 @@ test_that("cor = TRUE works with stan_rw", {
 
 test_that("priors work", {
     prior <- list()
-    prior$eta_1 = student_t(location = -5, scale = 5)
+    prior$eta_1 = normal(location = -5, scale = 5)
         fit <- stan_rw(
             data = dfw[grep("Hispanic", dfw$Race), ],
             prior = prior,

@@ -15,8 +15,8 @@
   base_size = 14,
   col = "black",
   fill = "gray80",
-  alpha = ifelse(style == "mean_qi", 0.5, 0.7),
-  lwd = ifelse(style == "mean_qi", 1, 0.05),
+  alpha,
+  lwd,
   ...
 )
 }

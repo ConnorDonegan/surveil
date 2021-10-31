@@ -77,27 +77,27 @@ head(tx.msa) %>%
 
 ### The basics
 
-The base **surveil** model specification is a Poisson random-walk, which is closely related to both state-space and Intrinsic Gaussian Markov random field (IGMRF) models. The Poisson model is used as the likelihood: the probability of observing a given number of cases, $y_t$, conditional on unknown level of risk, $e^{\phi_t}$, and known population at risk, $p_t$:
+The base **surveil** model specification is specified as follows. The Poisson model is used as the likelihood: the probability of observing a given number of cases, $y_t$, conditional on unknown level of risk, $e^{\phi_t}$, and known population at risk, $p_t$:
 $$y_t \sim \text{Pois}(p_t \cdot e^{\phi_t})$$
 where $t$ indexes the time period.
 
-Next, we build a model for the log-rates, ${\phi_t}$. The random walk structure states that our expectation for the log-rate at any time is its previous value, and we assign a Gaussian probability distribution to deviations from the previous value:
+Next, we build a model for the log-rates, ${\phi_t}$. The first-difference prior states that our expectation for the log-rate at any time is its previous value, and we assign a Gaussian probability distribution to deviations from the previous value [@clayton_1996]. This is also known as the random-walk prior:
 $$\phi_t \sim \text{Gau}(\phi_{t-1}, \tau^2)$$
-This places higher probability on a smooth trend through time, specifically implying that the underlying risk of disease tends to have less variation than we find in the raw observations.
+This places higher probability on a smooth trend through time, specifically implying that underlying disease risk tends to have less variation than crude incidence.
 
-The log-risk for time $t=1$ has no previous value to anchor its expectation; thus, we assign a prior probability distribution directly to $\phi_1$. For this prior, **surveil** uses a Student's t distribution, which has three parameters: degrees of freedom, location, and scale. When the degrees of freedom are large (even > 20), it is comparable to the Gaussian distribution; otherwise, somewhat greater probability is assigned to tail-area observations. The scale parameter, $\tau$, also requires a prior distribution, and again **surveil** uses a Student's t model.
+The log-risk for time $t=1$ has no previous value to anchor its expectation; thus, we assign a prior probability distribution directly to $\phi_1$. For this prior, **surveil** uses a Gaussian distribution. The scale parameter, $\tau$, also requires a prior distribution, and again **surveil** uses a Gaussian model.
 
 ### Multiple time series
 
 For multiple time series, **surveil** allows users to add a correlation structure to the model. This allows our inferences about each population to be mutually informed by inferences about all other observed populations.
 
-The log-rates for $k$ populations, $\boldsymbol \phi_t$, are assigned a multivariate Gaussian model:
+The log-rates for $k$ populations, $\boldsymbol \phi_t$, are assigned a multivariate Gaussian model [@brandt_2007]:
 $$\boldsymbol \phi_t \sim \text{Gau}(\boldsymbol \phi_{t-1}, \boldsymbol \Sigma),$$
 where $\boldsymbol \Sigma$ is a $k \times k$ covariance matrix.
 
-The covariance matrix can be decomposed into a diagonal matrix containing scale parameters for each variable, $\boldsymbol \Delta = diag(\tau_1,\dots \tau_k)$, and a symmetric correlation matrix, $\boldsymbol \Omega$:
+The covariance matrix can be decomposed into a diagonal matrix containing scale parameters for each variable, $\boldsymbol \Delta = diag(\tau_1,\dots \tau_k)$, and a symmetric correlation matrix, $\boldsymbol \Omega$ [@stan_2021]:
 $$\boldsymbol \Sigma = \boldsymbol \Delta \boldsymbol \Omega \boldsymbol \Delta$$
-When the correlation structure is added to the model, then a prior distribution is also required for the correlation matrix. **surveil** uses the LKJ model, which has a single shape parameter, $\eta$.^[You can find more about the LKJ model in the Stan documentation.] If $\eta=1$, the LKJ model will place uniform prior probability on any $k \times k$ correlation matrix; as $\eta$ increases from one, it expresses ever greater skepticism towards large correlations. When $\eta <1$, the LKJ model becomes 'concave'---expressing skepticism towards correlations of zero. 
+When the correlation structure is added to the model, then a prior distribution is also required for the correlation matrix. **surveil** uses the LKJ model, which has a single shape parameter, $\eta$ [@stan_2021]. If $\eta=1$, the LKJ model will place uniform prior probability on any $k \times k$ correlation matrix; as $\eta$ increases from one, it expresses ever greater skepticism towards large correlations. When $\eta <1$, the LKJ model becomes 'concave'---expressing skepticism towards correlations of zero. 
 
 ## Fitting the model
 
@@ -127,6 +127,14 @@ fig +
 		     name = NULL,
 		     type = 'qual')    
 ```
+
+The plot method has a `style` argument that controls how the probability distribution is represented. The default, `style = "mean_qi"`, shows the mean of the posterior distribution of the risk at each time period with a shaded 95\% credible interval (as above). The alternative, `style = "lines"`, plots MCMC samples from the joint probability distribution across all time periods:
+
+```{r fig.width = 4, fig.height = 3.5}
+plot(fit, scale = 100e3, style = "lines")
+```
+
+By default, `M = 250` samples are plotted. The `style` option is available for all of the `surveil` plot methods.
 
 ## Measuring pairwise inequality
 
@@ -158,8 +166,8 @@ plot(gd, scale = 100e3)
 
 If we wanted to replace the plot of the PAR with one of the RR, we would set the `PAR` option to `FALSE`:
 
-```{r eval = FALSE}
-plot(gd, scale = 100e3, PAR = FALSE)
+```{r fig.width = 3.5, fig.height = 4.5}
+plot(gd, scale = 100e3, PAR = FALSE, style = "lines")
 ```
 
 ## Measuring inequality with multiple groups

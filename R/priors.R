@@ -1,14 +1,13 @@
 #' Prior distributions
 #'
-#' @param df Degrees of freedom (positive numeric)
 #' @param location Location parameter (numeric)
 #' @param scale Scale parameter (positive numeric)
-#' 
+#' @param k Optional; number of groups for which priors are needed. This is a shortcut to avoid using the `rep` function to repeat the same prior for each group, as in: `normal(location = rep(0, times = 3), scale = rep(1, times = 3)`. To provide distinct priors for each group, simply specify them individually, as in `normal(location = c(-5, -6, -8), scale = c(2, 2, 2))`.
 #' @details
 #' 
 #' The prior distribution functions are used to set the values of prior parameters.
 #'
-#' Users can control the values of the parameters, but the distribution (model) itself is fixed. The first log-rate (`eta[t]`, `t=1`) and the scale parameters (sigma) are assigned Student's t prior distribution. (The scale parameter, sigma, is constrained to be positive, making it a half-Student's t prior.) For correlated time series, the correlation matrix is assigned the LKJ prior.
+#' Users can control the values of the parameters, but the distribution (model) itself is fixed. The first log-rate (`eta[t]`, `t=1`) and the scale parameters (sigma) are assigned Gaussian (`normal`) prior distribution. (The scale parameter, sigma, is constrained to be positive, making it a half-normal prior.) For correlated time series, the correlation matrix is assigned the LKJ prior.
 #' 
 #'
 #' ### Parameterizations
@@ -19,10 +18,11 @@
 #' 
 #' @examples
 #'
+#' # note there are three groups in the data, each requires a prior
 #' prior <- list()
-#' prior$eta_1 <- student_t(df = c(20, 20, 20), location = c(-5, -5, -5), scale = c(3, 3, 3))
-#' # By default, all `df = 20`
-#' prior$sigma <- student_t(location = c(0,0,0), scale = c(1,1,1))
+#' prior$eta_1 <- normal(location = -5, scale = 3, k = 3)
+#' ## by default, location = 0
+#' prior$sigma <- normal(scale = 1, k = 3)
 #' prior$omega <- lkj(2)
 #' \dontrun{
 #' dfw <- dplyr::filter(msa, grepl("Dallas", MSA))
@@ -33,13 +33,18 @@
 #' @rdname priors
 #' @md
 #' @export
-student_t <- function(df = 20, location = 0, scale) {
+#'
+normal <- function(location = 0, scale, k = 1) {
     validate_positive_parameter(scale)
-    validate_positive_parameter(df)
-    out <- list(dist = "student_t", df = df, location = location, scale = scale)
+    if (k > 1) {
+        location <- rep(location, times = k)
+        scale <- rep(scale, times = k)
+    }
+    out <- list(dist = "normal", location = location, scale = scale)
     class(out) <- append("prior", class(out))
     return (out)
 }
+
 
 #'
 #' @param eta The shape parameter for the LKJ prior
@@ -71,7 +76,7 @@ lkj <- function(eta) {
 print.prior <- function(x, digits = 2, ...) {
     nm <- x$dist
     message("Distribution: ", nm)
-    if (nm == "student_t") df <- as.data.frame(x[c('df', 'location', 'scale')])
+    if (nm == "normal") df <- as.data.frame(x[c('location', 'scale')])
     if (nm == "lkj") df <- data.frame(eta = x$eta)
     print(df, digits = digits, row.names = FALSE, ...)           
 }

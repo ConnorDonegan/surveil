@@ -15,6 +15,8 @@
   M = 250,
   alpha,
   lwd,
+  fill = "gray80",
+  size = 1.5,
   ...
 )
 
@@ -35,9 +37,13 @@
 
 \item{M}{If \code{style = "lines"}, then \code{M} is the number of samples from the posterior distribution that will be plotted; the default is \code{M = 250}.}
 
-\item{alpha}{For \code{style = "lines"}; numeric value from zero to one indicating transparency of lines; passed to \code{\link[ggplot2]{geom_line}}. For `style = "mean_qi", this controls the transparency of the shaded credible interval; passed to \code{\link[ggplot2]{geom_ribbon}}.}
+\item{alpha}{Numeric value from zero to one. When \code{style = "lines"},  this controls transparency of lines; passed to \code{\link[ggplot2]{geom_line}}. For `style = "mean_qi", this controls the transparency of the shaded credible interval; passed to \code{\link[ggplot2]{geom_ribbon}}.}
 
-\item{lwd}{For \code{style = "lines"}; numeric value indicating linewidth. Passed to \code{\link[ggplot2]{geom_line}}}
+\item{lwd}{Numeric value indicating linewidth. Passed to \code{\link[ggplot2]{geom_line}}}
+
+\item{fill}{Color for the shaded credible intervalsl; only used when \code{style = "mean_qi"}.}
+
+\item{size}{Positive numeric value. For \code{style = "mean_qi"}, this controls the size of the points representing crude rates. To exclude these points from the plot altogether, use \code{size = 0}.}
 
 \item{...}{additional arguments passed to \code{\link[base]{print.data.frame}}}
 }

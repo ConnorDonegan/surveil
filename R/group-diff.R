@@ -159,7 +159,7 @@ plot.surveil_diff <- function(x,
                                     names_to = "measure",
                                     values_to = "value"
                                     )
-        s_df <- arrange(s_df, time)
+        s_df <- arrange(s_df, .data$time)
         n_samples <- max(s_df$.draw)
         s_df <- s_df[which(s_df$.draw %in% sample(n_samples, size = M)),]
         gg <- ggplot(s_df) +
@@ -180,7 +180,9 @@ plot.surveil_diff <- function(x,
         return (gg)
     }    
     gg.ec <- ggplot(x$summary) +
-        geom_ribbon(aes(.data$time, ymin = .data$EC.lower, ymax = .data$EC.upper),
+        geom_ribbon(aes(.data$time,
+                        ymin = .data$EC.lower,
+                        ymax = .data$EC.upper),
                     fill = fill,
                     alpha = alpha) +
         geom_line(aes(.data$time,
@@ -190,14 +192,17 @@ plot.surveil_diff <- function(x,
                   ) +
         labs(
             x = NULL,
-            y = "EC"
+            y = NULL,
+            subtitle = "EC"
         ) +
-        geom_hline(yintercept = 0) +
+        #geom_hline(yintercept = 0) +
         theme_classic(base_size = base_size) +
         theme(...)
     if (PAR) {
         gg.relative <- ggplot(x$summary) +
-            geom_ribbon(aes(.data$time, ymin = .data$PAR.lower, ymax = .data$PAR.upper),
+            geom_ribbon(aes(.data$time,
+                            ymin = .data$PAR.lower,
+                            ymax = .data$PAR.upper),
                         fill = fill,
                         alpha = alpha) +
             geom_line(aes(.data$time, .data$PAR),
@@ -206,14 +211,17 @@ plot.surveil_diff <- function(x,
                       ) +
             labs(
                 x = NULL,
-                y = "PAR"
+                y = NULL,
+                subtitle = "PAR"
             ) +
-            geom_hline(yintercept = 0) +
+            #geom_hline(yintercept = 0) +
             theme_classic(base_size = base_size) +
             theme(...)
     } else {
         gg.relative <- ggplot(x$summary) +
-            geom_ribbon(aes(.data$time, ymin = .data$RR.lower, ymax = .data$RR.upper),
+            geom_ribbon(aes(.data$time,
+                            ymin = .data$RR.lower,
+                            ymax = .data$RR.upper),
                         fill = fill,
                         alpha = alpha
                         ) +
@@ -223,15 +231,18 @@ plot.surveil_diff <- function(x,
                       ) +
             labs(
                 x = NULL,
-                y = "RR"
+                y = NULL,
+                subtitle = "RR"
             ) +
-            geom_hline(yintercept = 0) +            
+           # geom_hline(yintercept = 0) +            
             theme_classic(base_size = base_size) +
             theme(...)
     }
     f.lab <- function(brks) scale * brks
     gg.rd <- ggplot(x$summary) +
-        geom_ribbon(aes(.data$time, ymin = .data$RD.lower, ymax = .data$RD.upper),
+        geom_ribbon(aes(.data$time,
+                        ymin = .data$RD.lower,
+                        ymax = .data$RD.upper),
                     fill = fill,
                     alpha = alpha) +
         geom_line(aes(.data$time, .data$RD),
@@ -240,9 +251,10 @@ plot.surveil_diff <- function(x,
                   ) +
         labs(
             x = NULL,
-            y = "RD"
+            y = NULL,
+            subtitle = "RD"
         ) +
-        geom_hline(yintercept = 0) +        
+        #geom_hline(yintercept = 0) +        
         theme_classic(base_size = base_size) +
         scale_y_continuous(labels = f.lab) +
         theme(...)

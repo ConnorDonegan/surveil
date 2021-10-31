@@ -109,9 +109,9 @@ theil.surveil <- function(x) {
     time.index <- 1:length(time.var)
     time.df <- data.frame(time = time.var, time.index = time.index)
     
-    names(x$summary)[grep(x$group$group, names(x$summary))] <- "label"    
-    pop.df <- dplyr::distinct(x$summary, .data$time, .data$label, .data$Population) %>%
-        dplyr::left_join(group.df, by = "label") %>%
+    names(x$summary)[grep(x$group$group, names(x$summary))] <- "group.label"    
+    pop.df <- dplyr::distinct(x$summary, .data$time, .data$group.label, .data$Population) %>%
+        dplyr::left_join(group.df, by = "group.label") %>%
         dplyr::left_join(time.df, by = "time")
     suppressMessages(
         theil.samples <- x$samples %>%
@@ -129,8 +129,8 @@ theil.surveil <- function(x) {
         ggdist::mean_qi(.data$Theil)
     res <- list(summary = theil.df,
                 samples = theil.samples,
-                groups = x$group$group.df$label,
-                group_var = x$group$group)
+                group = x$group.label,
+                time = x$time)
     class(res) <- append("theil", class(res))
     return (res)
 }
@@ -176,15 +176,15 @@ theil.list <- function(x) {
     tw.i.df <- dplyr::bind_rows(tw.i.list, .id = "geog")
     cases.list <- lapply(x, make_cases)
     cases.df <- dplyr::bind_rows(cases.list, .id = "geog")
-
-   theil_samples <- cases.df %>%
-       dplyr::inner_join(tw.i.df, by = c("geog", "time", ".draw")) %>%    
-       dplyr::inner_join(geog.pop.df, by = c("geog", "time")) %>%
-       dplyr::ungroup() %>%
-       dplyr::group_by(.data$time, .data$.draw) %>%
-       dplyr::mutate(total.count = sum(.data$Count),
-                     total.pop = sum(.data$Population)
-                     ) %>%
+    suppressMessages(
+        theil_samples <- cases.df %>%
+            dplyr::inner_join(tw.i.df, by = c("geog", "time", ".draw")) %>%    
+            dplyr::inner_join(geog.pop.df, by = c("geog", "time")) %>%
+            dplyr::ungroup() %>%
+            dplyr::group_by(.data$time, .data$.draw) %>%
+            dplyr::mutate(total.count = sum(.data$Count),
+                          total.pop = sum(.data$Population)
+                          ) %>%
        dplyr::mutate(omega = .data$Count / .data$total.count,
                      eta = .data$Population / .data$total.pop,
                      T_between_contribution = .data$omega * log(.data$omega / .data$eta),
@@ -195,6 +195,7 @@ theil.list <- function(x) {
                   ) %>%
        dplyr::mutate(Theil = .data$Theil_between + .data$Theil_within) %>%
        dplyr::ungroup()
+    )
     theil_summary <- theil_samples %>%
         dplyr::group_by(.data$time) %>%
         ggdist::mean_qi(.data$Theil, .data$Theil_between, .data$Theil_within)
@@ -213,9 +214,9 @@ make_cases <- function(x) {
     group.df$group.index <- as.integer(group.df$group.index)
     time.var <- unique(x$summary$time)
     time.df <- data.frame(time = time.var, time.index = 1:length(time.var))    
-    names(x$summary)[grep(x$group$group, names(x$summary))] <- "label"    
-    pop.df <- dplyr::distinct(x$summary, .data$time, .data$label, .data$Population) %>%
-        dplyr::left_join(group.df, by = "label") %>%
+    names(x$summary)[grep(x$group$group, names(x$summary))] <- "group.label"    
+    pop.df <- dplyr::distinct(x$summary, .data$time, .data$group.label, .data$Population) %>%
+        dplyr::left_join(group.df, by = "group.label") %>%
         dplyr::left_join(time.df, by = "time") %>%
         dplyr::mutate(group.index = as.integer(.data$group.index))            
     cases.samples <- x$samples %>%
@@ -266,13 +267,15 @@ plot.theil <- function(x,
                        M = 250,                      
                        col = "black",
                        fill = "black",
-                       alpha = ifelse(style == "mean_qi", 0.5, 0.7),
-                       lwd = ifelse(style == "mean_qi", 1, 0.05),                
+                       alpha,
+                       lwd,         
                        base_size = 14,
                        scale = 100,
                        labels = x$summary$time,
                        ...) {
     style <- match.arg(style, c("mean_qi", "lines"))
+    if (missing(lwd)) lwd <- ifelse(style == "mean_qi", 1, 0.05)
+    if (missing(alpha)) alpha <- ifelse(style == "mean_qi", 0.5, 0.7)    
     if (style == "lines") {
         s_df <- x$samples
         max_M <- max(s_df$.draw)
@@ -286,10 +289,8 @@ plot.theil <- function(x,
             geom_line(alpha = alpha,
                       lwd = lwd,
                       col = col) +
-            scale_x_continuous(
-                name = NULL
-            ) +
-            scale_y_continuous(name = NULL) +    
+            labs(x = NULL,
+                 y = NULL) +
             theme_classic() +
             theme(...)
         return (gg)
@@ -306,10 +307,8 @@ plot.theil <- function(x,
                   col = col,                
                   lwd = 0.75
                   ) +
-        scale_x_continuous(
-            name = NULL
-        ) +
-        scale_y_continuous(name = paste0("Theil x ", scale)) +
+        labs(x = NULL,
+             y = paste0("Theil x ", scale)) +
         theme_classic(base_size = base_size) +
         theme(...)
 }
@@ -335,8 +334,8 @@ plot.theil_list <- function(x,
                             M = 250,
                             col = "black",
                             fill = "black",
-                            alpha = ifelse(style == "mean_qi", 0.5, 0.7),
-                            lwd = ifelse(style == "mean_qi", 1, 0.05),                    
+                            alpha,
+                            lwd,
                             between_title = "Between",
                             within_title = "Within",
                             total_title = "Total",
@@ -344,8 +343,10 @@ plot.theil_list <- function(x,
                             plot = TRUE,
                             base_size = 14,
                             ...) {
-    if (scale != 1) message("y-axis scale is T times ", scale)
     style <- match.arg(style, c("mean_qi", "lines"))
+    if (missing(lwd)) lwd <- ifelse(style == "mean_qi", 1, 0.05)
+    if (missing(alpha)) alpha <- ifelse(style == "mean_qi", 0.5, 0.7)
+    if (scale != 1) message("y-axis scale is T times ", scale)    
     if (style == "lines") {
         s_df <- x$samples
         s_df <- dplyr::filter(s_df, .data$.draw %in% sample(max(.data$.draw), size = M))
@@ -364,16 +365,16 @@ plot.theil_list <- function(x,
             geom_line(alpha = alpha,
                       lwd = lwd,
                       col = col) +
-            scale_x_continuous(name = NULL) +
-            scale_y_continuous(name = NULL) +    
+            labs(x = NULL,
+                 y = NULL) +
             theme_classic(base_size = base_size) +
-            facet_wrap(~ component ) +
+            facet_wrap(~ component, scales = "free") +
             theme(...)    
         return(gg)
     }    
-    max.val <- x$summary %>%
-        dplyr::summarise(max.val = max(.data$Theil.upper))
-    max.val <- as.numeric(max.val$max.val) * scale
+    #max.val <- x$summary %>%
+     #   dplyr::summarise(max.val = max(.data$Theil.upper))
+    #max.val <- as.numeric(max.val$max.val) * scale
     ## between geography inequality
     g1 <- ggplot(x$summary,
                  aes(x = .data$time,                     
@@ -386,9 +387,10 @@ plot.theil_list <- function(x,
         geom_ribbon(alpha = alpha,
                     fill = fill
                     ) +
-        scale_y_continuous(name = NULL,
-                           limits = c(0, max.val)) +
-        labs(subtitle = between_title, x  = NULL) +
+       # scale_y_continuous(limits = c(0, max.val)) +
+        labs(subtitle = between_title,
+             x  = NULL,
+             y = NULL) +
         theme_classic(base_size = base_size) +
         theme(...)
     ## within geography inequality
@@ -402,10 +404,11 @@ plot.theil_list <- function(x,
                     alpha = alpha,
                     fill = fill
                     ) +
-        scale_y_continuous(name = NULL, limits = c(0, max.val)) +
+       # scale_y_continuous(limits = c(0, max.val)) +
         labs(
             subtitle = within_title,
-            x = NULL
+            x = NULL,
+            y = NULL
         ) +
         theme_classic(base_size = base_size) +
         theme(...)
@@ -420,8 +423,10 @@ plot.theil_list <- function(x,
                     alpha = alpha,
                     fill = fill
                     ) +
-        scale_y_continuous(name = NULL, limits = c(0, max.val)) +
-        labs(subtitle = total_title, x  = NULL) +
+        #scale_y_continuous(limits = c(0, max.val)) +
+        labs(subtitle = total_title,
+             x  = NULL,
+             y = NULL) +
         theme_classic(base_size = base_size) +
         theme(...)    
     if (!plot) {
@@ -440,7 +445,7 @@ plot.theil_list <- function(x,
 #' @export
 print.theil <- function(x, scale = 100, digits = 3, ...) {    
     message("Summary of Theil's Inequality Index")    
-    message("Groups: ", paste(x$groups, collapse = ", "))
+    message("Groups: ", paste(x$group$group.df$group.label, collapse = ", "))
     message("Time periods observed: ", length(x$summary$time))
     pdf <- as.data.frame(x$summary)
     pdf <- pdf[,c("time", "Theil", ".lower", ".upper")]

@@ -1,13 +1,14 @@
 Package: surveil
-Title: Time Series Models for Routine Disease Surveillance 
-Version: 0.0.1
+Title: Time Series Models for Disease Surveillance 
+Version: 0.1.0
 Authors@R: 
     person(given = "Connor",
            family = "Donegan",
            role = c("aut", "cre"),
-           email = "connor.donegan@utsouthwestern.edu",
-           comment = c(ORCID = "0000-0002-9698-5443"))
-Description: Bayesian time series models for routine disease surveillance.
+           email = "connor.donegan@gmail.com",
+Additional_repositories: https://connordonegan.github.io/drat
+comment = c(ORCID = "0000-0002-9698-5443"))
+Description: Provides Bayesian time series models for routine disease surveillance tasks and returns probability distributions for a variety of quantities of interest, including measures of health inequality, period and cumulative percent change, and age-standardized rates.
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true

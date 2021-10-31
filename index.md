@@ -50,8 +50,8 @@ kable(head(cancer),
 |  1999| 15-19 |   3875|    19585857|
 |  1999| 20-24 |   5969|    18148795|
 
-Model trends in risk with the `stan_rw` function, and easily view
-functions of risk estimates, such as cumulative percent change:
+Model trends in risk and easily view functions of risk estimates, such
+as cumulative percent change:
 
 ``` r
 fit <- stan_rw(data = cancer,

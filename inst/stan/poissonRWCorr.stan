@@ -4,10 +4,8 @@ data {
   int<lower=1> K;   // J outcomes
   int y[TT, K];     // outcome datda
   vector[K] log_E[TT];  // population at risk
-  vector[K] prior_eta_1_df;
   vector[K] prior_eta_1_location;
   vector[K] prior_eta_1_scale;  
-  vector[K] prior_sigma_df;
   vector[K] prior_sigma_location;
   vector[K] prior_sigma_scale;
   real<lower=0> prior_omega;  
@@ -34,8 +32,8 @@ transformed parameters {
 
 model {
   target += lkj_corr_cholesky_lpdf(L_Omega | prior_omega);
-  target += student_t_lpdf(sigma | prior_sigma_df, prior_sigma_location, prior_sigma_scale);
-  target += student_t_lpdf(eta_1 | prior_eta_1_df, prior_eta_1_location, prior_eta_1_scale);
+  target += normal_lpdf(sigma | prior_sigma_location, prior_sigma_scale);
+  target += normal_lpdf(eta_1 | prior_eta_1_location, prior_eta_1_scale);
   for (t in 1:TT) {
     target += poisson_log_lpmf(y[t] | mu_y[t]);
     target += std_normal_lpdf(z[t]);
