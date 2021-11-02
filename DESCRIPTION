@@ -7,6 +7,7 @@ Authors@R:
            role = c("aut", "cre"),
            email = "connor.donegan@gmail.com",
            comment = c(ORCID = "0000-0002-9698-5443"))
+URL: https://connordonegan.github.io/surveil/, https://github.com/ConnorDonegan/surveil/	   
 Additional_repositories: https://connordonegan.github.io/drat
 Description: Provides Bayesian time series models for routine disease surveillance tasks and returns probability distributions for a variety of quantities of interest, including measures of health inequality, period and cumulative percent change, and age-standardized rates.
 License: GPL (>= 3)

@@ -8,23 +8,17 @@ editor_options:
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# Surveil 
+# Public health surveillance 
 
 <img src="man/figures/logo.png" align="right" width="160" />
 
-### Public health surveillance 
+The **surveil** R package provides time series models for routine public health surveillance tasks: model time trends in mortality or disease incidence rates to make inferences about health inequalities, cumulative and period percent change, and age-standardized rates. 
 
-#### Measure and monitor health inequalities
-
-#### Cumulative and period percent change
-
-#### Age standardization methods
-
-#### Fully Bayesian inference
+**surveil** is an interface to [Stan](https://mc-stan.org), a state-of-the-art platform for Bayesian inference. 
 
 ### Installation
 
-From **R** (>= version 4.05), install **surveil** using:
+Install **surveil** from R using:
 
 ``` r
 if (!require(drat)) install.packages("drat")
@@ -59,34 +53,3 @@ plot(fit_apc, cumulative = TRUE)
 ```
 
 <img src="man/figures/cpc-plot.png" align="center" width="600" />
-
-### Citation
-
-> Donegan, Connor (2021). surveil: Public health surveillance. R package version 0.1.0., https://connordonegan.github.io/surveil/
-
-```
-bibentry(
-  bibtype = "Manual",
-  title= "surveil: Public Health Surveillance",
-  author= "Donegan, Connor",
-  url = "https://connordonegan.github.io/surveil/",
-  year = 2021,
-  note = "R package version 0.1.0"
-)
-```
-
-All **surveil** models were built using Stan:
-
-> Stan Development Team. 2021. Stan Modeling Language Users Guide and Reference Manual, 2.28. https://mc-stan.org
-
-```
-bibentry(
-  bibtype = "Manual",
-  title= "Stan Modeling Language Users Guide and Reference Manual",
-  author= "{Stan Development Team}",
-  url = "https://mc-stan.org",
-  year = 2021,
-  note = "Version 2.28"
-)
-```
-
