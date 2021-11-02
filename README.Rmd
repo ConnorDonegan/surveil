@@ -49,7 +49,7 @@ kable(head(cancer),
 
 Model trends in risk and easily view functions of risk estimates, such as cumulative percent change:
 
-```{r eval = FALSE}
+```{r}
 fit <- stan_rw(data = cancer,
                time = Year,
                group = Age)
@@ -57,8 +57,6 @@ fit <- stan_rw(data = cancer,
 fit_apc <- apc(fit)
 plot(fit_apc, cumulative = TRUE)
 ```
-
-<img src="man/figures/cpc-plot.png" align="center" width="600" />
 
 ### Citation
 

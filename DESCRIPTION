@@ -6,8 +6,8 @@ Authors@R:
            family = "Donegan",
            role = c("aut", "cre"),
            email = "connor.donegan@gmail.com",
+           comment = c(ORCID = "0000-0002-9698-5443"))
 Additional_repositories: https://connordonegan.github.io/drat
-comment = c(ORCID = "0000-0002-9698-5443"))
 Description: Provides Bayesian time series models for routine disease surveillance tasks and returns probability distributions for a variety of quantities of interest, including measures of health inequality, period and cumulative percent change, and age-standardized rates.
 License: GPL (>= 3)
 Encoding: UTF-8
