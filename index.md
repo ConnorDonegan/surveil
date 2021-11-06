@@ -54,4 +54,5 @@ fit_apc <- apc(fit)
 plot(fit_apc, cumulative = TRUE)
 ```
 
-<img src="man/figures/cpc-plot.png" align="center" width="600" />
+<img src="man/figures/cpc-plot.png" align="center" width="800" />
+*Cumulative percent change in US cancer incidence by age group*
