@@ -41,7 +41,9 @@ Model trends in risk and easily obtain functions of risk estimates, such as cumu
 ```{r message = FALSE, warning = FALSE}
 fit <- stan_rw(data = cancer,
                time = Year,
-               group = Age)
+               group = Age,
+	       refresh = 0 ## silence some printing
+	       )
 
 fit_apc <- apc(fit)
 plot(fit_apc, cumulative = TRUE)
