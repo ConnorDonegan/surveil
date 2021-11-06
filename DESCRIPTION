@@ -8,8 +8,7 @@ Authors@R:
            email = "connor.donegan@gmail.com",
            comment = c(ORCID = "0000-0002-9698-5443"))
 URL: https://connordonegan.github.io/surveil/, https://github.com/ConnorDonegan/surveil/	   
-Additional_repositories: https://connordonegan.github.io/drat
-Description: Provides Bayesian time series models for routine disease surveillance tasks and returns probability distributions for a variety of quantities of interest, including measures of health inequality, period and cumulative percent change, and age-standardized rates.
+Description: Fits Bayesian time series models for routine disease surveillance tasks and returns probability distributions for a variety of quantities of interest, including measures of health inequality, period and cumulative percent change, and age-standardized rates.
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
@@ -17,7 +16,7 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
 Biarch: true
 Depends: 
-    R (>= 3.4.0)
+    R (>= 3.5.0)
 Imports:
     rstantools (>= 2.1.1),
     methods,

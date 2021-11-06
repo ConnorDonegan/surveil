@@ -8,29 +8,19 @@ editor_options:
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# Surveil 
+# Surveil
+
+## Public Health Surveillance
 
 <img src="man/figures/logo.png" align="right" width="160" />
 
-### Public health surveillance 
+The **surveil** R package provides time series models for routine public health surveillance tasks: model time trends in mortality or disease incidence rates to make inferences about health inequalities, cumulative and period percent change, and age-standardized rates. 
 
-#### Measure and monitor health inequalities
-
-#### Cumulative and period percent change
-
-#### Age standardization methods
-
-#### Fully Bayesian inference
+**surveil** is an interface to [Stan](https://mc-stan.org), a state-of-the-art platform for Bayesian inference. 
 
 ### Installation
 
-From **R**, install **surveil** using:
-
-``` r
-if (!require(drat)) install.packages("drat")
-drat::addRepo("connordonegan")
-install.packages("surveil")
-```
+This project is still under development.
 
 ### Usage
 
@@ -48,7 +38,7 @@ kable(head(cancer),
 
 Model trends in risk and easily obtain functions of risk estimates, such as cumulative percent change:
 
-```{r}
+```{r message = FALSE, warning = FALSE}
 fit <- stan_rw(data = cancer,
                time = Year,
                group = Age)

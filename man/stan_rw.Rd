@@ -91,12 +91,22 @@ data(msa)
 dfw <- msa[grep("Dallas", msa$MSA), ]
 fit <- stan_rw(dfw, time = Year, group = Race)
 
+## Dont use results if you see a warning for divergent transitions;
+## try to fix the problem by adjusting adapt_delta:
+fit <- stan_rw(dfw, time = Year, group = Race,
+               control = list(adapt_delta = 0.99))
+
+## print the underlying Stan model, with MCMC diagnostics
+print(fit$samples)
+
+## print the surveil object
 print(fit)
 head(fit$summary)
 
- plot(fit)
+## plot time trends
+plot(fit)
 
-# Inequality analysis
+## Inequality analysis
 Ti <- theil(fit)
 plot(Ti)
 print(Ti)
@@ -105,7 +115,7 @@ gd <- group_diff(fit, target = "Black or African American", reference = "White")
 plot(gd)
 print(gd, scale = 10e3)
 
-# age-specific rates and cumulative percent change
+## age-specific rates and cumulative percent change
 data(cancer)
 fit <- stan_rw(cancer,
                time = Year,

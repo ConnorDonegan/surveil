@@ -18,13 +18,7 @@ The **surveil** R package provides time series models for routine public health 
 
 ### Installation
 
-Install **surveil** from R using:
-
-``` r
-if (!require(drat)) install.packages("drat")
-drat::addRepo("connordonegan")
-install.packages("surveil")
-```
+The project is still under development.
 
 ### Usage
 

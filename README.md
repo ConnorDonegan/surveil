@@ -3,27 +3,22 @@
 Surveil
 =======
 
+Public Health Surveillance
+--------------------------
+
 <img src="man/figures/logo.png" align="right" width="160" />
 
-### Public health surveillance
+The **surveil** R package provides time series models for routine public
+health surveillance tasks: model time trends in mortality or disease
+incidence rates to make inferences about health inequalities, cumulative
+and period percent change, and age-standardized rates.
 
-#### Measure and monitor health inequalities
-
-#### Cumulative and period percent change
-
-#### Age standardization methods
-
-#### Fully Bayesian inference
+**surveil** is an interface to [Stan](https://mc-stan.org), a
+state-of-the-art platform for Bayesian inference.
 
 ### Installation
 
-From **R**, install **surveil** using:
-
-``` r
-if (!require(drat)) install.packages("drat")
-drat::addRepo("connordonegan")
-install.packages("surveil")
-```
+This project is still under development.
 
 ### Usage
 
@@ -60,22 +55,16 @@ fit <- stan_rw(data = cancer,
 ```
 
     ## [1] "Setting normal prior(s) for eta_1: "
-
-    ## Distribution: normal
-
     ##  location scale
     ##        -5    10
     ## [1] "\nSetting half-normal prior for sigma: "
-
-    ## Distribution: normal
-
     ##  location scale
     ##         0     1
     ## 
     ## SAMPLING FOR MODEL 'poissonRW' NOW (CHAIN 1).
     ## Chain 1: 
-    ## Chain 1: Gradient evaluation took 4.6e-05 seconds
-    ## Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.46 seconds.
+    ## Chain 1: Gradient evaluation took 5.7e-05 seconds
+    ## Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.57 seconds.
     ## Chain 1: Adjust your expectations accordingly!
     ## Chain 1: 
     ## Chain 1: 
@@ -84,15 +73,15 @@ fit <- stan_rw(data = cancer,
     ## Chain 1: Iteration: 1501 / 3000 [ 50%]  (Sampling)
     ## Chain 1: Iteration: 3000 / 3000 [100%]  (Sampling)
     ## Chain 1: 
-    ## Chain 1:  Elapsed Time: 4.37218 seconds (Warm-up)
-    ## Chain 1:                1.91035 seconds (Sampling)
-    ## Chain 1:                6.28254 seconds (Total)
+    ## Chain 1:  Elapsed Time: 4.85199 seconds (Warm-up)
+    ## Chain 1:                1.99421 seconds (Sampling)
+    ## Chain 1:                6.8462 seconds (Total)
     ## Chain 1: 
     ## 
     ## SAMPLING FOR MODEL 'poissonRW' NOW (CHAIN 2).
     ## Chain 2: 
-    ## Chain 2: Gradient evaluation took 4.5e-05 seconds
-    ## Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.45 seconds.
+    ## Chain 2: Gradient evaluation took 4.3e-05 seconds
+    ## Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.43 seconds.
     ## Chain 2: Adjust your expectations accordingly!
     ## Chain 2: 
     ## Chain 2: 
@@ -101,15 +90,15 @@ fit <- stan_rw(data = cancer,
     ## Chain 2: Iteration: 1501 / 3000 [ 50%]  (Sampling)
     ## Chain 2: Iteration: 3000 / 3000 [100%]  (Sampling)
     ## Chain 2: 
-    ## Chain 2:  Elapsed Time: 4.58267 seconds (Warm-up)
-    ## Chain 2:                1.92802 seconds (Sampling)
-    ## Chain 2:                6.51069 seconds (Total)
+    ## Chain 2:  Elapsed Time: 5.03155 seconds (Warm-up)
+    ## Chain 2:                2.02755 seconds (Sampling)
+    ## Chain 2:                7.0591 seconds (Total)
     ## Chain 2: 
     ## 
     ## SAMPLING FOR MODEL 'poissonRW' NOW (CHAIN 3).
     ## Chain 3: 
-    ## Chain 3: Gradient evaluation took 8.4e-05 seconds
-    ## Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.84 seconds.
+    ## Chain 3: Gradient evaluation took 4.7e-05 seconds
+    ## Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.47 seconds.
     ## Chain 3: Adjust your expectations accordingly!
     ## Chain 3: 
     ## Chain 3: 
@@ -118,15 +107,15 @@ fit <- stan_rw(data = cancer,
     ## Chain 3: Iteration: 1501 / 3000 [ 50%]  (Sampling)
     ## Chain 3: Iteration: 3000 / 3000 [100%]  (Sampling)
     ## Chain 3: 
-    ## Chain 3:  Elapsed Time: 6.04125 seconds (Warm-up)
-    ## Chain 3:                2.3025 seconds (Sampling)
-    ## Chain 3:                8.34375 seconds (Total)
+    ## Chain 3:  Elapsed Time: 5.19795 seconds (Warm-up)
+    ## Chain 3:                2.03429 seconds (Sampling)
+    ## Chain 3:                7.23224 seconds (Total)
     ## Chain 3: 
     ## 
     ## SAMPLING FOR MODEL 'poissonRW' NOW (CHAIN 4).
     ## Chain 4: 
-    ## Chain 4: Gradient evaluation took 5e-05 seconds
-    ## Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.5 seconds.
+    ## Chain 4: Gradient evaluation took 4.6e-05 seconds
+    ## Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.46 seconds.
     ## Chain 4: Adjust your expectations accordingly!
     ## Chain 4: 
     ## Chain 4: 
@@ -135,9 +124,9 @@ fit <- stan_rw(data = cancer,
     ## Chain 4: Iteration: 1501 / 3000 [ 50%]  (Sampling)
     ## Chain 4: Iteration: 3000 / 3000 [100%]  (Sampling)
     ## Chain 4: 
-    ## Chain 4:  Elapsed Time: 5.7154 seconds (Warm-up)
-    ## Chain 4:                2.28139 seconds (Sampling)
-    ## Chain 4:                7.99678 seconds (Total)
+    ## Chain 4:  Elapsed Time: 4.92575 seconds (Warm-up)
+    ## Chain 4:                2.13442 seconds (Sampling)
+    ## Chain 4:                7.06018 seconds (Total)
     ## Chain 4:
 
 ``` r
