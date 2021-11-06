@@ -28,7 +28,7 @@
 #'
 #' Conceicao, P, Galbraith, JK, Bradford, P. (2001). The Theil Index in sequences of nested and hierarchic grouping structures: implications for the measurement of inequality through time, with data aggregated at different levels of industrial classification. *Eastern Economic Journal*. 27(4): 491-514.
 #' 
-#' Theil, Henri (1972). *Statistical Decomposition Analysis.* Amsterdan, The Netherlands and London, UK: North-Holland Publishing Company.
+#' Theil, Henri (1972). *Statistical Decomposition Analysis.* Amsterdam, The Netherlands and London, UK: North-Holland Publishing Company.
 #'
 #' Shannon, Claude E. and Weaver, Warren (1963). *The Mathematical Theory of Communication*. Urbana and Chicago, USA: University if Illinois Press.
 #'
@@ -145,7 +145,7 @@ theil.surveil <- function(x) {
 #' \describe{
 #' \item{time}{time period}
 #' \item{Theil}{Posterior mean for Theil's index; equal to the sum of `Theil_between` and `Theil_within`.}
-#' \item{Theil_between}{The between-areas component to Theil's indequality index}
+#' \item{Theil_between}{The between-areas component to Theil's inequality index}
 #' \item{Theil_within}{The within-areas component to Theil's inequality index}
 #' }
 #' Additional columns contain the upper and lower limits of the 95 percent credible intervals for each component of Theil's index. 

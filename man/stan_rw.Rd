@@ -21,7 +21,7 @@ stan_rw(
   cores = 1,
   iter = 3000,
   refresh = 1500,
-  control = list(adapt_delta = 0.975),
+  control = list(adapt_delta = 0.98),
   ...
 )
 }

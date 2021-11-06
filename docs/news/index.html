@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Widely Applicable Information Criteria — waic • surveil</title>
+<title>Changelog • surveil</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,8 +46,7 @@
 
 
 
-<meta property="og:title" content="Widely Applicable Information Criteria — waic" />
-<meta property="og:description" content="Widely Application Information Criteria (WAIC) for model comparison" />
+<meta property="og:title" content="Changelog" />
 <meta property="og:image" content="https://connordonegan.github.io/surveil/logo.png" />
 
 
@@ -85,7 +84,7 @@
   <body data-spy="scroll" data-target="#toc">
     
 
-    <div class="container template-reference-topic">
+    <div class="container template-news">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -143,56 +142,23 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Widely Applicable Information Criteria</h1>
-    <small class="dont-index">Source: <a href='https://github.com/ConnorDonegan/surveil/blob/master/R/methods.R'><code>R/methods.R</code></a></small>
-    <div class="hidden name"><code>waic.Rd</code></div>
+      <h1 data-toc-skip>Changelog <small></small></h1>
+      <small>Source: <a href='https://github.com/ConnorDonegan/surveil/blob/master/NEWS.md'><code>NEWS.md</code></a></small>
     </div>
 
-    <div class="ref-description">
-    <p>Widely Application Information Criteria (WAIC) for model comparison</p>
-    </div>
-
-    <div class="ref-usage sourceCode"><pre class='sourceCode r'><code><span class='fu'>waic</span><span class='op'>(</span><span class='va'>fit</span>, pointwise <span class='op'>=</span> <span class='cn'>FALSE</span>, digits <span class='op'>=</span> <span class='fl'>2</span><span class='op'>)</span></code></pre></div>
-
-    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
-    <table class="ref-arguments">
-    <colgroup><col class="name" /><col class="desc" /></colgroup>
-    <tr>
-      <th>fit</th>
-      <td><p>An <code>surveil</code> object or any Stan model with a parameter named "log_lik", the pointwise log likelihood of the observations.</p></td>
-    </tr>
-    <tr>
-      <th>pointwise</th>
-      <td><p>Logical (defaults to <code>FALSE</code>); if <code>pointwide = TRUE</code>, a vector of values for each observation will be returned.</p></td>
-    </tr>
-    <tr>
-      <th>digits</th>
-      <td><p>Round results to this many digits.</p></td>
-    </tr>
-    </table>
-
-    <h2 class="hasAnchor" id="source"><a class="anchor" href="#source"></a>Source</h2>
-
-    <p>Watanabe, S. (2010). Asymptotic equivalence of Bayes cross validation and widely application information criterion in singular learning theory. Journal of Machine Learning Research 11, 3571-3594.</p>
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
-
-    <p>A vector of length 3 with <code>WAIC</code>, a rough measure of the effective number of parameters estimated by the model <code>Eff_pars</code>, and log predictive density <code>Lpd</code>. If <code>pointwise = TRUE</code>, results are returned in a <code>data.frame</code>.</p>
-
-    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <div class="ref-examples sourceCode"><pre class='sourceCode r'><code><span class='r-in'></span>
-<span class='r-in'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span></span>
-<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>msa</span><span class='op'>)</span></span>
-<span class='r-in'><span class='va'>austin</span> <span class='op'>&lt;-</span> <span class='va'>msa</span><span class='op'>[</span><span class='fu'><a href='https://rdrr.io/r/base/grep.html'>grep</a></span><span class='op'>(</span><span class='st'>"Austin"</span>, <span class='va'>msa</span><span class='op'>$</span><span class='va'>MSA</span><span class='op'>)</span>, <span class='op'>]</span></span>
-<span class='r-in'><span class='va'>fit</span> <span class='op'>&lt;-</span> <span class='fu'><a href='stan_rw.html'>stan_rw</a></span><span class='op'>(</span><span class='va'>austin</span>, time <span class='op'>=</span> <span class='va'>Year</span>, group <span class='op'>=</span> <span class='va'>Race</span><span class='op'>)</span></span>
-<span class='r-in'><span class='fu'>waic</span><span class='op'>(</span><span class='va'>fit</span><span class='op'>)</span></span>
-<span class='r-in'><span class='op'>}</span></span>
-</code></pre></div>
+    <div id="surveil-010" class="section level2">
+<h2 class="hasAnchor">
+<a href="#surveil-010" class="anchor" aria-hidden="true"></a>surveil 0.1.0</h2>
+<p>November 6, 2021. surveil’s first release.</p>
+</div>
   </div>
+
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
       <h2 data-toc-skip>Contents</h2>
     </nav>
   </div>
+
 </div>
 
 

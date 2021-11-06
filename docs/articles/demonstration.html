@@ -67,8 +67,18 @@
     </li>
   </ul>
 </li>
+<li>
+  <a href="../news/index.html">Changelog</a>
+</li>
       </ul>
-<ul class="nav navbar-nav navbar-right"></ul>
+<ul class="nav navbar-nav navbar-right">
+<li>
+  <a href="https://github.com/ConnorDonegan/surveil/" class="external-link">
+    <span class="fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
 </div>
 <!--/.nav-collapse -->
   </div>
@@ -84,7 +94,7 @@
       <h1 data-toc-skip>Public health surveillance with surveil</h1>
             
       
-      
+      <small class="dont-index">Source: <a href="https://github.com/ConnorDonegan/surveil/blob/master/vignettes/demonstration.Rmd" class="external-link"><code>vignettes/demonstration.Rmd</code></a></small>
       <div class="hidden name"><code>demonstration.Rmd</code></div>
 
     </div>
@@ -98,7 +108,7 @@
 <a href="#getting-started" class="anchor" aria-hidden="true"></a>Getting started</h2>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## packages required for the analysis</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">surveil</span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://connordonegan.github.io/surveil/">surveil</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span>
 <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme_get.html" class="external-link">theme_set</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_classic</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
@@ -264,8 +274,8 @@
 <span class="co">#&gt; </span>
 <span class="co">#&gt; SAMPLING FOR MODEL 'poissonRW' NOW (CHAIN 1).</span>
 <span class="co">#&gt; Chain 1: </span>
-<span class="co">#&gt; Chain 1: Gradient evaluation took 1.9e-05 seconds</span>
-<span class="co">#&gt; Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.19 seconds.</span>
+<span class="co">#&gt; Chain 1: Gradient evaluation took 4.6e-05 seconds</span>
+<span class="co">#&gt; Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.46 seconds.</span>
 <span class="co">#&gt; Chain 1: Adjust your expectations accordingly!</span>
 <span class="co">#&gt; Chain 1: </span>
 <span class="co">#&gt; Chain 1: </span>
@@ -274,15 +284,15 @@
 <span class="co">#&gt; Chain 1: Iteration: 1501 / 3000 [ 50%]  (Sampling)</span>
 <span class="co">#&gt; Chain 1: Iteration: 3000 / 3000 [100%]  (Sampling)</span>
 <span class="co">#&gt; Chain 1: </span>
-<span class="co">#&gt; Chain 1:  Elapsed Time: 0.390963 seconds (Warm-up)</span>
-<span class="co">#&gt; Chain 1:                0.364962 seconds (Sampling)</span>
-<span class="co">#&gt; Chain 1:                0.755925 seconds (Total)</span>
+<span class="co">#&gt; Chain 1:  Elapsed Time: 0.364382 seconds (Warm-up)</span>
+<span class="co">#&gt; Chain 1:                0.357079 seconds (Sampling)</span>
+<span class="co">#&gt; Chain 1:                0.721461 seconds (Total)</span>
 <span class="co">#&gt; Chain 1: </span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; SAMPLING FOR MODEL 'poissonRW' NOW (CHAIN 2).</span>
 <span class="co">#&gt; Chain 2: </span>
-<span class="co">#&gt; Chain 2: Gradient evaluation took 1.4e-05 seconds</span>
-<span class="co">#&gt; Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.14 seconds.</span>
+<span class="co">#&gt; Chain 2: Gradient evaluation took 1.2e-05 seconds</span>
+<span class="co">#&gt; Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.12 seconds.</span>
 <span class="co">#&gt; Chain 2: Adjust your expectations accordingly!</span>
 <span class="co">#&gt; Chain 2: </span>
 <span class="co">#&gt; Chain 2: </span>
@@ -291,15 +301,15 @@
 <span class="co">#&gt; Chain 2: Iteration: 1501 / 3000 [ 50%]  (Sampling)</span>
 <span class="co">#&gt; Chain 2: Iteration: 3000 / 3000 [100%]  (Sampling)</span>
 <span class="co">#&gt; Chain 2: </span>
-<span class="co">#&gt; Chain 2:  Elapsed Time: 0.358385 seconds (Warm-up)</span>
-<span class="co">#&gt; Chain 2:                0.374025 seconds (Sampling)</span>
-<span class="co">#&gt; Chain 2:                0.73241 seconds (Total)</span>
+<span class="co">#&gt; Chain 2:  Elapsed Time: 0.368745 seconds (Warm-up)</span>
+<span class="co">#&gt; Chain 2:                0.357346 seconds (Sampling)</span>
+<span class="co">#&gt; Chain 2:                0.726091 seconds (Total)</span>
 <span class="co">#&gt; Chain 2: </span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; SAMPLING FOR MODEL 'poissonRW' NOW (CHAIN 3).</span>
 <span class="co">#&gt; Chain 3: </span>
-<span class="co">#&gt; Chain 3: Gradient evaluation took 1.4e-05 seconds</span>
-<span class="co">#&gt; Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.14 seconds.</span>
+<span class="co">#&gt; Chain 3: Gradient evaluation took 1.2e-05 seconds</span>
+<span class="co">#&gt; Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.12 seconds.</span>
 <span class="co">#&gt; Chain 3: Adjust your expectations accordingly!</span>
 <span class="co">#&gt; Chain 3: </span>
 <span class="co">#&gt; Chain 3: </span>
@@ -308,15 +318,15 @@
 <span class="co">#&gt; Chain 3: Iteration: 1501 / 3000 [ 50%]  (Sampling)</span>
 <span class="co">#&gt; Chain 3: Iteration: 3000 / 3000 [100%]  (Sampling)</span>
 <span class="co">#&gt; Chain 3: </span>
-<span class="co">#&gt; Chain 3:  Elapsed Time: 0.396976 seconds (Warm-up)</span>
-<span class="co">#&gt; Chain 3:                0.355184 seconds (Sampling)</span>
-<span class="co">#&gt; Chain 3:                0.75216 seconds (Total)</span>
+<span class="co">#&gt; Chain 3:  Elapsed Time: 0.364684 seconds (Warm-up)</span>
+<span class="co">#&gt; Chain 3:                0.357253 seconds (Sampling)</span>
+<span class="co">#&gt; Chain 3:                0.721937 seconds (Total)</span>
 <span class="co">#&gt; Chain 3: </span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; SAMPLING FOR MODEL 'poissonRW' NOW (CHAIN 4).</span>
 <span class="co">#&gt; Chain 4: </span>
-<span class="co">#&gt; Chain 4: Gradient evaluation took 1.3e-05 seconds</span>
-<span class="co">#&gt; Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.13 seconds.</span>
+<span class="co">#&gt; Chain 4: Gradient evaluation took 1.1e-05 seconds</span>
+<span class="co">#&gt; Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.11 seconds.</span>
 <span class="co">#&gt; Chain 4: Adjust your expectations accordingly!</span>
 <span class="co">#&gt; Chain 4: </span>
 <span class="co">#&gt; Chain 4: </span>
@@ -325,9 +335,9 @@
 <span class="co">#&gt; Chain 4: Iteration: 1501 / 3000 [ 50%]  (Sampling)</span>
 <span class="co">#&gt; Chain 4: Iteration: 3000 / 3000 [100%]  (Sampling)</span>
 <span class="co">#&gt; Chain 4: </span>
-<span class="co">#&gt; Chain 4:  Elapsed Time: 0.38442 seconds (Warm-up)</span>
-<span class="co">#&gt; Chain 4:                0.368502 seconds (Sampling)</span>
-<span class="co">#&gt; Chain 4:                0.752922 seconds (Total)</span>
+<span class="co">#&gt; Chain 4:  Elapsed Time: 0.38598 seconds (Warm-up)</span>
+<span class="co">#&gt; Chain 4:                0.353829 seconds (Sampling)</span>
+<span class="co">#&gt; Chain 4:                0.739809 seconds (Total)</span>
 <span class="co">#&gt; Chain 4:</span></code></pre></div>
 <p>If we wanted to add a correlation structure to the model, we would add <code>cor = TRUE</code> (as opposed to the default, <code>cor = FALSE</code>). To speed things up, we could take advantage of parallel processing using the <code>cores</code> argument (e.g., by adding <code>cores = 4</code> to run on 4 cores simultaneously). Note also that it is important to read and address any warning messages related to Stan’s MCMC diagnostics. In this case, the sampling finished without any warnings, so we can proceed with our analysis.</p>
 </div>
@@ -379,7 +389,7 @@
 <span class="co">#&gt; Reference group: White</span>
 <span class="co">#&gt; Time periods observed: 19</span>
 <span class="co">#&gt; Rate scale: per 100,000</span>
-<span class="co">#&gt; Cumulative excess cases (EC): 3,208 [2978, 3439]</span>
+<span class="co">#&gt; Cumulative excess cases (EC): 3,206 [2986, 3440]</span>
 <span class="co">#&gt; Cumulative EC as a fraction of group risk (PAR): 0.27 [0.25, 0.28]</span>
 <span class="co">#&gt;  time Rate RD  PAR  RR  EC</span>
 <span class="co">#&gt;  1999  170 35 0.20 1.3  95</span>
@@ -391,16 +401,16 @@
 <span class="co">#&gt;  2005  159 44 0.28 1.4 161</span>
 <span class="co">#&gt;  2006  155 45 0.29 1.4 179</span>
 <span class="co">#&gt;  2007  153 44 0.29 1.4 186</span>
-<span class="co">#&gt;  2008  150 46 0.31 1.4 204</span>
+<span class="co">#&gt;  2008  150 46 0.31 1.4 203</span>
 <span class="co">#&gt;  2009  144 45 0.31 1.5 208</span>
 <span class="co">#&gt;  2010  139 43 0.31 1.4 209</span>
 <span class="co">#&gt;  2011  131 37 0.28 1.4 191</span>
 <span class="co">#&gt;  2012  125 34 0.27 1.4 184</span>
 <span class="co">#&gt;  2013  125 35 0.28 1.4 196</span>
-<span class="co">#&gt;  2014  126 35 0.28 1.4 204</span>
+<span class="co">#&gt;  2014  126 35 0.27 1.4 204</span>
 <span class="co">#&gt;  2015  122 29 0.24 1.3 180</span>
 <span class="co">#&gt;  2016  122 33 0.27 1.4 209</span>
-<span class="co">#&gt;  2017  123 30 0.25 1.3 199</span></code></pre></div>
+<span class="co">#&gt;  2017  122 30 0.25 1.3 199</span></code></pre></div>
 <p>All of the <strong>surveil</strong> plotting and printing methods provide an option to scale rates by a custom value. By setting <code>scale = 100e3</code> (100,000), the RD is printed as cases per 100,000. Note that none of the other inequality measures (PAR, RR, EC) are ever impacted by this choice.</p>
 <p>The plot method for <code>surveil_diff</code> produces one time series <code>ggplot</code> each for RD, PAR, and EC. The means of the probability distributions for each measure are plotted as lines, while the shading indicates a 95% credible interval:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
@@ -427,26 +437,26 @@
 <span class="co">#&gt; Time periods observed: 19</span>
 <span class="co">#&gt; Theil's T (times 100) with 95% credible intervals</span>
 <span class="co">#&gt;  time Theil .lower .upper</span>
-<span class="co">#&gt;  1999 0.940  0.624  1.307</span>
-<span class="co">#&gt;  2000 0.795  0.530  1.077</span>
-<span class="co">#&gt;  2001 0.903  0.635  1.208</span>
-<span class="co">#&gt;  2002 0.983  0.696  1.302</span>
-<span class="co">#&gt;  2003 0.994  0.714  1.315</span>
-<span class="co">#&gt;  2004 1.070  0.747  1.442</span>
-<span class="co">#&gt;  2005 1.000  0.697  1.344</span>
-<span class="co">#&gt;  2006 1.045  0.741  1.386</span>
-<span class="co">#&gt;  2007 1.101  0.772  1.474</span>
-<span class="co">#&gt;  2008 1.246  0.895  1.643</span>
-<span class="co">#&gt;  2009 1.201  0.852  1.587</span>
-<span class="co">#&gt;  2010 1.134  0.798  1.523</span>
-<span class="co">#&gt;  2011 0.913  0.609  1.249</span>
-<span class="co">#&gt;  2012 0.771  0.485  1.092</span>
-<span class="co">#&gt;  2013 0.807  0.527  1.119</span>
-<span class="co">#&gt;  2014 0.859  0.592  1.187</span>
-<span class="co">#&gt;  2015 0.678  0.439  0.948</span>
-<span class="co">#&gt;  2016 0.804  0.531  1.121</span>
-<span class="co">#&gt;  2017 0.717  0.450  1.034</span></code></pre></div>
-<p>The time series of Theil’s T can be plotted with 95% credible intervals:</p>
+<span class="co">#&gt;  1999 0.942  0.639  1.304</span>
+<span class="co">#&gt;  2000 0.797  0.525  1.089</span>
+<span class="co">#&gt;  2001 0.903  0.626  1.203</span>
+<span class="co">#&gt;  2002 0.982  0.690  1.307</span>
+<span class="co">#&gt;  2003 0.996  0.710  1.315</span>
+<span class="co">#&gt;  2004 1.071  0.755  1.445</span>
+<span class="co">#&gt;  2005 1.000  0.700  1.351</span>
+<span class="co">#&gt;  2006 1.044  0.716  1.402</span>
+<span class="co">#&gt;  2007 1.100  0.780  1.460</span>
+<span class="co">#&gt;  2008 1.242  0.897  1.659</span>
+<span class="co">#&gt;  2009 1.201  0.849  1.597</span>
+<span class="co">#&gt;  2010 1.132  0.798  1.533</span>
+<span class="co">#&gt;  2011 0.912  0.601  1.270</span>
+<span class="co">#&gt;  2012 0.768  0.480  1.091</span>
+<span class="co">#&gt;  2013 0.806  0.532  1.123</span>
+<span class="co">#&gt;  2014 0.858  0.577  1.200</span>
+<span class="co">#&gt;  2015 0.681  0.429  0.966</span>
+<span class="co">#&gt;  2016 0.803  0.530  1.118</span>
+<span class="co">#&gt;  2017 0.715  0.435  1.047</span></code></pre></div>
+<p>The probability distribution for Theil’s T can be summarized visualy using the <code>"lines"</code> style plot or by plotting estimates with shaded 95% credible intervals:</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">Ts</span><span class="op">)</span></code></pre></div>
 <p><img src="demonstration_files/figure-html/unnamed-chunk-14-1.png" width="384" style="display: block; margin: auto;"></p>

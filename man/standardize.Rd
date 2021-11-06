@@ -36,7 +36,7 @@ stands <- standardize(fit,
                       label = standard$age,
                       standard_pop = standard$standard_pop)
 print(stands)
-plot(stands)
+plot(stands, style = "lines")
 }
 }
 \seealso{

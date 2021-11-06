@@ -185,7 +185,7 @@ Ts <- theil(fit)
 print(Ts)
 ```
 
-The time series of Theil's T can be plotted with 95\% credible intervals:
+The probability distribution for Theil's T can be summarized visualy using the `"lines"` style plot or by plotting estimates with shaded 95\% credible intervals:
 
 ```{r fig.width = 4, fig.height = 3}
 plot(Ts)

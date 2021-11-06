@@ -60,11 +60,11 @@ Print a summary of \code{surveil} model results to the console
 \dontrun{
 library(ggplot2)
    data(msa)
-   dfw <- msa[grep("Dallas", msa$MSA), ]
-   fit <- stan_rw(dfw, time = Year, group = Race)
+   houston <- msa[grep("Houston", msa$MSA), ]
+   fit <- stan_rw(houston, time = Year, group = Race)
 
   ## plot time-varying risk with 95\\% credible intervals
- plot(fit)
+ plot(fit, style = "lines")
  plot(fit, legend.text = element_text(size = 12))
 
  ## as a ggplot, you can customize the output
