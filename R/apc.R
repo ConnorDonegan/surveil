@@ -46,21 +46,21 @@ apc.surveil <- function(x) {
     s_cpc_list <- list()
     for (g in 1:GG) {
         g.samples <- a.samples[,g,]
-        res.apc <- matrix(nrow = nrow(g.samples), ncol = ncol(g.samples) - 1)
-        res.cum <- matrix(nrow = nrow(g.samples), ncol = ncol(g.samples) - 1)
+        res.apc <- matrix(0, nrow = nrow(g.samples), ncol = ncol(g.samples))
+        res.cum <- matrix(0, nrow = nrow(g.samples), ncol = ncol(g.samples))
         for (i in 2:ncol(g.samples)) {
-            res.apc[,i-1] <- 100 * (g.samples[,i] / g.samples[,i-1] - 1)
-            res.cum[,i-1] <- 100 * (g.samples[,i] / g.samples[,1] - 1)
+            res.apc[,i] <- 100 * (g.samples[,i] / g.samples[,i-1] - 1)
+            res.cum[,i] <- 100 * (g.samples[,i] / g.samples[,1] - 1)
         }
         apc_summary <- data.frame(
-            time = time_label[-1],
+            time = time_label,
             group = group_label[g],
             apc = apply(res.apc, 2, mean),
             lwr = apply(res.apc, 2, quantile, probs = 0.025),
             upr = apply(res.apc, 2, quantile, probs = 0.975)
         )
         cpc_summary <- data.frame(
-            time = time_label[-1],
+            time = time_label,
             group = group_label[g],
             cpc = apply(res.cum, 2, mean),
             lwr = apply(res.cum, 2, quantile, probs = 0.025),
@@ -70,7 +70,7 @@ apc.surveil <- function(x) {
         cpc_list[[g]] <- cpc_summary
 
         apc_samples <- as.data.frame(res.apc)
-        names(apc_samples) <- time_label[-1]
+        names(apc_samples) <- time_label
         apc_samples$.draw <- 1:nrow(apc_samples)
         apc_samples$group <- group_label[g]
         apc_samples <- tidyr::pivot_longer(apc_samples,
@@ -81,7 +81,7 @@ apc.surveil <- function(x) {
         s_apc_list[[g]] <- apc_samples
 
         cpc_samples<- as.data.frame(res.cum)
-        names(cpc_samples) <- time_label[-1]
+        names(cpc_samples) <- time_label
         cpc_samples$.draw <- 1:nrow(cpc_samples)
         cpc_samples$group <- group_label[g]
         cpc_samples <- tidyr::pivot_longer(cpc_samples,
@@ -119,24 +119,40 @@ apc.stand_surveil <- function(x) {
                                  )
     s.wide$.draw <- NULL                   
     s.wide <- as.matrix(s.wide)
-    res.apc <- matrix(NA, nrow = nrow(s.wide), ncol = ncol(s.wide) - 1)
-    res.cum <- matrix(NA, nrow = nrow(s.wide), ncol = ncol(s.wide) - 1)    
+    res.apc <- matrix(0, nrow = nrow(s.wide), ncol = ncol(s.wide))
+    res.cum <- matrix(0, nrow = nrow(s.wide), ncol = ncol(s.wide))    
     for (i in 2:ncol(s.wide)) {
-        res.apc[,i-1] <- 100 * ((s.wide[,i] / s.wide[,i-1]) - 1)
-        res.cum[,i-1] <- 100 * ((s.wide[,i] / s.wide[,1]) - 1)
+        res.apc[,i] <- 100 * ((s.wide[,i] / s.wide[,i-1]) - 1)
+        res.cum[,i] <- 100 * ((s.wide[,i] / s.wide[,1]) - 1)
     }    
     apc_summary <- data.frame(
-        time = time_label[-1],
+        time = time_label,
         apc = apply(res.apc, 2, mean),
         lwr = apply(res.apc, 2, quantile, probs = 0.025),
         upr = apply(res.apc, 2, quantile, probs = 0.975)
     )
     cpc_summary <- data.frame(
-        time = time_label[-1],
+        time = time_label,
         cpc = apply(res.cum, 2, mean),
         lwr = apply(res.cum, 2, quantile, probs = 0.025),
         upr = apply(res.cum, 2, quantile, probs = 0.975)
-    )        
+    )
+    res.apc <- as.data.frame(res.apc)
+    names(res.apc) <- time_label
+    res.apc$.draw <- 1:nrow(res.apc)
+    res.apc <- tidyr::pivot_longer(res.apc,
+                                   -c(.data$.draw),
+                                   names_to = "time",
+                                   values_to = "value")
+    res.apc$time <- as.numeric(res.apc$time)
+    res.cum <- as.data.frame(res.cum)
+    names(res.cum) <- time_label
+    res.cum$.draw <- 1:nrow(res.cum)
+    res.cum <- tidyr::pivot_longer(res.cum,
+                                   -c(.data$.draw),
+                                   names_to = "time",
+                                   values_to = "value")
+    res.cum$time <- as.numeric(res.cum$time)    
     res <- list(apc = apc_summary,
                 cpc = cpc_summary,
                 apc_samples = res.apc,
@@ -237,6 +253,7 @@ plot.apc_ls <- function(x,
             s_df <- x$apc_samples
         }
         s_df <- dplyr::filter(s_df, .data$.draw %in% sample(max(.data$.draw), size = M))
+                                print('these are lines')
         if (length(unique(s_df$group)) > 1) s_df$group <- factor(s_df$group, ordered = TRUE, levels = unique(s_df$group))
         gg <- ggplot(s_df, aes(.data$time, .data$value,
                                group = factor(.data$.draw))
