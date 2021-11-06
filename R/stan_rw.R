@@ -134,7 +134,7 @@ stan_rw <- function(data,
                     cores = 1,
                     iter = 3e3,
                     refresh = 1500,
-                    control = list(adapt_delta = 0.975),
+                    control = list(adapt_delta = 0.98),
                     ...
                     ) {
     stopifnot(inherits(data, "data.frame"))
