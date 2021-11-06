@@ -9,11 +9,11 @@
 #' \dontrun{
 #' library(ggplot2)
 #'    data(msa)
-#'    dfw <- msa[grep("Dallas", msa$MSA), ]
-#'    fit <- stan_rw(dfw, time = Year, group = Race)
+#'    houston <- msa[grep("Houston", msa$MSA), ]
+#'    fit <- stan_rw(houston, time = Year, group = Race)
 #'
 #'   ## plot time-varying risk with 95\% credible intervals
-#'  plot(fit)
+#'  plot(fit, style = "lines")
 #'  plot(fit, legend.text = element_text(size = 12))
 #' 
 #'  ## as a ggplot, you can customize the output
@@ -275,7 +275,7 @@ print.surveil <- function(x, scale = 1, ...) {
 #'                       label = standard$age,
 #'                       standard_pop = standard$standard_pop)
 #' print(stands)
-#' plot(stands)
+#' plot(stands, style = "lines")
 #' }
 #' @seealso \code{\link[surveil]{stan_rw}}  \code{\link[surveil]{plot.stand_surveil}} \code{\link[surveil]{print.stand_surveil}} 
 #' @md
