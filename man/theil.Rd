@@ -90,11 +90,12 @@ Theil's index, which is based on Shannon's information theory, can be extended t
 }
 \examples{
 
+\donttest{
  houston <- msa[grep("Houston", msa$MSA), ]
  fit <- stan_rw(houston, time = Year, group = Race, iter = 1200)
  theil_dfw <- theil(fit)
  plot(theil_dfw)
-
+}
 
 Count <- c(10, 12, 3, 111)
 Pop <- c(1000, 1200, 4000, 9000)

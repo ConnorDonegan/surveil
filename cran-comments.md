@@ -31,13 +31,6 @@ Duration: 9m 17.5s
     Theil (12:981)
     Theil's (12:274)
   
-  Found the following (possibly) invalid URLs:
-    URL: https://www.jstor.org/stable/40326064
-      From: DESCRIPTION
-            man/surveil-package.Rd
-      Status: 403
-      Message: Forbidden
-
 ❯ checking for GNU extensions in Makefiles ... NOTE
   GNU make is a SystemRequirements.
 

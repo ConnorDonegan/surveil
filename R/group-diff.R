@@ -21,12 +21,14 @@
 #'
 #' @examples
 #'
+#' \donttest{
 #' data(msa)
 #' houston <- msa[grep("Houston", msa$MSA), ]
 #' fit <- stan_rw(houston, time = Year, group = Race, iter = 1500)
 #' gd <- group_diff(fit, "Black or African American", "White")
 #' print(gd, scale = 100e3)
 #' plot(gd, scale = 100e3)
+#' }
 #' 
 #' @details
 #'

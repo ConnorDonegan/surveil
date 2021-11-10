@@ -446,7 +446,7 @@ plot.stand_surveil <- function(x,
 #' data(msa)
 #' austin <- msa[grep("Austin", msa$MSA), ]
 #' austin.w <- austin[grep("White", austin$Race),]
-#' fit <- stan_rw(austin.w, time = Year, iter = 1500)
+#' fit <- stan_rw(austin.w, time = Year, iter = 1200)
 #' waic(fit)
 #'  
 #' @source
