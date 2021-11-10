@@ -122,7 +122,7 @@ samples <- fit$samples
 class(samples)
 ```
 
-With `samples`, we can take advantage of the tools provided by **rstan** and other packages, such as **bayesplot**, **tidybayes**, and **loo**. 
+With `samples`, we can take advantage of the tools provided by **rstan** and other packages, such as **bayesplot** and **tidybayes**.
 
 Printing `samples` to the console (`print(samples)`) is an effective way to view the effective sample size, Monte Carlo standard error, and Rhat statistics for each model parameter.
 
