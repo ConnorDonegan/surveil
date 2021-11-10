@@ -101,7 +101,7 @@
 
     
     
-<p>This vignette demonstrates basic usage of <strong>surveil</strong> for public health surveillance. <strong>surveil</strong> leverages the principles of Bayesian inference <span class="citation">(Jaynes <a href="#ref-jaynes_2003">2003</a>; MacKay <a href="#ref-mackay_2003">2003</a>)</span> to infer population risk of disease or death given time series data consisting of case counts and population at risk. Models were built using the <a href="https://mc-stan.org/" class="external-link">Stan</a> modeling language, but users only need to be familiar with the R language.</p>
+<p>This vignette demonstrates basic usage of <strong>surveil</strong> for public health surveillance. <strong>surveil</strong> leverages the principles of Bayesian inference and Markov chain Monte Carlo (MCMC) <span class="citation">(Jaynes <a href="#ref-jaynes_2003">2003</a>; MacKay <a href="#ref-mackay_2003">2003</a>)</span> to infer population risk of disease or death given time series data consisting of case counts and population at risk. Models were built using the <a href="https://mc-stan.org/" class="external-link">Stan</a> modeling language, but users only need to be familiar with the R language.</p>
 <p>The package also contains special methods for age-standardization, printing and plotting model results, and for measuring and visualizing health inequalities.</p>
 <div id="getting-started" class="section level2">
 <h2 class="hasAnchor">
@@ -179,7 +179,7 @@
 <div id="preparing-the-data" class="section level2">
 <h2 class="hasAnchor">
 <a href="#preparing-the-data" class="anchor" aria-hidden="true"></a>Preparing the data</h2>
-<p>We will first analyze aggregated CRC cases across Texas’s top four MSAs. The <code>msa</code> data from CDC Wonder already has the necessary format (column names and contents), but the data are dis-aggregated by MSA. So for this analysis, we first group the data by year and race, and then combine cases across MSAs.</p>
+<p>We will demonstrate using aggregated CRC cases across Texas’s top four MSAs. The <code>msa</code> data from CDC Wonder already has the necessary format (column names and contents), but these data are dis-aggregated by MSA. So for this analysis, we first group the data by year and race, and then combine cases across MSAs.</p>
 <p>The following code chunk aggregates the data using the <code>dplyr</code> package:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">tx.msa</span> <span class="op">&lt;-</span> <span class="va">msa</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
@@ -267,15 +267,15 @@
 <span class="co">#&gt; Distribution: normal</span>
 <span class="co">#&gt; [1] "Setting normal prior(s) for eta_1: "</span>
 <span class="co">#&gt;  location scale</span>
-<span class="co">#&gt;        -5    10</span>
+<span class="co">#&gt;        -6     5</span>
 <span class="co">#&gt; [1] "\nSetting half-normal prior for sigma: "</span>
 <span class="co">#&gt;  location scale</span>
 <span class="co">#&gt;         0     1</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; SAMPLING FOR MODEL 'poissonRW' NOW (CHAIN 1).</span>
 <span class="co">#&gt; Chain 1: </span>
-<span class="co">#&gt; Chain 1: Gradient evaluation took 4.6e-05 seconds</span>
-<span class="co">#&gt; Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.46 seconds.</span>
+<span class="co">#&gt; Chain 1: Gradient evaluation took 2.2e-05 seconds</span>
+<span class="co">#&gt; Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.22 seconds.</span>
 <span class="co">#&gt; Chain 1: Adjust your expectations accordingly!</span>
 <span class="co">#&gt; Chain 1: </span>
 <span class="co">#&gt; Chain 1: </span>
@@ -284,15 +284,15 @@
 <span class="co">#&gt; Chain 1: Iteration: 1501 / 3000 [ 50%]  (Sampling)</span>
 <span class="co">#&gt; Chain 1: Iteration: 3000 / 3000 [100%]  (Sampling)</span>
 <span class="co">#&gt; Chain 1: </span>
-<span class="co">#&gt; Chain 1:  Elapsed Time: 0.364382 seconds (Warm-up)</span>
-<span class="co">#&gt; Chain 1:                0.357079 seconds (Sampling)</span>
-<span class="co">#&gt; Chain 1:                0.721461 seconds (Total)</span>
+<span class="co">#&gt; Chain 1:  Elapsed Time: 0.615819 seconds (Warm-up)</span>
+<span class="co">#&gt; Chain 1:                0.480883 seconds (Sampling)</span>
+<span class="co">#&gt; Chain 1:                1.0967 seconds (Total)</span>
 <span class="co">#&gt; Chain 1: </span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; SAMPLING FOR MODEL 'poissonRW' NOW (CHAIN 2).</span>
 <span class="co">#&gt; Chain 2: </span>
-<span class="co">#&gt; Chain 2: Gradient evaluation took 1.2e-05 seconds</span>
-<span class="co">#&gt; Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.12 seconds.</span>
+<span class="co">#&gt; Chain 2: Gradient evaluation took 1.4e-05 seconds</span>
+<span class="co">#&gt; Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.14 seconds.</span>
 <span class="co">#&gt; Chain 2: Adjust your expectations accordingly!</span>
 <span class="co">#&gt; Chain 2: </span>
 <span class="co">#&gt; Chain 2: </span>
@@ -301,15 +301,15 @@
 <span class="co">#&gt; Chain 2: Iteration: 1501 / 3000 [ 50%]  (Sampling)</span>
 <span class="co">#&gt; Chain 2: Iteration: 3000 / 3000 [100%]  (Sampling)</span>
 <span class="co">#&gt; Chain 2: </span>
-<span class="co">#&gt; Chain 2:  Elapsed Time: 0.368745 seconds (Warm-up)</span>
-<span class="co">#&gt; Chain 2:                0.357346 seconds (Sampling)</span>
-<span class="co">#&gt; Chain 2:                0.726091 seconds (Total)</span>
+<span class="co">#&gt; Chain 2:  Elapsed Time: 0.550344 seconds (Warm-up)</span>
+<span class="co">#&gt; Chain 2:                0.46079 seconds (Sampling)</span>
+<span class="co">#&gt; Chain 2:                1.01113 seconds (Total)</span>
 <span class="co">#&gt; Chain 2: </span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; SAMPLING FOR MODEL 'poissonRW' NOW (CHAIN 3).</span>
 <span class="co">#&gt; Chain 3: </span>
-<span class="co">#&gt; Chain 3: Gradient evaluation took 1.2e-05 seconds</span>
-<span class="co">#&gt; Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.12 seconds.</span>
+<span class="co">#&gt; Chain 3: Gradient evaluation took 1.3e-05 seconds</span>
+<span class="co">#&gt; Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.13 seconds.</span>
 <span class="co">#&gt; Chain 3: Adjust your expectations accordingly!</span>
 <span class="co">#&gt; Chain 3: </span>
 <span class="co">#&gt; Chain 3: </span>
@@ -318,15 +318,15 @@
 <span class="co">#&gt; Chain 3: Iteration: 1501 / 3000 [ 50%]  (Sampling)</span>
 <span class="co">#&gt; Chain 3: Iteration: 3000 / 3000 [100%]  (Sampling)</span>
 <span class="co">#&gt; Chain 3: </span>
-<span class="co">#&gt; Chain 3:  Elapsed Time: 0.364684 seconds (Warm-up)</span>
-<span class="co">#&gt; Chain 3:                0.357253 seconds (Sampling)</span>
-<span class="co">#&gt; Chain 3:                0.721937 seconds (Total)</span>
+<span class="co">#&gt; Chain 3:  Elapsed Time: 0.563153 seconds (Warm-up)</span>
+<span class="co">#&gt; Chain 3:                0.454483 seconds (Sampling)</span>
+<span class="co">#&gt; Chain 3:                1.01764 seconds (Total)</span>
 <span class="co">#&gt; Chain 3: </span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; SAMPLING FOR MODEL 'poissonRW' NOW (CHAIN 4).</span>
 <span class="co">#&gt; Chain 4: </span>
-<span class="co">#&gt; Chain 4: Gradient evaluation took 1.1e-05 seconds</span>
-<span class="co">#&gt; Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.11 seconds.</span>
+<span class="co">#&gt; Chain 4: Gradient evaluation took 1.4e-05 seconds</span>
+<span class="co">#&gt; Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.14 seconds.</span>
 <span class="co">#&gt; Chain 4: Adjust your expectations accordingly!</span>
 <span class="co">#&gt; Chain 4: </span>
 <span class="co">#&gt; Chain 4: </span>
@@ -335,37 +335,82 @@
 <span class="co">#&gt; Chain 4: Iteration: 1501 / 3000 [ 50%]  (Sampling)</span>
 <span class="co">#&gt; Chain 4: Iteration: 3000 / 3000 [100%]  (Sampling)</span>
 <span class="co">#&gt; Chain 4: </span>
-<span class="co">#&gt; Chain 4:  Elapsed Time: 0.38598 seconds (Warm-up)</span>
-<span class="co">#&gt; Chain 4:                0.353829 seconds (Sampling)</span>
-<span class="co">#&gt; Chain 4:                0.739809 seconds (Total)</span>
+<span class="co">#&gt; Chain 4:  Elapsed Time: 0.529698 seconds (Warm-up)</span>
+<span class="co">#&gt; Chain 4:                0.46776 seconds (Sampling)</span>
+<span class="co">#&gt; Chain 4:                0.997458 seconds (Total)</span>
 <span class="co">#&gt; Chain 4:</span></code></pre></div>
-<p>If we wanted to add a correlation structure to the model, we would add <code>cor = TRUE</code> (as opposed to the default, <code>cor = FALSE</code>). To speed things up, we could take advantage of parallel processing using the <code>cores</code> argument (e.g., by adding <code>cores = 4</code> to run on 4 cores simultaneously). Note also that it is important to read and address any warning messages related to Stan’s MCMC diagnostics. In this case, the sampling finished without any warnings, so we can proceed with our analysis.</p>
+<p>If we wanted to add a correlation structure to the model, we would add <code>cor = TRUE</code> (as opposed to the default, <code>cor = FALSE</code>). To speed things up, we could take advantage of parallel processing using the <code>cores</code> argument (e.g., by adding <code>cores = 4</code> to run on 4 cores simultaneously).</p>
+</div>
+<div id="mcmc-diagnostics" class="section level2">
+<h2 class="hasAnchor">
+<a href="#mcmc-diagnostics" class="anchor" aria-hidden="true"></a>MCMC diagnostics</h2>
+<p>Before analyzing results, it is important to check MCMC diagnostics. Below, three diagnostics are discussed, each with its own purpose. Note that Stan will automatically print a warning to the R console when these diagnostics indicate trouble.</p>
+<p>MCMC algorithms, such as the Hamiltonian Monte Carlo algorithm that Stan uses, aim to draw samples from the probability distribution specified by the user. The algorithm tries to explore the probability distribution extensively, and when successful, the resulting samples provide an approximate image of the target probability distribution.</p>
+<p>In what follows, we will use the <code>stanfit</code> object stored in our model:</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">samples</span> <span class="op">&lt;-</span> <span class="va">fit</span><span class="op">$</span><span class="va">samples</span>
+<span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">samples</span><span class="op">)</span>
+<span class="co">#&gt; [1] "stanfit"</span>
+<span class="co">#&gt; attr(,"package")</span>
+<span class="co">#&gt; [1] "rstan"</span></code></pre></div>
+<p>With <code>samples</code>, we can take advantage of the tools provided by <strong>rstan</strong> and other packages, such as <strong>bayesplot</strong>, <strong>tidybayes</strong>, and <strong>loo</strong>.</p>
+<p>Printing <code>samples</code> to the console (<code>print(samples)</code>) is an effective way to view the effective sample size, Monte Carlo standard error, and Rhat statistics for each model parameter.</p>
+<div id="monte-carlo-standard-errors" class="section level3">
+<h3 class="hasAnchor">
+<a href="#monte-carlo-standard-errors" class="anchor" aria-hidden="true"></a>Monte Carlo standard errors</h3>
+<p>An important difference between sampling with an MCMC algorithm and sampling from a pseudo random number generator (like <code>rnorm</code>) is that MCMC produces samples that are correlated with each other. This means that for any number of MCMC samples, there is less information than would be provided by the same number of independently drawn samples. To evaluate how far our MCMC estimates may be from the mean of the target probability distribution, we need to consider Monte Carlo standard errors (MCSEs) for each parameter.</p>
+<p>MCSEs are calculated as <span class="citation">(Gelman et al. <a href="#ref-gelman_2014">2014</a>)</span></p>
+<p><span class="math display">\[MCSE(\theta) = \frac{\sqrt(Var(\theta))}{\sqrt(ESS(\theta))}\]</span></p>
+<p>where <span class="math inline">\(Var(\theta)\)</span> is the variance of the posterior distribution for parameter <span class="math inline">\(\theta\)</span> and ESS is the effective sample size. ESS is adjusted for autocorrelation in the MCMC samples.</p>
+<p>To view a histogram of MCSEs for all parameters in the <strong>surveil</strong> model, we can use <strong>rstan</strong>’s <code>stan_mcse</code> function:</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">rstan</span><span class="fu">::</span><span class="fu"><a href="https://mc-stan.org/rstan/reference/stan_plot_diagnostics.html" class="external-link">stan_mcse</a></span><span class="op">(</span><span class="va">samples</span><span class="op">)</span>
+<span class="co">#&gt; `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</span></code></pre></div>
+<p><img src="demonstration_files/figure-html/unnamed-chunk-8-1.png" width="384" style="display: block; margin: auto;"></p>
+<p>Notice that instead of returing the MCSEs themselves, <strong>rstan</strong> divides the MCSEs by the scale of the probability distribution, <span class="math inline">\(\frac{MCSE(\theta)}{SD(\theta)}\)</span>. We can see that these values are all under 0.03, which is quite sufficient. We can always obtain smaller MCSEs by drawing a larger number of samples. For a more detailed view, you can start by printing results with <code>print(samples)</code> to examine the <code>n_eff</code> (ESS) column.</p>
+</div>
+</div>
+<div id="r-hat" class="section level2">
+<h2 class="hasAnchor">
+<a href="#r-hat" class="anchor" aria-hidden="true"></a>R-hat</h2>
+<p>A second important difference between sampling with MCMC and sampling with functions like <code>rnorm</code> is that with MCMC we have to <em>find</em> the target distribution. The reason <strong>rstan</strong> (and <strong>surveil</strong>) samples from multiple, independent MCMC chains by default is that this allows us to check that they have all converged on the same distribution. If one or more chains does not resemble the others, then there is obviously a convergence failure. To make the most of the information provided by these MCMC chains, we can split each of them in half, effectively doubling the number of chains, before checking convergence. This is known as the split Rhat statistic <span class="citation">(Gelman et al. <a href="#ref-gelman_2014">2014</a>)</span>. When chains have converged, the Rhat statistics will all equal 1.</p>
+<p>Since we always have at least as many parameters as we do time periods, it helps to visualize them all at once using <code><a href="https://mc-stan.org/rstan/reference/stan_plot_diagnostics.html" class="external-link">rstan::stan_rhat</a></code>:</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">rstan</span><span class="fu">::</span><span class="fu"><a href="https://mc-stan.org/rstan/reference/stan_plot_diagnostics.html" class="external-link">stan_rhat</a></span><span class="op">(</span><span class="va">samples</span><span class="op">)</span>
+<span class="co">#&gt; `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</span></code></pre></div>
+<p><img src="demonstration_files/figure-html/unnamed-chunk-9-1.png" width="384" style="display: block; margin: auto;"></p>
+<p>These are all very near to 1. If any were approaching 1.05 or larger, we would want to run the chains for longer and then check results again.</p>
+</div>
+<div id="divergent-transitions" class="section level2">
+<h2 class="hasAnchor">
+<a href="#divergent-transitions" class="anchor" aria-hidden="true"></a>Divergent transitions</h2>
+<p>Sometimes, MCMC algorithms are unable to provide unbiased samples that will converge on the target distribution given sufficient time. Stan’s MCMC algorithm will issue a warning when it encounters a region of the probability model that it is unable to explore. These warnings of “divergent transitions” should not be ignored, as they indicate that something may have gone wrong <span class="citation">(Betancourt <a href="#ref-betancourt_2017">2017</a>)</span>. They will be printed to the console just after the model finishes sampling.</p>
+<p>For the simple models provided by <strong>surveil</strong>, there will almost always be a way to address divergent transitions. If you receive a divergent transition warning from a <strong>surveil</strong> model, these are the three most probable solutions:</p>
+<ol style="list-style-type: decimal">
+<li>Draw more samples: if you also have low ESS, the divergent transitions may disappear by increasing the number of iterations. This is controlled by the <code>iter</code> argument of <code>stan_rw</code>; e.g., <code>stan_rw(data, time = Year, iter = 3e3)</code>. However, the default value of <code>iter = 3000</code> should generally be sufficient.</li>
+<li>Raise <code>adapt_delta</code>: you can also control an important tuning parameter related to divergent transitions. Simply raising the <code>adapt_delta</code> value to, say, 0.99 or so, may be sufficient; e.g., <code>stan_rw(data, time = Year, control = list(adapt_delta = 0.99))</code>. If you find yourself needing to try ever larger values, then the problem lies elsewhere.</li>
+<li>Check your prior distributions: If your prior information is in conflict with the data, this can create a difficult probability distribution to sample from. The most probable cause for such a situation is that you have made a mistake when specifying your prior distribution. Look first to the prior for <span class="math inline">\(\eta_1\)</span>, the prior for the first log-rate. Note that the parameter is on the <em>log</em> scale, where small changes have big impact on incidence rates. You may find that increasing the scale parameter for the <code><a href="../reference/priors.html">surveil::normal</a></code> prior distribution on <span class="math inline">\(\eta_1\)</span> (making the prior more diffuse) causes the divergent transition warnings to disappear.</li>
+</ol>
 </div>
 <div id="visualizing-results" class="section level2">
 <h2 class="hasAnchor">
 <a href="#visualizing-results" class="anchor" aria-hidden="true"></a>Visualizing results</h2>
-<p>If we call <code>plot</code> on a <code>surveil</code> model, we get a <code>ggplot</code> object:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<p>If we call <code>plot</code> on a <code>surveil</code> model, we get a <code>ggplot</code> object depicting risk estimates with 95% credible intervals:</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit</span>, scale <span class="op">=</span> <span class="fl">100e3</span><span class="op">)</span>
 <span class="co">#&gt; Plotted rates are per 100,000</span></code></pre></div>
-<p><img src="demonstration_files/figure-html/unnamed-chunk-7-1.png" width="384" style="display: block; margin: auto;"></p>
+<p><img src="demonstration_files/figure-html/unnamed-chunk-10-1.png" width="384" style="display: block; margin: auto;"></p>
 <p>Instead of viewing the default plot, we can first store the `<code>ggplot</code> in our working environment and then modify the figure as we please:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">fig</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit</span>, scale <span class="op">=</span> <span class="fl">100e3</span><span class="op">)</span>
 <span class="co">#&gt; Plotted rates are per 100,000</span>
-<span class="va">fig</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_brewer.html" class="external-link">scale_color_brewer</a></span><span class="op">(</span>breaks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Black or African American"</span>, <span class="st">"White"</span>, <span class="st">"Hispanic"</span><span class="op">)</span>,
-                     labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Black"</span>, <span class="st">"White"</span>, <span class="st">"Hispanic"</span><span class="op">)</span>,
-             name <span class="op">=</span> <span class="cn">NULL</span>,
-             type <span class="op">=</span> <span class="st">'qual'</span><span class="op">)</span>    
-<span class="co">#&gt; Scale for 'colour' is already present. Adding another scale for 'colour',</span>
-<span class="co">#&gt; which will replace the existing scale.</span></code></pre></div>
-<p><img src="demonstration_files/figure-html/unnamed-chunk-8-1.png" width="384" style="display: block; margin: auto;"></p>
+<span class="va">fig</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></code></pre></div>
+<p><img src="demonstration_files/figure-html/unnamed-chunk-11-1.png" width="384" style="display: block; margin: auto;"></p>
 <p>The plot method has a <code>style</code> argument that controls how the probability distribution is represented. The default, <code>style = "mean_qi"</code>, shows the mean of the posterior distribution of the risk at each time period with a shaded 95% credible interval (as above). The alternative, <code>style = "lines"</code>, plots MCMC samples from the joint probability distribution across all time periods:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit</span>, scale <span class="op">=</span> <span class="fl">100e3</span>, style <span class="op">=</span> <span class="st">"lines"</span><span class="op">)</span>
 <span class="co">#&gt; Plotted rates are per 100,000</span></code></pre></div>
-<p><img src="demonstration_files/figure-html/unnamed-chunk-9-1.png" width="384" style="display: block; margin: auto;"></p>
+<p><img src="demonstration_files/figure-html/unnamed-chunk-12-1.png" width="384" style="display: block; margin: auto;"></p>
 <p>By default, <code>M = 250</code> samples are plotted. The <code>style</code> option is available for all of the <code>surveil</code> plot methods.</p>
 </div>
 <div id="measuring-pairwise-inequality" class="section level2">
@@ -381,7 +426,7 @@
 </ul>
 <p>Notice that the PAR is simply the rate difference expressed as a fraction of total risk; it indicates the fraction of risk in the target population that would have been removed had the target rate equaled the reference rate <span class="citation">(Menvielle, Kulhánová, and Machenbach <a href="#ref-menvielle_2019">2019</a>)</span>.</p>
 <p>To calculate all of these measures for two groups in our data, we call <code>group_diff</code> on our fitted model:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">gd</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/group_diff.html">group_diff</a></span><span class="op">(</span><span class="va">fit</span>, target <span class="op">=</span> <span class="st">"Black or African American"</span>, reference <span class="op">=</span> <span class="st">"White"</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">gd</span>, scale <span class="op">=</span> <span class="fl">100e3</span><span class="op">)</span>
 <span class="co">#&gt; Summary of Pairwise Inequality</span>
@@ -389,10 +434,10 @@
 <span class="co">#&gt; Reference group: White</span>
 <span class="co">#&gt; Time periods observed: 19</span>
 <span class="co">#&gt; Rate scale: per 100,000</span>
-<span class="co">#&gt; Cumulative excess cases (EC): 3,206 [2986, 3440]</span>
+<span class="co">#&gt; Cumulative excess cases (EC): 3,202 [2970, 3425]</span>
 <span class="co">#&gt; Cumulative EC as a fraction of group risk (PAR): 0.27 [0.25, 0.28]</span>
 <span class="co">#&gt;  time Rate RD  PAR  RR  EC</span>
-<span class="co">#&gt;  1999  170 35 0.20 1.3  95</span>
+<span class="co">#&gt;  1999  170 35 0.20 1.3  94</span>
 <span class="co">#&gt;  2000  166 30 0.18 1.2  85</span>
 <span class="co">#&gt;  2001  168 34 0.20 1.3 102</span>
 <span class="co">#&gt;  2002  169 39 0.23 1.3 122</span>
@@ -402,26 +447,26 @@
 <span class="co">#&gt;  2006  155 45 0.29 1.4 179</span>
 <span class="co">#&gt;  2007  153 44 0.29 1.4 186</span>
 <span class="co">#&gt;  2008  150 46 0.31 1.4 203</span>
-<span class="co">#&gt;  2009  144 45 0.31 1.5 208</span>
-<span class="co">#&gt;  2010  139 43 0.31 1.4 209</span>
+<span class="co">#&gt;  2009  143 44 0.31 1.5 207</span>
+<span class="co">#&gt;  2010  139 42 0.31 1.4 208</span>
 <span class="co">#&gt;  2011  131 37 0.28 1.4 191</span>
-<span class="co">#&gt;  2012  125 34 0.27 1.4 184</span>
-<span class="co">#&gt;  2013  125 35 0.28 1.4 196</span>
+<span class="co">#&gt;  2012  125 34 0.27 1.4 183</span>
+<span class="co">#&gt;  2013  125 35 0.28 1.4 195</span>
 <span class="co">#&gt;  2014  126 35 0.27 1.4 204</span>
 <span class="co">#&gt;  2015  122 29 0.24 1.3 180</span>
 <span class="co">#&gt;  2016  122 33 0.27 1.4 209</span>
-<span class="co">#&gt;  2017  122 30 0.25 1.3 199</span></code></pre></div>
+<span class="co">#&gt;  2017  123 30 0.25 1.3 199</span></code></pre></div>
 <p>All of the <strong>surveil</strong> plotting and printing methods provide an option to scale rates by a custom value. By setting <code>scale = 100e3</code> (100,000), the RD is printed as cases per 100,000. Note that none of the other inequality measures (PAR, RR, EC) are ever impacted by this choice.</p>
 <p>The plot method for <code>surveil_diff</code> produces one time series <code>ggplot</code> each for RD, PAR, and EC. The means of the probability distributions for each measure are plotted as lines, while the shading indicates a 95% credible interval:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">gd</span>, scale <span class="op">=</span> <span class="fl">100e3</span><span class="op">)</span>
 <span class="co">#&gt; Rate differences (RD) are per 100,000 at risk</span></code></pre></div>
-<p><img src="demonstration_files/figure-html/unnamed-chunk-11-1.png" width="336" style="display: block; margin: auto;"></p>
+<p><img src="demonstration_files/figure-html/unnamed-chunk-14-1.png" width="336" style="display: block; margin: auto;"></p>
 <p>If we wanted to replace the plot of the PAR with one of the RR, we would set the <code>PAR</code> option to <code>FALSE</code>:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">gd</span>, scale <span class="op">=</span> <span class="fl">100e3</span>, PAR <span class="op">=</span> <span class="cn">FALSE</span>, style <span class="op">=</span> <span class="st">"lines"</span><span class="op">)</span>
 <span class="co">#&gt; Rate differences (RD) are per 100,000 at risk</span></code></pre></div>
-<p><img src="demonstration_files/figure-html/unnamed-chunk-12-1.png" width="336" style="display: block; margin: auto;"></p>
+<p><img src="demonstration_files/figure-html/unnamed-chunk-15-1.png" width="336" style="display: block; margin: auto;"></p>
 </div>
 <div id="measuring-inequality-with-multiple-groups" class="section level2">
 <h2 class="hasAnchor">
@@ -429,7 +474,7 @@
 <p>Pairwise measures are important, but they cannot provide a summary of inequality across multiple socially situated groups. Theil’s T is an entropy-based inequality index with many favorable qualities, including that it naturally accommodates complex grouping structures <span class="citation">(Theil <a href="#ref-theil_1972">1972</a>; Conceição and Galbraith <a href="#ref-conceicao_2000a">2000</a>; Conceição and Ferreira <a href="#ref-conceicao_2000b">2000</a>)</span>.</p>
 <p>Theil’s T measures the extent to which certain populations are overburdened by disease, meaning precisely that the proportion of cases accounted for by a particular group, <span class="math inline">\(\omega_j\)</span>, is higher than the proportion of the population constituted by that same group, <span class="math inline">\(\eta_j\)</span>. With <span class="math inline">\(k\)</span> groups, Theil’s index is <span class="math display">\[T = \sum_{j=1}^k \omega_j \big[ log(\omega_j / \eta_j) \big].\]</span> This is zero when case shares equal population shares and it increases monotonically as the two diverge for any group. Theil’s T is thus a weighted mean of log-ratios of case shares to population shares, where each log-ratio (which we may describe as a raw inequality score) is weighted by its share of total cases.</p>
 <p>Theil’s T can be computed from a fitted <strong>surveil</strong> model, the only requirement is that the model includes multiple groups (through the <code>group</code> argument):</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">Ts</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/theil.html">theil</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">Ts</span><span class="op">)</span>
 <span class="co">#&gt; Summary of Theil's Inequality Index</span>
@@ -437,29 +482,29 @@
 <span class="co">#&gt; Time periods observed: 19</span>
 <span class="co">#&gt; Theil's T (times 100) with 95% credible intervals</span>
 <span class="co">#&gt;  time Theil .lower .upper</span>
-<span class="co">#&gt;  1999 0.942  0.639  1.304</span>
-<span class="co">#&gt;  2000 0.797  0.525  1.089</span>
-<span class="co">#&gt;  2001 0.903  0.626  1.203</span>
-<span class="co">#&gt;  2002 0.982  0.690  1.307</span>
-<span class="co">#&gt;  2003 0.996  0.710  1.315</span>
-<span class="co">#&gt;  2004 1.071  0.755  1.445</span>
-<span class="co">#&gt;  2005 1.000  0.700  1.351</span>
-<span class="co">#&gt;  2006 1.044  0.716  1.402</span>
-<span class="co">#&gt;  2007 1.100  0.780  1.460</span>
-<span class="co">#&gt;  2008 1.242  0.897  1.659</span>
-<span class="co">#&gt;  2009 1.201  0.849  1.597</span>
-<span class="co">#&gt;  2010 1.132  0.798  1.533</span>
-<span class="co">#&gt;  2011 0.912  0.601  1.270</span>
-<span class="co">#&gt;  2012 0.768  0.480  1.091</span>
-<span class="co">#&gt;  2013 0.806  0.532  1.123</span>
-<span class="co">#&gt;  2014 0.858  0.577  1.200</span>
-<span class="co">#&gt;  2015 0.681  0.429  0.966</span>
-<span class="co">#&gt;  2016 0.803  0.530  1.118</span>
-<span class="co">#&gt;  2017 0.715  0.435  1.047</span></code></pre></div>
+<span class="co">#&gt;  1999 0.941  0.629  1.324</span>
+<span class="co">#&gt;  2000 0.797  0.525  1.095</span>
+<span class="co">#&gt;  2001 0.906  0.640  1.210</span>
+<span class="co">#&gt;  2002 0.985  0.708  1.308</span>
+<span class="co">#&gt;  2003 0.997  0.710  1.320</span>
+<span class="co">#&gt;  2004 1.071  0.750  1.449</span>
+<span class="co">#&gt;  2005 1.000  0.698  1.327</span>
+<span class="co">#&gt;  2006 1.046  0.741  1.413</span>
+<span class="co">#&gt;  2007 1.101  0.782  1.473</span>
+<span class="co">#&gt;  2008 1.244  0.897  1.652</span>
+<span class="co">#&gt;  2009 1.200  0.854  1.599</span>
+<span class="co">#&gt;  2010 1.127  0.788  1.513</span>
+<span class="co">#&gt;  2011 0.908  0.612  1.246</span>
+<span class="co">#&gt;  2012 0.765  0.486  1.073</span>
+<span class="co">#&gt;  2013 0.804  0.521  1.118</span>
+<span class="co">#&gt;  2014 0.856  0.574  1.198</span>
+<span class="co">#&gt;  2015 0.679  0.436  0.961</span>
+<span class="co">#&gt;  2016 0.802  0.527  1.114</span>
+<span class="co">#&gt;  2017 0.717  0.443  1.056</span></code></pre></div>
 <p>The probability distribution for Theil’s T can be summarized visualy using the <code>"lines"</code> style plot or by plotting estimates with shaded 95% credible intervals:</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">Ts</span><span class="op">)</span></code></pre></div>
-<p><img src="demonstration_files/figure-html/unnamed-chunk-14-1.png" width="384" style="display: block; margin: auto;"></p>
+<p><img src="demonstration_files/figure-html/unnamed-chunk-17-1.png" width="480" style="display: block; margin: auto;"></p>
 <p>While the minimum of Theil’s index is always zero, the maximum value varies with the structure of the population under observation. The index is useful for comparisons such as monitoring change over time, and should generally not be used as a indication of the absolute level of inequality.</p>
 <p>The index also has interesting extensions; for example, given disease data for a nested population structure—such as racial-ethnic groups within states—Theil’s index can provide a measure of geographic inequality across states (between-state inequality), and social inequality within states (within-state inequality). For details, see <code><a href="../reference/theil.html">?theil</a></code>.</p>
 </div>
@@ -467,6 +512,9 @@
 <h2 class="hasAnchor">
 <a href="#references" class="anchor" aria-hidden="true"></a>References</h2>
 <div id="refs" class="references">
+<div id="ref-betancourt_2017">
+<p>Betancourt, Michael. 2017. “Diagnosing Biased Inference with Divergences.” <em>Stan Case Studies</em> 4. <a href="https://mc-stan.org/users/documentation/case-studies/divergences_and_bias.html" class="external-link">https://mc-stan.org/users/documentation/case-studies/divergences_and_bias.html</a>.</p>
+</div>
 <div id="ref-brandt_2007">
 <p>Brandt, P, and JT Williams. 2007. <em>Multiple Time Series Models</em>. Sage.</p>
 </div>
@@ -478,6 +526,9 @@
 </div>
 <div id="ref-conceicao_2000a">
 <p>Conceição, Pedro, and James K. Galbraith. 2000. “Constructing Long and Dense Time Series of Inequality Using the Theil Index.” <em>Eastern Economic Journal</em> 26 (1): 61–74.</p>
+</div>
+<div id="ref-gelman_2014">
+<p>Gelman, Andrew, John B Carlin, Hal S Stern, David B Dunson, Aki Vehtari, and Donald B Rubin. 2014. <em>Bayesian Data Analysis</em>. Third. CRC Press.</p>
 </div>
 <div id="ref-jaynes_2003">
 <p>Jaynes, Edwin T. 2003. <em>Probability Theory: The Logic of Science</em>. Cambridge University Press.</p>

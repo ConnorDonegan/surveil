@@ -5,6 +5,8 @@
 \alias{print.surveil}
 \title{Methods for fitted \code{surveil} models}
 \usage{
+\method{print}{surveil}(x, scale = 1, ...)
+
 \method{plot}{surveil}(
   x,
   scale = 1,
@@ -19,13 +21,13 @@
   size = 1.5,
   ...
 )
-
-\method{print}{surveil}(x, scale = 1, ...)
 }
 \arguments{
-\item{x}{A fitted \code{surveil} model.}
+\item{x}{A fitted \code{surveil} model}
 
 \item{scale}{Scale the rates by this amount; e.g., \code{scale = 100e3} will print rates per 100,000 at risk.}
+
+\item{...}{For the plot method, additional arguments will be passed to `\code{\link[ggplot2]{theme}}; for the print method, additional arguments will be passed to \code{\link[base]{print.data.frame}}.}
 
 \item{style}{If \code{style = "mean_qi"}, then the posterior mean and 95 percent credible interval will be plotted; if \code{style = "lines"}, then \code{M} samples from the joint probability distribution of the annual rates will be plotted.}
 
@@ -44,41 +46,32 @@
 \item{fill}{Color for the shaded credible intervalsl; only used when \code{style = "mean_qi"}.}
 
 \item{size}{Positive numeric value. For \code{style = "mean_qi"}, this controls the size of the points representing crude rates. To exclude these points from the plot altogether, use \code{size = 0}.}
-
-\item{...}{additional arguments passed to \code{\link[base]{print.data.frame}}}
 }
 \value{
-a \code{ggplot} object
+The plot method returns a \code{ggplot} object; the print method returns nothing but prints a summary of results to the R console.
 }
 \description{
-Plotting method for \code{surveil} model results
-
-Print a summary of \code{surveil} model results to the console
+Print and plot methods for \code{surveil} model results
 }
 \examples{
 
-\dontrun{
-library(ggplot2)
-   data(msa)
-   houston <- msa[grep("Houston", msa$MSA), ]
-   fit <- stan_rw(houston, time = Year, group = Race)
+data(msa)
+houston <- msa[grep("Houston", msa$MSA), ]
+fit <- stan_rw(houston, time = Year, group = Race, iter = 1500)
 
-  ## plot time-varying risk with 95\\% credible intervals
- plot(fit, style = "lines")
- plot(fit, legend.text = element_text(size = 12))
+print(fit)
+
+## plot probability distribution for disease risk
+plot(fit, style = "lines")
+plot(fit, facet = TRUE, scale = 100e3)
 
  ## as a ggplot, you can customize the output
-plot(fit) +
- scale_x_continuous(breaks = 1:19, 
-                    labels = 1999:2017,
-                    name = NULL
-                    )
-}
+library(ggplot2)
+plot(fit) + theme_bw()
+
 }
 \seealso{
 \code{\link[surveil]{stan_rw}}
-
-\code{\link[surveil]{stan_rw}} \code{\link[surveil]{plot.surveil}}
 }
 \author{
 Connor Donegan (Connor.Donegan@UTSouthwestern.edu)

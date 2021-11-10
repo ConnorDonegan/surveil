@@ -195,7 +195,7 @@
       <th>prior</th>
       <td><p>Optionally provide a named <code>list</code> with prior parameters. If any of the following items are missing, default priors will be assigned and printed to the console.</p>
 <dl>
-<dt>eta_1</dt><dd><p>The first value of log-risk in each series must be assigned a Gaussian prior probability distribution. Provide the location and scale parameters for each demographic group in a list, where each parameter is a <code>k</code>-length vector.For example, with <code>k=2</code> demographic groups, the following code will assign priors of <code>normal(-5, 5)</code> to the starting values of both series: <code>prior = list(eta_1 = normal(location = -6.5, scale = 5, k = 2)</code>. Note, <code>eta</code> is the log-rate, so centering the prior for <code>eta_1</code> on <code>-5</code> is equivalent to centering the prior rate on <code>exp(-6.5)*100,000 = 150</code> cases per 100,000 person-years at risk.</p></dd>
+<dt>eta_1</dt><dd><p>The first value of log-risk in each series must be assigned a Gaussian prior probability distribution. Provide the location and scale parameters for each demographic group in a list, where each parameter is a <code>k</code>-length vector.For example, with <code>k=2</code> demographic groups, the following code will assign priors of <code>normal(-6.5, 5)</code> to the starting values of both series: <code>prior = list(eta_1 = normal(location = -6.5, scale = 5, k = 2)</code>. Note, <code>eta</code> is the log-rate, so centering the prior for <code>eta_1</code> on <code>-6.5</code> is similar to centering the prior rate on <code>exp(-6.5)*100,000 = 150</code> cases per 100,000 person-years at risk. Note, however, that the translation from log-rate to rate is non-linear.</p></dd>
 
 <dt>sigma</dt><dd><p>Each demographic group has a scale parameter assigned to its log-rate. This is the scale of the annual deviations from the previous year's log-rate. The scale parameters are assigned independent half-normal prior distributions (these <code>half</code> normal distributions are restricted to be positive-valued only).</p></dd>
 
@@ -234,19 +234,35 @@
     <p>Brandt P, Williams JT. Multiple time series models. Thousand Oaks, CA: SAGE Publications, 2007.</p>
 <p>Clayton, DG. Generalized linear mixed models. In: Gilks WR, Richardson S, Spiegelhalter DJ, editors. Markov Chain Monte Carlo in Practice: Interdisciplinary Statistics. Boca Raton, FL: CRC Press, 1996. p. 275-302.</p>
 <p>Stan Development Team. Stan Modeling Language Users Guide and Reference Manual, 2.28. 2021. https://mc-stan.org</p>
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>The function returns a list, also of class <code>surveil</code>, containing the following elements:</p><dl>
+
+<dt>summary</dt><dd><p>A <code>data.frame</code> with posterior means and 95 percent credible intervals, as well as the raw data (Count, Population,  time period, grouping variable if any, and crude rates).</p></dd>
+
+<dt>samples</dt><dd><p>A <code>stanfit</code> object returned by <code><a href='https://mc-stan.org/rstan/reference/stanmodel-method-sampling.html'>sampling</a></code>. This contains the MCMC samples from the posterior distribution of the fitted model.</p></dd>
+
+<dt>cor</dt><dd><p>Logical value indicating if the model included a correlation structure.</p></dd>
+
+<dt>time</dt><dd><p>A list containing the name of the time-period column in the user-provided data and a <code>data.frame</code> of observed time periods and their index.</p></dd>
+
+<dt>group</dt><dd><p>If a grouping variable was used, this will be a list containing the name of the grouping variable and a <code>data.frame</code> with group labels and index values.</p></dd>
+
+</dl>
+
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>For time t = 1,...n, the models have Poisson likelihoods for the case counts, given log-risk <code>eta</code> and population at tirks P; the log-risk is modeled using the first-difference prior (a.k.a. a random-walk).</p><pre><code>       y_t ~ Poisson(p_t * exp(eta_t))
+    <p>For time t = 1,...n, the models have Poisson likelihoods for the case counts, given log-risk <code>eta</code> and population at tirks P; the log-risk is modeled using the first-difference (or random-walk) prior:</p><pre><code>       y_t ~ Poisson(p_t * exp(eta_t))
        eta_t ~ Normal(eta_{t-1}, sigma)
-       eta_1 ~ Normal(-5, 10)
-       sigma ~ Normal(0, 1) (0, Inf]
+       eta_1 ~ Normal(-6, 5) (-Inf, 0)
+       sigma ~ Normal(0, 1) (0, Inf)
 </code></pre>
 
 <p>This style of model has been discussed in Bayesian (bio)statistics for quite some time. See Clayton (1996).</p>
 <p>The above model can be used for multiple distinct groups; in that case, each group will have its own independent time series model. However, it is also possible to add a correlation structure to that set of models. Let <code>Y_t</code> be a k-length vector of observations for each of k groups at time t (the capital letter now indicates a vector), then:</p><pre><code>       Y_t ~ Poisson(P_t * exp(Eta_t))
        Eta_t ~ MVNormal(Eta_{t-1}, Sigma)
-       Eta_1 ~ Normal(-5, 10)
-       Sigma = diag(sigma) Omega diag(sigma)
+       Eta_1 ~ Normal(-6, 5)  (-Inf, 0)
+       Sigma = diag(sigma) * Omega * diag(sigma)
        Omega ~ LKJ(2)
        sigma ~ Normal(0, 1) (0, Inf)
 </code></pre>
@@ -257,52 +273,42 @@
     <p>Connor Donegan (Connor.Donegan@UTSouthwestern.edu)</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <div class="ref-examples sourceCode"><pre class='sourceCode r'><code><span class='r-in'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span></span>
-<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>msa</span><span class='op'>)</span></span>
-<span class='r-in'><span class='va'>dfw</span> <span class='op'>&lt;-</span> <span class='va'>msa</span><span class='op'>[</span><span class='fu'><a href='https://rdrr.io/r/base/grep.html'>grep</a></span><span class='op'>(</span><span class='st'>"Dallas"</span>, <span class='va'>msa</span><span class='op'>$</span><span class='va'>MSA</span><span class='op'>)</span>, <span class='op'>]</span></span>
-<span class='r-in'><span class='va'>fit</span> <span class='op'>&lt;-</span> <span class='fu'>stan_rw</span><span class='op'>(</span><span class='va'>dfw</span>, time <span class='op'>=</span> <span class='va'>Year</span>, group <span class='op'>=</span> <span class='va'>Race</span><span class='op'>)</span></span>
-<span class='r-in'></span>
-<span class='r-in'><span class='co'>## Dont use results if you see a warning for divergent transitions;</span></span>
-<span class='r-in'><span class='co'>## try to fix the problem by adjusting adapt_delta:</span></span>
-<span class='r-in'><span class='va'>fit</span> <span class='op'>&lt;-</span> <span class='fu'>stan_rw</span><span class='op'>(</span><span class='va'>dfw</span>, time <span class='op'>=</span> <span class='va'>Year</span>, group <span class='op'>=</span> <span class='va'>Race</span>,</span>
-<span class='r-in'>               control <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>adapt_delta <span class='op'>=</span> <span class='fl'>0.99</span><span class='op'>)</span><span class='op'>)</span></span>
-<span class='r-in'></span>
-<span class='r-in'><span class='co'>## print the underlying Stan model, with MCMC diagnostics</span></span>
-<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span><span class='op'>(</span><span class='va'>fit</span><span class='op'>$</span><span class='va'>samples</span><span class='op'>)</span></span>
-<span class='r-in'></span>
-<span class='r-in'><span class='co'>## print the surveil object</span></span>
-<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span><span class='op'>(</span><span class='va'>fit</span><span class='op'>)</span></span>
-<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span><span class='op'>(</span><span class='va'>fit</span><span class='op'>$</span><span class='va'>summary</span><span class='op'>)</span></span>
-<span class='r-in'></span>
-<span class='r-in'><span class='co'>## plot time trends</span></span>
-<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>fit</span><span class='op'>)</span></span>
-<span class='r-in'></span>
-<span class='r-in'><span class='co'>## Inequality analysis</span></span>
-<span class='r-in'><span class='va'>Ti</span> <span class='op'>&lt;-</span> <span class='fu'><a href='theil.html'>theil</a></span><span class='op'>(</span><span class='va'>fit</span><span class='op'>)</span></span>
-<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>Ti</span><span class='op'>)</span></span>
-<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span><span class='op'>(</span><span class='va'>Ti</span><span class='op'>)</span></span>
-<span class='r-in'></span>
-<span class='r-in'><span class='va'>gd</span> <span class='op'>&lt;-</span> <span class='fu'><a href='group_diff.html'>group_diff</a></span><span class='op'>(</span><span class='va'>fit</span>, target <span class='op'>=</span> <span class='st'>"Black or African American"</span>, reference <span class='op'>=</span> <span class='st'>"White"</span><span class='op'>)</span></span>
-<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>gd</span><span class='op'>)</span></span>
-<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span><span class='op'>(</span><span class='va'>gd</span>, scale <span class='op'>=</span> <span class='fl'>10e3</span><span class='op'>)</span></span>
-<span class='r-in'></span>
-<span class='r-in'><span class='co'>## age-specific rates and cumulative percent change</span></span>
-<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>cancer</span><span class='op'>)</span></span>
-<span class='r-in'><span class='va'>fit</span> <span class='op'>&lt;-</span> <span class='fu'>stan_rw</span><span class='op'>(</span><span class='va'>cancer</span>,</span>
-<span class='r-in'>               time <span class='op'>=</span> <span class='va'>Year</span>,</span>
-<span class='r-in'>               group <span class='op'>=</span> <span class='va'>Age</span></span>
-<span class='r-in'>               <span class='op'>)</span></span>
-<span class='r-in'><span class='va'>fit_apc</span> <span class='op'>&lt;-</span> <span class='fu'><a href='apc.html'>apc</a></span><span class='op'>(</span><span class='va'>fit</span><span class='op'>)</span></span>
-<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>fit_apc</span>, cumulative <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span></span>
-<span class='r-in'></span>
-<span class='r-in'><span class='co'># age-standardized rates</span></span>
-<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>standard</span><span class='op'>)</span></span>
-<span class='r-in'><span class='va'>fit_stands</span> <span class='op'>&lt;-</span> <span class='fu'><a href='standardize.html'>standardize</a></span><span class='op'>(</span><span class='va'>fit</span>, label <span class='op'>=</span> <span class='va'>standard</span><span class='op'>$</span><span class='va'>age</span>, standard_pop <span class='op'>=</span> <span class='va'>standard</span><span class='op'>$</span><span class='va'>standard_pop</span><span class='op'>)</span></span>
-<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span><span class='op'>(</span><span class='va'>fit_stands</span><span class='op'>)</span></span>
-<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>fit_stands</span><span class='op'>)</span></span>
-<span class='r-in'><span class='va'>fit_stands_apc</span> <span class='op'>&lt;-</span> <span class='fu'><a href='apc.html'>apc</a></span><span class='op'>(</span><span class='va'>fit_stands</span><span class='op'>)</span></span>
-<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>fit_stands_apc</span><span class='op'>)</span></span>
-<span class='r-in'><span class='op'>}</span></span>
+    <div class="ref-examples sourceCode"><pre class='sourceCode r'><code><span class='co'># \donttest{</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://mc-stan.org/rstan'>rstan</a></span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>msa</span><span class='op'>)</span>
+<span class='va'>austin</span> <span class='op'>&lt;-</span> <span class='va'>msa</span><span class='op'>[</span><span class='fu'><a href='https://rdrr.io/r/base/grep.html'>grep</a></span><span class='op'>(</span><span class='st'>"Austin"</span>, <span class='va'>msa</span><span class='op'>$</span><span class='va'>MSA</span><span class='op'>)</span>, <span class='op'>]</span>
+
+<span class='va'>fit</span> <span class='op'>&lt;-</span> <span class='fu'>stan_rw</span><span class='op'>(</span><span class='va'>austin</span>,
+               time <span class='op'>=</span> <span class='va'>Year</span>,
+               group <span class='op'>=</span> <span class='va'>Race</span>,
+               iter <span class='op'>=</span> <span class='fl'>1500</span><span class='op'>)</span>
+
+<span class='co'>## MCMC diagnostics</span>
+<span class='fu'>rstan</span><span class='fu'>::</span><span class='fu'><a href='https://mc-stan.org/rstan/reference/stan_plot_diagnostics.html'>stan_mcse</a></span><span class='op'>(</span><span class='va'>fit</span><span class='op'>$</span><span class='va'>samples</span><span class='op'>)</span>
+<span class='fu'>rstan</span><span class='fu'>::</span><span class='fu'><a href='https://mc-stan.org/rstan/reference/stan_plot_diagnostics.html'>stan_rhat</a></span><span class='op'>(</span><span class='va'>fit</span><span class='op'>$</span><span class='va'>samples</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span><span class='op'>(</span><span class='va'>fit</span><span class='op'>$</span><span class='va'>samples</span><span class='op'>)</span>
+
+<span class='co'>## print the surveil object</span>
+<span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span><span class='op'>(</span><span class='va'>fit</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span><span class='op'>(</span><span class='va'>fit</span><span class='op'>$</span><span class='va'>summary</span><span class='op'>)</span>
+
+<span class='co'>## plot time trends</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>fit</span>, style <span class='op'>=</span> <span class='st'>'lines'</span><span class='op'>)</span>
+
+<span class='co'>## age-specific rates and cumulative percent change</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>cancer</span><span class='op'>)</span>
+<span class='va'>fit</span> <span class='op'>&lt;-</span> <span class='fu'>stan_rw</span><span class='op'>(</span><span class='va'>cancer</span>, time <span class='op'>=</span> <span class='va'>Year</span>, group <span class='op'>=</span> <span class='va'>Age</span>, iter <span class='op'>=</span> <span class='fl'>2000</span><span class='op'>)</span>
+<span class='va'>fit_apc</span> <span class='op'>&lt;-</span> <span class='fu'><a href='apc.html'>apc</a></span><span class='op'>(</span><span class='va'>fit</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>fit_apc</span>, cumulative <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
+
+<span class='co'># age-standardized rates</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>standard</span><span class='op'>)</span>
+<span class='va'>fit_stands</span> <span class='op'>&lt;-</span> <span class='fu'><a href='standardize.html'>standardize</a></span><span class='op'>(</span><span class='va'>fit</span>, label <span class='op'>=</span> <span class='va'>standard</span><span class='op'>$</span><span class='va'>age</span>, standard_pop <span class='op'>=</span> <span class='va'>standard</span><span class='op'>$</span><span class='va'>standard_pop</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span><span class='op'>(</span><span class='va'>fit_stands</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>fit_stands</span><span class='op'>)</span>
+<span class='va'>fit_stands_apc</span> <span class='op'>&lt;-</span> <span class='fu'><a href='apc.html'>apc</a></span><span class='op'>(</span><span class='va'>fit_stands</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>fit_stands_apc</span><span class='op'>)</span>
+<span class='co'># }</span>
 </code></pre></div>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

@@ -10,9 +10,9 @@ Watanabe, S. (2010). Asymptotic equivalence of Bayes cross validation and widely
 waic(fit, pointwise = FALSE, digits = 2)
 }
 \arguments{
-\item{fit}{An \code{surveil} object or any Stan model with a parameter named "log_lik", the pointwise log likelihood of the observations.}
+\item{fit}{An \code{surveil} object}
 
-\item{pointwise}{Logical (defaults to \code{FALSE}); if \code{pointwide = TRUE}, a vector of values for each observation will be returned.}
+\item{pointwise}{Logical (defaults to \code{FALSE}); if \code{pointwise = TRUE}, a vector of values for each observation will be returned.}
 
 \item{digits}{Round results to this many digits.}
 }
@@ -24,10 +24,10 @@ Widely Application Information Criteria (WAIC) for model comparison
 }
 \examples{
 
-\dontrun{
 data(msa)
 austin <- msa[grep("Austin", msa$MSA), ]
-fit <- stan_rw(austin, time = Year, group = Race)
+austin.w <- austin[grep("White", austin$Race),]
+fit <- stan_rw(austin.w, time = Year, iter = 1500)
 waic(fit)
-}
+ 
 }

@@ -26,10 +26,10 @@ data(standard)
 head(standard)
 head(cancer)
 
-\dontrun{
+\donttest{
 fit <- stan_rw(cancer,
               time = Year,
-              group = Age
+              group = Age               
               )
 
 stands <- standardize(fit,

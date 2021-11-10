@@ -8,7 +8,6 @@
 #'
 #' @param reference The name (character string) of the reference group to which `target` will be compared.
 #'
-#'
 #' @return
 #'
 #' A list, also of class "surveil_diff", with the following elements: \describe{
@@ -20,6 +19,15 @@
 #' }
 #' @author Connor Donegan (Connor.Donegan@UTSouthwestern.edu)
 #'
+#' @examples
+#'
+#' data(msa)
+#' houston <- msa[grep("Houston", msa$MSA), ]
+#' fit <- stan_rw(houston, time = Year, group = Race, iter = 1500)
+#' gd <- group_diff(fit, "Black or African American", "White")
+#' print(gd, scale = 100e3)
+#' plot(gd, scale = 100e3)
+#' 
 #' @details
 #'
 #' For the following calculations, the terms `reference` and `target` refer to incidence rates for the respective groups; `p` is the size of the target population. (Target is the group that is the 'target' of our inferences, so that it is the numerator in rate ratios, etc.) The following measures are calculated by `group_diff`:
@@ -34,7 +42,7 @@
 #' # excess cases
 #' EC = RD * p
 #' ```
-#' As the math concisely communicates, the PAR is defined as the fraction of risk in the target population that would have been removed had the target rate equaled the reference rate (Menvielle et al. 2017).
+#' As the math communicates, the PAR is the rate difference expressed as a fraction of total risk for the target population. This could also be read as the fraction of risk in the target population that would have been removed had the target rate equaled the reference rate (Menvielle et al. 2017).
 #' 
 #' @source
 #' 
@@ -120,6 +128,13 @@ group_diff <- function(fit, target, reference) {
 #' @param PAR Return population attributable risk? IF `FALSE`, then the rate ratio will be used instead of PAR.
 #' @param base_size Passed to `theme_classic` to control size of plot elements (e.g., text)
 #' @param ... additional plot arguments passed to \code{\link[ggplot2]{theme}}
+#'
+#' @return
+#'
+#' ### plot.surveil_diff
+#'
+#' By default or whenever `plot = TRUE`, the plot method draws a series of plots to the current plotting device using \code{\link[gridExtra]{grid.arrange}}. If `plot = FALSE`, then a list of `ggplot`s is returned.
+#' 
 #' @method plot surveil_diff
 #' @importFrom scales comma
 #' @importFrom gridExtra grid.arrange
@@ -267,6 +282,12 @@ plot.surveil_diff <- function(x,
 #' print surveil_diff objects for analyses of inequality
 #' @param scale Print rates and rate differences as per `scale` at risk, e.g., per 10,000 at risk.
 #' @param ... additional print arguments
+#'
+#' @return
+#'
+#' ### print.surveil_diff
+#'
+#' The print method returns nothing and prints a summary of results to the console.
 #' @method print surveil_diff
 #' @importFrom scales comma percent
 #' @name surveil_diff

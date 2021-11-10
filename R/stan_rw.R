@@ -20,7 +20,7 @@
 #' \describe{
 #' \item{eta_1}{The first value of log-risk in each series must be assigned a Gaussian prior probability distribution. Provide the location and scale parameters for each demographic group in a list, where each parameter is a `k`-length vector.
 #'
-#' For example, with `k=2` demographic groups, the following code will assign priors of `normal(-5, 5)` to the starting values of both series: `prior = list(eta_1 = normal(location = -6.5, scale = 5, k = 2)`. Note, `eta` is the log-rate, so centering the prior for `eta_1` on `-5` is equivalent to centering the prior rate on `exp(-6.5)*100,000 = 150` cases per 100,000 person-years at risk.}
+#' For example, with `k=2` demographic groups, the following code will assign priors of `normal(-6.5, 5)` to the starting values of both series: `prior = list(eta_1 = normal(location = -6.5, scale = 5, k = 2)`. Note, `eta` is the log-rate, so centering the prior for `eta_1` on `-6.5` is similar to centering the prior rate on `exp(-6.5)*100,000 = 150` cases per 100,000 person-years at risk. Note, however, that the translation from log-rate to rate is non-linear.}
 #'
 #' \item{sigma}{Each demographic group has a scale parameter assigned to its log-rate. This is the scale of the annual deviations from the previous year's log-rate. The scale parameters are assigned independent half-normal prior distributions (these `half` normal distributions are restricted to be positive-valued only).}
 #'
@@ -40,15 +40,30 @@
 #'
 #' @author Connor Donegan (Connor.Donegan@UTSouthwestern.edu)
 #'
+#' @return
+#' The function returns a list, also of class `surveil`, containing the following elements:
+#' \describe{
+#' 
+#'   \item{summary}{A `data.frame` with posterior means and 95 percent credible intervals, as well as the raw data (Count, Population,  time period, grouping variable if any, and crude rates).}
+#'
+#' \item{samples}{A `stanfit` object returned by \code{\link[rstan]{sampling}}. This contains the MCMC samples from the posterior distribution of the fitted model.}
+#'
+#' \item{cor}{Logical value indicating if the model included a correlation structure.}
+#'
+#' \item{time}{A list containing the name of the time-period column in the user-provided data and a `data.frame` of observed time periods and their index.}
+#'
+#' \item{group}{If a grouping variable was used, this will be a list containing the name of the grouping variable and a `data.frame` with group labels and index values.}
+#' }
+#' 
 #' @details
 #'
-#' For time t = 1,...n, the models have Poisson likelihoods for the case counts, given log-risk `eta` and population at tirks P; the log-risk is modeled using the first-difference prior (a.k.a. a random-walk).
+#' For time t = 1,...n, the models have Poisson likelihoods for the case counts, given log-risk `eta` and population at tirks P; the log-risk is modeled using the first-difference (or random-walk) prior:
 #' 
 #' ```
 #'        y_t ~ Poisson(p_t * exp(eta_t))
 #'        eta_t ~ Normal(eta_{t-1}, sigma)
-#'        eta_1 ~ Normal(-5, 10)
-#'        sigma ~ Normal(0, 1) (0, Inf]
+#'        eta_1 ~ Normal(-6, 5) (-Inf, 0)
+#'        sigma ~ Normal(0, 1) (0, Inf)
 #' ```
 #' This style of model has been discussed in Bayesian (bio)statistics for quite some time. See Clayton (1996).
 #'
@@ -57,8 +72,8 @@
 #' ```
 #'        Y_t ~ Poisson(P_t * exp(Eta_t))
 #'        Eta_t ~ MVNormal(Eta_{t-1}, Sigma)
-#'        Eta_1 ~ Normal(-5, 10)
-#'        Sigma = diag(sigma) Omega diag(sigma)
+#'        Eta_1 ~ Normal(-6, 5)  (-Inf, 0)
+#'        Sigma = diag(sigma) * Omega * diag(sigma)
 #'        Omega ~ LKJ(2)
 #'        sigma ~ Normal(0, 1) (0, Inf)
 #' ```
@@ -73,17 +88,19 @@
 #' Stan Development Team. Stan Modeling Language Users Guide and Reference Manual, 2.28. 2021. https://mc-stan.org
 #' 
 #' @examples
-#' \dontrun{
+#' \donttest{
+#' library(rstan)
 #' data(msa)
-#' dfw <- msa[grep("Dallas", msa$MSA), ]
-#' fit <- stan_rw(dfw, time = Year, group = Race)
+#' austin <- msa[grep("Austin", msa$MSA), ]
 #'
-#' ## Dont use results if you see a warning for divergent transitions;
-#' ## try to fix the problem by adjusting adapt_delta:
-#' fit <- stan_rw(dfw, time = Year, group = Race,
-#'                control = list(adapt_delta = 0.99))
-#'
-#' ## print the underlying Stan model, with MCMC diagnostics
+#' fit <- stan_rw(austin,
+#'                time = Year,
+#'                group = Race,
+#'                iter = 1500)
+#' 
+#' ## MCMC diagnostics
+#' rstan::stan_mcse(fit$samples)
+#' rstan::stan_rhat(fit$samples)
 #' print(fit$samples)
 #' 
 #' ## print the surveil object
@@ -91,23 +108,11 @@
 #' head(fit$summary)
 #'
 #' ## plot time trends
-#' plot(fit)
-#'
-#' ## Inequality analysis
-#' Ti <- theil(fit)
-#' plot(Ti)
-#' print(Ti)
-#' 
-#' gd <- group_diff(fit, target = "Black or African American", reference = "White")
-#' plot(gd)
-#' print(gd, scale = 10e3)
+#' plot(fit, style = 'lines')
 #'
 #' ## age-specific rates and cumulative percent change
 #' data(cancer)
-#' fit <- stan_rw(cancer,
-#'                time = Year,
-#'                group = Age
-#'                )
+#' fit <- stan_rw(cancer, time = Year, group = Age, iter = 2000)
 #' fit_apc <- apc(fit)
 #' plot(fit_apc, cumulative = TRUE)
 #'
@@ -195,12 +200,12 @@ stan_rw <- function(data,
     ## fill in missing priors
     if (!"eta_1" %in% names(prior)) {   
         prior$eta_1 <- normal(
-            location = -5,
-            scale = 10,
+            location = -6,
+            scale = 5,
             k = ncol(cases)
         )
         print("Setting normal prior(s) for eta_1: ")
-                print(normal(-5, 10))                
+                print(normal(-6, 5))                
     }    
     if (!"sigma" %in% names(prior)) {
         prior$sigma <- normal(
@@ -226,7 +231,7 @@ stan_rw <- function(data,
         prior_sigma_location = as.array(prior$sigma$location),
         prior_sigma_scale = as.array(prior$sigma$scale),
         prior_omega = prior$omega$eta
-    )                
+    )
     if (cor) {
         samples <- rstan::sampling(stanmodels$poissonRWCorr,
                                    data = standata,

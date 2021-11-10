@@ -4,7 +4,8 @@
 #'
 #' @param x A fitted `surviel` model, or standardized rates (a `stand_surveil` object). 
 #'
-#' @return An `apc_ls` (list) object containing the following data frames:
+#' @return
+#' An `apc` (list) object containing the following data frames:
 #' \describe{
 #'  \item{apc}{A data frame containing a summary of the posterior distribution for period-specific percent change. This contains the posterior mean (`apc`) 95 percent credible intervals (`lwr` and `upr` bounds).}
 #' \item{cpc}{A data frame containing a summary of the posterior distribution for the cumulative percent change in risk at each time period. This contains the posterior mean (`cpc`) and 95 percent credible interval (`lwr` and `upr` bounds).}
@@ -14,10 +15,10 @@
 #'
 #' @examples
 #' data(cancer)
-#' \dontrun{
-#'  fit <- stan_rw(cancer, time = Year, group = Age)
+#' \donttest{
+#'  fit <- stan_rw(cancer, time = Year, group = Age, iter = 2e3)
 #'  x <- apc(fit)
-#'  print(x, rate = 10e3)
+#'  print(x)
 #'  plot(x, cumulative = TRUE)
 #' }
 #' @seealso \code{\link[surveil]{stan_rw}} \code{\link[surveil]{standardize}}
@@ -102,7 +103,7 @@ apc.surveil <- function(x) {
                 cpc_samples = cpc_samples,
                 time = x$time,
                 group = x$group)
-    class(res) <- append("apc_ls", class(res))
+    class(res) <- append("apc", class(res))
     return (res)
 }
 
@@ -158,30 +159,30 @@ apc.stand_surveil <- function(x) {
                 apc_samples = res.apc,
                 cpc_samples = res.cum,
                 time = x$time)
-    class(res) <- append("apc_ls", class(res))
+    class(res) <- append("apc", class(res))
     return (res)
     }
 
 
 #' Methods for APC objects
-#' @param x An `apc_ls` object returned by \code{\link[surveil]{apc}}
+#' @param x An `apc` object returned by \code{\link[surveil]{apc}}
 #' @param digits Print this many digits (passed to \code{\link[base]{print.data.frame}})
 #' @param max Print this many rows
 #' @param ... additional arguments
 #' @details
 #' 
-#' ### print.apc_ls
+#' ### print.apc
 #'
 #' Any additional arguments (`...`) to the print method will be  passed to \code{\link[base]{print.data.frame}}
-#' 
+#'
 #' @param max Maximum number of time periods (rows) to print 
 #' @importFrom scales comma
 #' @importFrom tidyr pivot_wider
-#' @method print apc_ls
+#' @method print apc
 #' @export
 #' @md
-#' @rdname apc_ls
-print.apc_ls <- function(x, digits = 1, max = 10, ...) {    
+#' @rdname apc
+print.apc <- function(x, digits = 1, max = 10, ...) {    
     message("Summary of cumulative and per-period percent change")
     message("Time periods: ", length(unique(x$time$time.df$time.label)))
     GG <- !is.null(x$apc$group)
@@ -222,16 +223,23 @@ print.apc_ls <- function(x, digits = 1, max = 10, ...) {
 #' @param ... Additional arguments
 #' @md
 #' @import ggplot2
-#' @method plot apc_ls
-#' @rdname apc_ls
+#' @method plot apc
+#' @rdname apc
 #' @export
 #' 
 #' @details
-#' ### plot.apc_ls
+#' 
+#' ### plot.apc
 #' 
 #' Any additional arguments (`...`) will be passed to \code{\link[ggplot2]{theme}}.
+#'
+#' @return
+#'
+#' ### plot.apc
+#'
+#' The plot method returns a `ggplot`
 #' 
-plot.apc_ls <- function(x,
+plot.apc <- function(x,
                         cumulative = FALSE,
                         style = c("mean_qi", "lines"),
                         M = 250,                        

@@ -19,16 +19,16 @@ test_that("cor = FALSE works with stan_rw", {
 test_that("cor = TRUE works with stan_rw", {
     fit2 <- stan_rw(
         data = dfw,
-        cor = TRUE,
         group = Race,
         time = Year,
         iter = iter,
-        chains = 1
+        chains = 1,
+        cor = TRUE        
     )
     expect_s3_class(fit2, "surveil")
 })
 
-test_that("priors work", {
+test_that("priors work: k = 1", {
     prior <- list()
     prior$eta_1 = normal(location = -5, scale = 5)
         fit <- stan_rw(
@@ -40,6 +40,24 @@ test_that("priors work", {
         )
     expect_s3_class(fit, "surveil")
 })
+
+test_that("priors work: k = 3", {
+    prior <- list()
+    prior$eta_1 = normal(location = -6, scale = 5, k = 3)
+    prior$sigma <- normal(scale = 0.5, k = 3)
+    prior$omega <- lkj(2)
+        fit <- stan_rw(
+            data = dfw,
+            prior = prior,
+            time = Year,
+            group = Race,
+            iter = iter,
+            cor = TRUE,
+            chains = 1
+        )
+    expect_s3_class(fit, "surveil")
+})
+
 
 test_that("group_diff works", {
     fit2 <- stan_rw(        

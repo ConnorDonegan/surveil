@@ -198,7 +198,7 @@
     </tr>
     <tr>
       <th>base_size</th>
-      <td><p>Passed to <code>theme_classic()</code> to control size of plot components (text).</p></td>
+      <td><p>Passed to <code><a href='https://ggplot2.tidyverse.org/reference/ggtheme.html'>theme_classic()</a></code> to control size of plot components (text).</p></td>
     </tr>
     <tr>
       <th>col</th>
@@ -218,10 +218,22 @@
     </tr>
     </table>
 
-    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     
 <h3 class='hasAnchor' id='print-stand-surveil'><a class='anchor' aria-hidden='true' href='#print-stand-surveil'></a>print.stand_surveil</h3>
+
+
+<p>The print method returns nothing but prints a summary of results to the console.</p>
+
+<h3 class='hasAnchor' id='plot-stand-surveil'><a class='anchor' aria-hidden='true' href='#plot-stand-surveil'></a>plot.stand_surveil</h3>
+
+
+<p>The plot method returns an object of class <code>ggplot</code>.</p>
+
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>Calling <code>standardize</code> on a fitted <code>surveil</code> model will create a new object that contains the <code>surveil</code> model results as well standardized rates. This new <code>stand_surveil</code> object has its own methods for printing and plotting.</p><h3 class='hasAnchor' id='print-stand-surveil'><a class='anchor' aria-hidden='true' href='#print-stand-surveil'></a>print.stand_surveil</h3>
 
 
 <p>Any additional arguments (<code>...</code>) will be  passed to <code><a href='https://rdrr.io/r/base/print.dataframe.html'>print.data.frame</a></code></p>

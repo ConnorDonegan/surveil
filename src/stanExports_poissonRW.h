@@ -209,7 +209,7 @@ public:
         size_t eta_i_0_max__ = K;
         for (size_t i_0__ = 0; i_0__ < eta_i_0_max__; ++i_0__) {
             try {
-                writer__.vector_unconstrain(eta[i_0__]);
+                writer__.vector_ub_unconstrain(0, eta[i_0__]);
             } catch (const std::exception& e) {
                 stan::lang::rethrow_located(std::runtime_error(std::string("Error transforming variable eta: ") + e.what()), current_statement_begin__, prog_reader__());
             }
@@ -262,9 +262,9 @@ public:
             eta.reserve(eta_d_0_max__);
             for (size_t d_0__ = 0; d_0__ < eta_d_0_max__; ++d_0__) {
                 if (jacobian__)
-                    eta.push_back(in__.vector_constrain(TT, lp__));
+                    eta.push_back(in__.vector_ub_constrain(0, TT, lp__));
                 else
-                    eta.push_back(in__.vector_constrain(TT));
+                    eta.push_back(in__.vector_ub_constrain(0, TT));
             }
             current_statement_begin__ = 15;
             Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> sigma;
@@ -383,7 +383,7 @@ public:
         size_t eta_d_0_max__ = K;
         eta.reserve(eta_d_0_max__);
         for (size_t d_0__ = 0; d_0__ < eta_d_0_max__; ++d_0__) {
-            eta.push_back(in__.vector_constrain(TT));
+            eta.push_back(in__.vector_ub_constrain(0, TT));
         }
         size_t eta_j_1_max__ = TT;
         size_t eta_k_0_max__ = K;

@@ -75,16 +75,29 @@
 
 \item{digits}{number of digits to print (passed to \code{\link[base]{print.data.frame}})}
 }
+\value{
+\subsection{plot.theil}{
+
+The plot method returns an object of class \code{ggplot}.
+}
+
+\subsection{print.theil}{
+
+The print method returns nothing and prints a summary of results to the console.
+}
+
+\subsection{plot.theil_list}{
+
+If \code{style = "lines"}, the plot method for \code{theil_list} objects returns a \code{ggplot} with facets for each component of inequality (between-areas, within-areas, and total). For \code{style = "mean_qi"}, the plot method returns either a list of plots (all of class \code{ggplot}) or, when \code{plot = TRUE}, it will draw them to current plotting device using \code{\link[gridExtra]{grid.arrange}}.
+}
+
+\subsection{print.theil}{
+
+The print returns nothing and method prints a summary of results to the R console.
+}
+}
 \description{
 Printing and plotting methods for Theil's inequality index
-}
-\examples{
- \dontrun{
- dfw <- msa[grep("Dallas", msa$MSA), ]
- fit <- stan_rw(dfw, time = Year, group = Race)
- theil.dfw <- theil(fit)
- plot(theil.dfw)
-}
 }
 \seealso{
 \code{\link[surveil]{theil}}

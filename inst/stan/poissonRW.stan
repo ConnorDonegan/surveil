@@ -11,7 +11,7 @@ data {
 }
 
 parameters {
-  vector[TT] eta[K];      // annual risk per group
+  vector<upper=0>[TT] eta[K];      // annual risk per group
   vector<lower=0>[K] sigma; // scale per group
 }
 

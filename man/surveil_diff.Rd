@@ -48,6 +48,17 @@
 
 \item{...}{additional print arguments}
 }
+\value{
+\subsection{plot.surveil_diff}{
+
+By default or whenever \code{plot = TRUE}, the plot method draws a series of plots to the current plotting device using \code{\link[gridExtra]{grid.arrange}}. If \code{plot = FALSE}, then a list of \code{ggplot}s is returned.
+}
+
+\subsection{print.surveil_diff}{
+
+The print method returns nothing and prints a summary of results to the console.
+}
+}
 \description{
 Methods for \code{surveil_diff} objects
 

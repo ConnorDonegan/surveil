@@ -3,13 +3,13 @@
 #' @param location Location parameter (numeric)
 #' @param scale Scale parameter (positive numeric)
 #' @param k Optional; number of groups for which priors are needed. This is a shortcut to avoid using the `rep` function to repeat the same prior for each group, as in: `normal(location = rep(0, times = 3), scale = rep(1, times = 3)`. To provide distinct priors for each group, simply specify them individually, as in `normal(location = c(-5, -6, -8), scale = c(2, 2, 2))`.
+#' 
 #' @details
 #' 
 #' The prior distribution functions are used to set the values of prior parameters.
 #'
 #' Users can control the values of the parameters, but the distribution (model) itself is fixed. The first log-rate (`eta[t]`, `t=1`) and the scale parameters (sigma) are assigned Gaussian (`normal`) prior distribution. (The scale parameter, sigma, is constrained to be positive, making it a half-normal prior.) For correlated time series, the correlation matrix is assigned the LKJ prior.
 #' 
-#'
 #' ### Parameterizations
 #'
 #' For details on how any distribution is parameterized, see the Stan Language Functions Reference document: \url{https://mc-stan.org/users/documentation/}.
@@ -20,16 +20,19 @@
 #'
 #' # note there are three groups in the data, each requires a prior
 #' prior <- list()
-#' prior$eta_1 <- normal(location = -5, scale = 3, k = 3)
+#' prior$eta_1 <- normal(location = -6, scale = 4, k = 3)
 #' ## by default, location = 0
 #' prior$sigma <- normal(scale = 1, k = 3)
 #' prior$omega <- lkj(2)
-#' \dontrun{
-#' dfw <- dplyr::filter(msa, grepl("Dallas", MSA))
-#' fit <- stan_rw(dfw, time = Year, group = Race, prior = prior)
+#' 
+#' dfw <- msa[grep("Dallas", msa$MSA), ]
+#' fit <- stan_rw(dfw, time = Year, group = Race, prior = prior, iter = 1200)
 #' plot(fit)
-#' }
+#' 
 #'
+#' @name priors
+NULL
+
 #' @rdname priors
 #' @md
 #' @export
@@ -46,7 +49,6 @@ normal <- function(location = 0, scale, k = 1) {
 }
 
 
-#'
 #' @param eta The shape parameter for the LKJ prior
 #' 
 #' @details

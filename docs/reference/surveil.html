@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Methods for fitted surveil models — plot.surveil • surveil</title>
+<title>Methods for fitted surveil models — surveil • surveil</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,9 +46,8 @@
 
 
 
-<meta property="og:title" content="Methods for fitted surveil models — plot.surveil" />
-<meta property="og:description" content="Plotting method for surveil model results
-Print a summary of surveil model results to the console" />
+<meta property="og:title" content="Methods for fitted surveil models — surveil" />
+<meta property="og:description" content="Print and plot methods for surveil model results" />
 <meta property="og:image" content="https://connordonegan.github.io/surveil/logo.png" />
 
 
@@ -150,11 +149,13 @@ Print a summary of surveil model results to the console" />
     </div>
 
     <div class="ref-description">
-    <p>Plotting method for <code>surveil</code> model results</p>
-<p>Print a summary of <code>surveil</code> model results to the console</p>
+    <p>Print and plot methods for <code>surveil</code> model results</p>
     </div>
 
     <div class="ref-usage sourceCode"><pre class='sourceCode r'><code><span class='co'># S3 method for surveil</span>
+<span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span><span class='op'>(</span><span class='va'>x</span>, scale <span class='op'>=</span> <span class='fl'>1</span>, <span class='va'>...</span><span class='op'>)</span>
+
+<span class='co'># S3 method for surveil</span>
 <span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span>
   <span class='va'>x</span>,
   scale <span class='op'>=</span> <span class='fl'>1</span>,
@@ -168,21 +169,22 @@ Print a summary of surveil model results to the console" />
   fill <span class='op'>=</span> <span class='st'>"gray80"</span>,
   size <span class='op'>=</span> <span class='fl'>1.5</span>,
   <span class='va'>...</span>
-<span class='op'>)</span>
-
-<span class='co'># S3 method for surveil</span>
-<span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span><span class='op'>(</span><span class='va'>x</span>, scale <span class='op'>=</span> <span class='fl'>1</span>, <span class='va'>...</span><span class='op'>)</span></code></pre></div>
+<span class='op'>)</span></code></pre></div>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>x</th>
-      <td><p>A fitted <code>surveil</code> model.</p></td>
+      <td><p>A fitted <code>surveil</code> model</p></td>
     </tr>
     <tr>
       <th>scale</th>
       <td><p>Scale the rates by this amount; e.g., <code>scale = 100e3</code> will print rates per 100,000 at risk.</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>For the plot method, additional arguments will be passed to `<code><a href='https://ggplot2.tidyverse.org/reference/theme.html'>theme</a></code>; for the print method, additional arguments will be passed to <code><a href='https://rdrr.io/r/base/print.dataframe.html'>print.data.frame</a></code>.</p></td>
     </tr>
     <tr>
       <th>style</th>
@@ -220,42 +222,33 @@ Print a summary of surveil model results to the console" />
       <th>size</th>
       <td><p>Positive numeric value. For <code>style = "mean_qi"</code>, this controls the size of the points representing crude rates. To exclude these points from the plot altogether, use <code>size = 0</code>.</p></td>
     </tr>
-    <tr>
-      <th>...</th>
-      <td><p>additional arguments passed to <code><a href='https://rdrr.io/r/base/print.dataframe.html'>print.data.frame</a></code></p></td>
-    </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>a <code>ggplot</code> object</p>
+    <p>The plot method returns a <code>ggplot</code> object; the print method returns nothing but prints a summary of results to the R console.</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p><code><a href='stan_rw.html'>stan_rw</a></code></p>
-<p><code><a href='stan_rw.html'>stan_rw</a></code> <code>plot.surveil</code></p></div>
+    <div class='dont-index'><p><code><a href='stan_rw.html'>stan_rw</a></code></p></div>
     <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
 
     <p>Connor Donegan (Connor.Donegan@UTSouthwestern.edu)</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <div class="ref-examples sourceCode"><pre class='sourceCode r'><code><span class='r-in'></span>
-<span class='r-in'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span></span>
-<span class='r-in'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://ggplot2.tidyverse.org'>ggplot2</a></span><span class='op'>)</span></span>
-<span class='r-in'>   <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>msa</span><span class='op'>)</span></span>
-<span class='r-in'>   <span class='va'>houston</span> <span class='op'>&lt;-</span> <span class='va'>msa</span><span class='op'>[</span><span class='fu'><a href='https://rdrr.io/r/base/grep.html'>grep</a></span><span class='op'>(</span><span class='st'>"Houston"</span>, <span class='va'>msa</span><span class='op'>$</span><span class='va'>MSA</span><span class='op'>)</span>, <span class='op'>]</span></span>
-<span class='r-in'>   <span class='va'>fit</span> <span class='op'>&lt;-</span> <span class='fu'><a href='stan_rw.html'>stan_rw</a></span><span class='op'>(</span><span class='va'>houston</span>, time <span class='op'>=</span> <span class='va'>Year</span>, group <span class='op'>=</span> <span class='va'>Race</span><span class='op'>)</span></span>
-<span class='r-in'></span>
-<span class='r-in'>  <span class='co'>## plot time-varying risk with 95\</span></span>
-<span class='r-in'> <span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>fit</span>, style <span class='op'>=</span> <span class='st'>"lines"</span><span class='op'>)</span></span>
-<span class='r-in'> <span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>fit</span>, legend.text <span class='op'>=</span> <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/element.html'>element_text</a></span><span class='op'>(</span>size <span class='op'>=</span> <span class='fl'>12</span><span class='op'>)</span><span class='op'>)</span></span>
-<span class='r-in'></span>
-<span class='r-in'> <span class='co'>## as a ggplot, you can customize the output</span></span>
-<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>fit</span><span class='op'>)</span> <span class='op'>+</span></span>
-<span class='r-in'> <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_continuous.html'>scale_x_continuous</a></span><span class='op'>(</span>breaks <span class='op'>=</span> <span class='fl'>1</span><span class='op'>:</span><span class='fl'>19</span>, </span>
-<span class='r-in'>                    labels <span class='op'>=</span> <span class='fl'>1999</span><span class='op'>:</span><span class='fl'>2017</span>,</span>
-<span class='r-in'>                    name <span class='op'>=</span> <span class='cn'>NULL</span></span>
-<span class='r-in'>                    <span class='op'>)</span></span>
-<span class='r-in'><span class='op'>}</span></span>
+    <div class="ref-examples sourceCode"><pre class='sourceCode r'><code>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>msa</span><span class='op'>)</span>
+<span class='va'>houston</span> <span class='op'>&lt;-</span> <span class='va'>msa</span><span class='op'>[</span><span class='fu'><a href='https://rdrr.io/r/base/grep.html'>grep</a></span><span class='op'>(</span><span class='st'>"Houston"</span>, <span class='va'>msa</span><span class='op'>$</span><span class='va'>MSA</span><span class='op'>)</span>, <span class='op'>]</span>
+<span class='va'>fit</span> <span class='op'>&lt;-</span> <span class='fu'><a href='stan_rw.html'>stan_rw</a></span><span class='op'>(</span><span class='va'>houston</span>, time <span class='op'>=</span> <span class='va'>Year</span>, group <span class='op'>=</span> <span class='va'>Race</span>, iter <span class='op'>=</span> <span class='fl'>1500</span><span class='op'>)</span>
+
+<span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span><span class='op'>(</span><span class='va'>fit</span><span class='op'>)</span>
+
+<span class='co'>## plot probability distribution for disease risk</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>fit</span>, style <span class='op'>=</span> <span class='st'>"lines"</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>fit</span>, facet <span class='op'>=</span> <span class='cn'>TRUE</span>, scale <span class='op'>=</span> <span class='fl'>100e3</span><span class='op'>)</span>
+
+ <span class='co'>## as a ggplot, you can customize the output</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>fit</span><span class='op'>)</span> <span class='op'>+</span> <span class='fu'>theme_bw</span><span class='op'>(</span><span class='op'>)</span>
+
 </code></pre></div>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

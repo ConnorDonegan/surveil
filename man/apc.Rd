@@ -4,6 +4,8 @@
 \alias{apc}
 \alias{apc.surveil}
 \alias{apc.stand_surveil}
+\alias{print.apc}
+\alias{plot.apc}
 \title{Annual and cumulative percent change}
 \usage{
 apc(x)
@@ -11,28 +13,81 @@ apc(x)
 \method{apc}{surveil}(x)
 
 \method{apc}{stand_surveil}(x)
+
+\method{print}{apc}(x, digits = 1, max = 10, ...)
+
+\method{plot}{apc}(
+  x,
+  cumulative = FALSE,
+  style = c("mean_qi", "lines"),
+  M = 250,
+  col = "black",
+  fill = "black",
+  alpha,
+  lwd,
+  base_size = 14,
+  ...
+)
 }
 \arguments{
-\item{x}{A fitted \code{surviel} model, or standardized rates (a \code{stand_surveil} object).}
+\item{x}{An \code{apc} object returned by \code{\link[surveil]{apc}}}
+
+\item{digits}{Print this many digits (passed to \code{\link[base]{print.data.frame}})}
+
+\item{max}{Maximum number of time periods (rows) to print}
+
+\item{...}{Additional arguments}
+
+\item{cumulative}{Plot cumulative percent change? Defaults to \code{cumulative = FALSE}}
+
+\item{style}{If \code{style = "mean_qi"}, then the posterior mean and 95 percent credible interval will be plotted; if \code{style = "lines"}, then \code{M} samples from the joint probability distribution will be plotted.}
+
+\item{M}{If \code{style = "lines"}, then \code{M} is the number of samples from the posterior distribution that will be plotted; the default is \code{M = 250}.}
+
+\item{col}{Line color}
+
+\item{fill}{Fill color for the 95 percent credible interval}
+
+\item{alpha}{For \code{style = "mean_qi"}, this controls the transparency for the credible interval (passed to \code{\link[ggplot2]{geom_ribbon}}) and defaults to \code{alpha = 0.5}; for \code{style = "lines"}, this controls the transparency of the lines and defaults to \code{alpha = 0.7}.}
+
+\item{lwd}{Line width}
+
+\item{base_size}{Size of plot attributes, passed to `\code{\link[ggplot2]{theme_classic}}}
 }
 \value{
-An \code{apc_ls} (list) object containing the following data frames:
+An \code{apc} (list) object containing the following data frames:
 \describe{
 \item{apc}{A data frame containing a summary of the posterior distribution for period-specific percent change. This contains the posterior mean (\code{apc}) 95 percent credible intervals (\code{lwr} and \code{upr} bounds).}
 \item{cpc}{A data frame containing a summary of the posterior distribution for the cumulative percent change in risk at each time period. This contains the posterior mean (\code{cpc}) and 95 percent credible interval (\code{lwr} and \code{upr} bounds).}
 \item{apc_samples}{MCMC samples from the posterior distribution for period percent change}
 \item{cpc_samples}{MCMC samples from the posterior distribution for cumulative percent change}
 }
+
+\subsection{plot.apc}{
+
+The plot method returns a \code{ggplot}
+}
 }
 \description{
 Summarize annual and cumulative percent change in risk
 }
+\details{
+\subsection{print.apc}{
+
+Any additional arguments (\code{...}) to the print method will be  passed to \code{\link[base]{print.data.frame}}
+}
+
+\subsection{plot.apc}{
+
+Any additional arguments (\code{...}) will be passed to \code{\link[ggplot2]{theme}}.
+}
+}
 \examples{
 data(cancer)
-\dontrun{
- fit <- stan_rw(cancer, time = Year, group = Age)
+\donttest{
+ fit <- stan_rw(cancer, time = Year, group = Age, iter = 2e3)
  x <- apc(fit)
- print(x, rate = 10e3)
+ print(x)
  plot(x, cumulative = TRUE)
 }
 }

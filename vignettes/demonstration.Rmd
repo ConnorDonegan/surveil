@@ -23,7 +23,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-This vignette demonstrates basic usage of **surveil** for public health surveillance. **surveil** leverages the principles of Bayesian inference [@jaynes_2003;@mackay_2003] to infer population risk of disease or death given time series data consisting of case counts and population at risk. Models were built using the [Stan](https://mc-stan.org/) modeling language, but users only need to be familiar with the R language.
+This vignette demonstrates basic usage of **surveil** for public health surveillance. **surveil** leverages the principles of Bayesian inference and Markov chain Monte Carlo (MCMC) [@jaynes_2003;@mackay_2003] to infer population risk of disease or death given time series data consisting of case counts and population at risk. Models were built using the [Stan](https://mc-stan.org/) modeling language, but users only need to be familiar with the R language.
 
 The package also contains special methods for age-standardization, printing and plotting model results, and for measuring and visualizing health inequalities.
 
@@ -54,7 +54,7 @@ head(msa) %>%
 
 ## Preparing the data
 
-We will first analyze aggregated CRC cases across Texas's top four MSAs. The `msa` data from CDC Wonder already has the necessary format (column names and contents), but the data are dis-aggregated by MSA. So for this analysis, we first group the data by year and race, and then combine cases across MSAs.
+We will demonstrate using aggregated CRC cases across Texas's top four MSAs. The `msa` data from CDC Wonder already has the necessary format (column names and contents), but these data are dis-aggregated by MSA. So for this analysis, we first group the data by year and race, and then combine cases across MSAs.
 
 The following code chunk aggregates the data using the `dplyr` package:
 
@@ -107,11 +107,68 @@ The time series model is fit by passing surveillance data to the `stan_rw` funct
 fit <- stan_rw(tx.msa, time = Year, group = Race)
 ```
 
-If we wanted to add a correlation structure to the model, we would add `cor = TRUE` (as opposed to the default, `cor = FALSE`). To speed things up, we could take advantage of parallel processing using the `cores` argument (e.g., by adding `cores = 4` to run on 4 cores simultaneously). Note also that it is important to read and address any warning messages related to Stan's MCMC diagnostics. In this case, the sampling finished without any warnings, so we can proceed with our analysis.
+If we wanted to add a correlation structure to the model, we would add `cor = TRUE` (as opposed to the default, `cor = FALSE`). To speed things up, we could take advantage of parallel processing using the `cores` argument (e.g., by adding `cores = 4` to run on 4 cores simultaneously). 
+
+## MCMC diagnostics
+
+Before analyzing results, it is important to check MCMC diagnostics. Below, three diagnostics are discussed, each with its own purpose. Note that Stan will automatically print a warning to the R console when these diagnostics indicate trouble.
+
+MCMC algorithms, such as the Hamiltonian Monte Carlo algorithm that Stan uses, aim to draw samples from the probability distribution specified by the user. The algorithm tries to explore the probability distribution extensively, and when successful, the resulting samples provide an approximate image of the target probability distribution. 
+
+In what follows, we will use the `stanfit` object stored in our model:
+
+```{r}
+samples <- fit$samples
+class(samples)
+```
+
+With `samples`, we can take advantage of the tools provided by **rstan** and other packages, such as **bayesplot**, **tidybayes**, and **loo**. 
+
+Printing `samples` to the console (`print(samples)`) is an effective way to view the effective sample size, Monte Carlo standard error, and Rhat statistics for each model parameter.
+
+### Monte Carlo standard errors
+
+An important difference between sampling with an MCMC algorithm and sampling from a pseudo random number generator (like `rnorm`) is that MCMC produces samples that are correlated with each other. This means that for any number of MCMC samples, there is less information than would be provided by the same number of independently drawn samples. To evaluate how far our MCMC estimates may be from the mean of the target probability distribution, we need to consider Monte Carlo standard errors (MCSEs) for each parameter. 
+
+MCSEs are calculated as [@gelman_2014]
+
+$$MCSE(\theta) = \frac{\sqrt(Var(\theta))}{\sqrt(ESS(\theta))}$$
+
+where $Var(\theta)$ is the variance of the posterior distribution for parameter $\theta$ and ESS is the effective sample size. ESS is adjusted for autocorrelation in the MCMC samples.
+
+To view a histogram of MCSEs for all parameters in the **surveil** model, we can use **rstan**'s `stan_mcse` function:
+
+```{r fig.width = 4, fig.height = 3.5}
+rstan::stan_mcse(samples)
+```
+
+Notice that instead of returing the MCSEs themselves, **rstan** divides the MCSEs by the scale of the probability distribution, $\frac{MCSE(\theta)}{SD(\theta)}$. We can see that these values are all under 0.03, which is quite sufficient. We can always obtain smaller MCSEs by drawing a larger number of samples. For a more detailed view, you can start by printing results with `print(samples)` to examine the `n_eff` (ESS) column.
+
+## R-hat
+
+A second important difference between sampling with MCMC and sampling with functions like `rnorm` is that with MCMC we have to *find* the target distribution. The reason **rstan** (and **surveil**) samples from multiple, independent MCMC chains by default is that this allows us to check that they have all converged on the same distribution. If one or more chains does not resemble the others, then there is obviously a convergence failure. To make the most of the information provided by these MCMC chains, we can split each of them in half, effectively doubling the number of chains, before checking convergence. This is known as the split Rhat statistic [@gelman_2014]. When chains have converged, the Rhat statistics will all equal 1. 
+
+Since we always have at least as many parameters as we do time periods, it helps to visualize them all at once using `rstan::stan_rhat`:
+
+```{r fig.width = 4, fig.height = 3.5}
+rstan::stan_rhat(samples)
+```
+
+These are all very near to 1. If any were approaching 1.05 or larger, we would want to run the chains for longer and then check results again. 
+
+## Divergent transitions
+
+Sometimes, MCMC algorithms are unable to provide unbiased samples that will converge on the target distribution given sufficient time. Stan's MCMC algorithm will issue a warning when it encounters a region of the probability model that it is unable to explore. These warnings of "divergent transitions" should not be ignored, as they indicate that something may have gone wrong [@betancourt_2017]. They will be printed to the console just after the model finishes sampling.
+
+For the simple models provided by **surveil**, there will almost always be a way to address divergent transitions. If you receive a divergent transition warning from a **surveil** model, these are the three most probable solutions:
+
+  1. Draw more samples: if you also have low ESS, the divergent transitions may disappear by increasing the number of iterations. This is controlled by the `iter` argument of `stan_rw`; e.g., `stan_rw(data, time = Year, iter = 3e3)`. However, the default value of `iter = 3000` should generally be sufficient.
+  2. Raise `adapt_delta`: you can also control an important tuning parameter related to divergent transitions. Simply raising the `adapt_delta` value to, say, 0.99 or so, may be sufficient; e.g., `stan_rw(data, time = Year, control = list(adapt_delta = 0.99))`. If you find yourself needing to try ever larger values, then the problem lies elsewhere.
+  3. Check your prior distributions: If your prior information is in conflict with the data, this can create a difficult probability distribution to sample from. The most probable cause for such a situation is that you have made a mistake when specifying your prior distribution. Look first to the prior for $\eta_1$, the prior for the first log-rate. Note that the parameter is on the *log* scale, where small changes have big impact on incidence rates. You may find that increasing the scale parameter for the `surveil::normal` prior distribution on $\eta_1$ (making the prior more diffuse) causes the divergent transition warnings to disappear.
 
 ## Visualizing results
 
-If we call `plot` on a `surveil` model, we get a `ggplot` object:
+If we call `plot` on a `surveil` model, we get a `ggplot` object depicting risk estimates with 95\% credible intervals:
 
 ```{r fig.width = 4, fig.height = 3.5}
 plot(fit, scale = 100e3)
@@ -121,11 +178,7 @@ Instead of viewing the default plot, we can first store the ``ggplot` in our wor
 
 ```{r fig.width = 4, fig.height = 3.5}
 fig <- plot(fit, scale = 100e3)
-fig +
-  scale_color_brewer(breaks = c("Black or African American", "White", "Hispanic"),
-                     labels = c("Black", "White", "Hispanic"),
-		     name = NULL,
-		     type = 'qual')    
+fig + theme_bw() + theme(legend.position = "bottom")
 ```
 
 The plot method has a `style` argument that controls how the probability distribution is represented. The default, `style = "mean_qi"`, shows the mean of the posterior distribution of the risk at each time period with a shaded 95\% credible interval (as above). The alternative, `style = "lines"`, plots MCMC samples from the joint probability distribution across all time periods:
@@ -187,7 +240,7 @@ print(Ts)
 
 The probability distribution for Theil's T can be summarized visualy using the `"lines"` style plot or by plotting estimates with shaded 95\% credible intervals:
 
-```{r fig.width = 4, fig.height = 3}
+```{r fig.width = 5, fig.height = 3}
 plot(Ts)
 ```
 

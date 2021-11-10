@@ -1,28 +1,25 @@
 #' Methods for fitted `surveil` models
 #'
-#' @description Plotting method for `surveil` model results
-#' @return a `ggplot` object
+#' @description Print and plot methods for `surveil` model results
+#' @return The plot method returns a `ggplot` object; the print method returns nothing but prints a summary of results to the R console.
 #' @seealso \code{\link[surveil]{stan_rw}}
 #' @author Connor Donegan (Connor.Donegan@UTSouthwestern.edu)
 #' @examples
+#' 
+#' data(msa)
+#' houston <- msa[grep("Houston", msa$MSA), ]
+#' fit <- stan_rw(houston, time = Year, group = Race, iter = 1500)
 #'
-#' \dontrun{
-#' library(ggplot2)
-#'    data(msa)
-#'    houston <- msa[grep("Houston", msa$MSA), ]
-#'    fit <- stan_rw(houston, time = Year, group = Race)
-#'
-#'   ## plot time-varying risk with 95\% credible intervals
-#'  plot(fit, style = "lines")
-#'  plot(fit, legend.text = element_text(size = 12))
+#' print(fit)
+#' 
+#' ## plot probability distribution for disease risk
+#' plot(fit, style = "lines")
+#' plot(fit, facet = TRUE, scale = 100e3)
 #' 
 #'  ## as a ggplot, you can customize the output
-#' plot(fit) +
-#'  scale_x_continuous(breaks = 1:19, 
-#'                     labels = 1999:2017,
-#'                     name = NULL
-#'                     )
-#' }
+#' library(ggplot2)
+#' plot(fit) + theme_bw()
+#' 
 #' @param x A fitted `surveil` model
 #' @param base_size Passed to `theme_classic()` to control size of plot components (text).
 #' @param scale Scale the rates by this amount; e.g., `scale = 100e3` will print rates per 100,000 at risk.
@@ -35,13 +32,35 @@
 #' @param lwd Numeric value indicating linewidth. Passed to \code{\link[ggplot2]{geom_line}}
 #' @param fill Color for the shaded credible intervalsl; only used when `style = "mean_qi"`.
 #' @param size Positive numeric value. For `style = "mean_qi"`, this controls the size of the points representing crude rates. To exclude these points from the plot altogether, use `size = 0`.
-#' @param ... additional arguments will be passed to `\code{\link[ggplot2]{theme}}
+#' @param ... For the plot method, additional arguments will be passed to `\code{\link[ggplot2]{theme}}; for the print method, additional arguments will be passed to \code{\link[base]{print.data.frame}}.
 #' 
-#' @export 
+#' @name plot.surveil
+NULL
+
+#' @rdname plot.surveil
+#' @method print surveil
+#' @export
+print.surveil <- function(x, scale = 1, ...) {    
+    message("Summary of surveil model results")
+    message("Time periods: ", nrow(x$data$cases))
+    cols <- "time"
+    if (inherits(x$group, "list")) {
+        message("Grouping variable: ", x$group$group)
+        cols <- c(cols, x$group$group)
+        message("Correlation matrix: ", x$cor)
+    }
+
+    data.cols <- c("mean", "lwr_2.5", "upr_97.5")
+    x$summary[,data.cols] <- x$summary[,data.cols] * scale
+    cols <- c(cols, data.cols)
+    print(x$summary[ , cols], ...)
+}
+
+#' @rdname plot.surveil
+#' @method plot surveil
 #' @import graphics
 #' @import ggplot2
-#' @rdname surveil
-#' @method plot surveil
+#' @export
 plot.surveil <- function(x,
                          scale = 1,
                          style = c("mean_qi", "lines"),
@@ -219,35 +238,6 @@ plot_lines <- function(x,
         return (gg)
 }
 
-    
-#' Print `surveil` model results
-#'
-#' @description Print a summary of `surveil` model results to the console
-#'
-#' @param x A fitted `surveil` model.
-#' @param scale Scale the rates by this amount; e.g., `scale = 100e3` will print rates per 100,000 at risk.
-#' @param ... additional arguments passed to \code{\link[base]{print.data.frame}}
-#' @seealso \code{\link[surveil]{stan_rw}} \code{\link[surveil]{plot.surveil}}
-#'
-#' @method print surveil
-#' @export
-#' @rdname surveil
-print.surveil <- function(x, scale = 1, ...) {    
-    message("Summary of surveil model results")
-    message("Time periods: ", nrow(x$data$cases))
-    cols <- "time"
-    if (inherits(x$group, "list")) {
-        message("Grouping variable: ", x$group$group)
-        cols <- c(cols, x$group$group)
-        message("Correlation matrix: ", x$cor)
-    }
-
-    data.cols <- c("mean", "lwr_2.5", "upr_97.5")
-    x$summary[,data.cols] <- x$summary[,data.cols] * scale
-    cols <- c(cols, data.cols)
-    print(x$summary[ , cols], ...)
-}
-
 
 #' Standardized rates
 #' @description Convert `surveil` model results to age standardized rates using a fixed age distribution
@@ -265,10 +255,10 @@ print.surveil <- function(x, scale = 1, ...) {
 #' head(standard)
 #' head(cancer)
 #'
-#' \dontrun{
+#' \donttest{
 #' fit <- stan_rw(cancer,
 #'               time = Year,
-#'               group = Age
+#'               group = Age               
 #'               )
 #'
 #' stands <- standardize(fit,
@@ -318,7 +308,6 @@ standardize <- function(x, label, standard_pop) {
 
 standardize_rate <- function(rate, stand_pop) sum(rate * stand_pop) / sum(stand_pop)
 
-
 #' Methods for standardized rates
 #'
 #' @description Print and plot methods for `stand_surveil` (standardized rates obtained from a fitted `surveil` model)
@@ -328,13 +317,21 @@ standardize_rate <- function(rate, stand_pop) sum(rate * stand_pop) / sum(stand_
 #' @param digits Number of digits to print
 #' @param ... additional arguments
 #' @details
-#' 
+#'
+#'  Calling `standardize` on a fitted `surveil` model will create a new object that contains the `surveil` model results as well standardized rates. This new `stand_surveil` object has its own methods for printing and plotting.
+#'
 #' ### print.stand_surveil
 #'
 #' Any additional arguments (`...`) will be  passed to \code{\link[base]{print.data.frame}}
+#'
+#' @return
+#'
+#' ### print.stand_surveil
+#'
+#' The print method returns nothing but prints a summary of results to the console. 
 #' 
 #' @seealso \code{\link[surveil]{standardize}} \code{\link[surveil]{stan_rw}}
-#' 
+#'
 #' @importFrom scales comma
 #' @method print stand_surveil
 #' @export
@@ -363,6 +360,12 @@ print.stand_surveil <- function(x, scale = 1, digits = 3, ...) {
 #' 
 #' Any additional arguments (`...`) will be passed to `\code{\link[ggplot2]{theme}}.
 #'
+#' @return
+#'
+#' ### plot.stand_surveil
+#'
+#' The plot method returns an object of class `ggplot`.
+#' 
 #' @importFrom scales comma
 #' @import ggplot2
 #' @import graphics
@@ -430,20 +433,20 @@ plot.stand_surveil <- function(x,
 #'
 #' @description Widely Application Information Criteria (WAIC) for model comparison
 #' 
-#' @param fit An \code{surveil} object or any Stan model with a parameter named "log_lik", the pointwise log likelihood of the observations.
-#' @param pointwise Logical (defaults to `FALSE`); if `pointwide = TRUE`, a vector of values for each observation will be returned. 
+#' @param fit An \code{surveil} object
+#' @param pointwise Logical (defaults to `FALSE`); if `pointwise = TRUE`, a vector of values for each observation will be returned. 
 #' @param digits Round results to this many digits.
 #' 
 #' @return A vector of length 3 with \code{WAIC}, a rough measure of the effective number of parameters estimated by the model \code{Eff_pars}, and log predictive density \code{Lpd}. If \code{pointwise = TRUE}, results are returned in a \code{data.frame}.
 #'
 #' @examples
 #' 
-#' \dontrun{
 #' data(msa)
 #' austin <- msa[grep("Austin", msa$MSA), ]
-#' fit <- stan_rw(austin, time = Year, group = Race)
+#' austin.w <- austin[grep("White", austin$Race),]
+#' fit <- stan_rw(austin.w, time = Year, iter = 1500)
 #' waic(fit)
-#' }
+#'  
 #' @source
 #'
 #' Watanabe, S. (2010). Asymptotic equivalence of Bayes cross validation and widely application information criterion in singular learning theory. Journal of Machine Learning Research 11, 3571-3594.

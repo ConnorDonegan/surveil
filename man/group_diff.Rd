@@ -39,7 +39,17 @@ RR = target/reference
 EC = RD * p
 }
 
-As the math concisely communicates, the PAR is defined as the fraction of risk in the target population that would have been removed had the target rate equaled the reference rate (Menvielle et al. 2017).
+As the math communicates, the PAR is the rate difference expressed as a fraction of total risk for the target population. This could also be read as the fraction of risk in the target population that would have been removed had the target rate equaled the reference rate (Menvielle et al. 2017).
+}
+\examples{
+
+data(msa)
+houston <- msa[grep("Houston", msa$MSA), ]
+fit <- stan_rw(houston, time = Year, group = Race, iter = 1500)
+gd <- group_diff(fit, "Black or African American", "White")
+print(gd, scale = 100e3)
+plot(gd, scale = 100e3)
+
 }
 \seealso{
 \code{\link[surveil]{plot.surveil_diff}} \code{\link[surveil]{print.surveil_diff}} \code{\link[surveil]{theil}}

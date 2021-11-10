@@ -6,7 +6,7 @@
 #' 
 #' @details
 #'
-#' Theil's index is a good index of inequality in disease and mortality burdens when multiple groups are being considered. It provides a summary measure of inequality across a set of demographic groups that may be tracked over time. Also, it is interesting because it is additive, and thus admits of simple decompositions. 
+#' Theil's index is a good index of inequality in disease and mortality burdens when multiple groups are being considered. It provides a summary measure of inequality across a set of demographic groups that may be tracked over time (and/or space). Also, it is interesting because it is additive, and thus admits of simple decompositions. 
 #'
 #' The index measures discrepancies between a population's share of the disease burden, `omega`, and their share of the population, `eta`. A situation of zero inequality would imply that each population's share of cases is equal to its population share, or, `omega=eta`. Each population's contribution to total inequality is calculated as:
 #' ```
@@ -16,11 +16,10 @@
 #' ```
 #'              T = sum_(i=1)^n T_i.
 #' ```
-#' Theil's T is thus a weighted mean of log-ratios of case shares to population shares, where each log-ratio (which we may describe as a raw inequality score) is weighted by its share of total cases. The index has a minimum of zero and a maximum of `log(N)`, where `N` is the number of units (e.g., number of counties).
-
-#' Theil's index is based on Shannon's information theory and Theil used it to study a variety of topics, including income inequality and racial segregation.
+#' Theil's T is thus a weighted mean of log-ratios of case shares to population shares, where each log-ratio (which we may describe as a raw inequality score) is weighted by its share of total cases. The index has a minimum of zero and a maximum of `log(N)`, where `N` is the number of units (e.g., number of states).
 #'
-#' Theil's index is often of great interest because it is additive across multiple scales. Surveillance data often consist of nested population structures, such as demographic groups nested within states. 
+#' Theil's index, which is based on Shannon's information theory, can be extended to measure inequality across multiple groups nested within non-overlapping geographies (e.g., states).
+#'
 #'
 #' @source
 #'
@@ -36,13 +35,10 @@
 #'
 #' @examples
 #' 
-#' \dontrun{
-#'  dfw <- msa[grep("Dallas", msa$MSA), ]
-#'  fit <- stan_rw(dfw, time = Year, group = Race)
-#'  theil.dfw <- theil(fit)
-#'  plot(theil.dfw)
-#' }
-#' 
+#'  houston <- msa[grep("Houston", msa$MSA), ]
+#'  fit <- stan_rw(houston, time = Year, group = Race, iter = 1200)
+#'  theil_dfw <- theil(fit)
+#'  plot(theil_dfw)
 #' 
 #' @export
 #' @md
@@ -252,13 +248,14 @@ make_cases <- function(x) {
 #' @param labels x-axis labels (time periods)
 #' @param base_size Passed to `theme_classic` to control size of plot elements (e.g., text)
 #' @param ... additional arguments
-#' @examples
-#'  \dontrun{
-#'  dfw <- msa[grep("Dallas", msa$MSA), ]
-#'  fit <- stan_rw(dfw, time = Year, group = Race)
-#'  theil.dfw <- theil(fit)
-#'  plot(theil.dfw)
-#' }
+#'
+#' @return
+#'
+#' ### plot.theil
+#'
+#' The plot method returns an object of class `ggplot`.
+#' 
+#' 
 #' @method plot theil
 #' @import ggplot2
 #' @rdname theil_methods
@@ -318,6 +315,16 @@ plot.theil <- function(x,
 #' @param between_title Plot title for the between geography component of Theil's T; defaults to "Between".
 #' @param within_title Plot title for the within geography component of Theil's T; defaults to "Within".
 #' @param total_title Plot title for Theil's index; defaults to "Total".
+#'
+#' @return
+#'
+#' ### print.theil
+#'
+#' The print method returns nothing and prints a summary of results to the console.
+#'
+#' ### plot.theil_list
+#'
+#' If `style = "lines"`, the plot method for `theil_list` objects returns a `ggplot` with facets for each component of inequality (between-areas, within-areas, and total). For `style = "mean_qi"`, the plot method returns either a list of plots (all of class `ggplot`) or, when `plot = TRUE`, it will draw them to current plotting device using \code{\link[gridExtra]{grid.arrange}}.
 #' 
 #' @method plot theil_list
 #' @import ggplot2
@@ -372,9 +379,6 @@ plot.theil_list <- function(x,
             theme(...)    
         return(gg)
     }    
-    #max.val <- x$summary %>%
-     #   dplyr::summarise(max.val = max(.data$Theil.upper))
-    #max.val <- as.numeric(max.val$max.val) * scale
     ## between geography inequality
     g1 <- ggplot(x$summary,
                  aes(x = .data$time,                     
@@ -387,7 +391,6 @@ plot.theil_list <- function(x,
         geom_ribbon(alpha = alpha,
                     fill = fill
                     ) +
-       # scale_y_continuous(limits = c(0, max.val)) +
         labs(subtitle = between_title,
              x  = NULL,
              y = NULL) +
@@ -404,7 +407,6 @@ plot.theil_list <- function(x,
                     alpha = alpha,
                     fill = fill
                     ) +
-       # scale_y_continuous(limits = c(0, max.val)) +
         labs(
             subtitle = within_title,
             x = NULL,
@@ -423,7 +425,6 @@ plot.theil_list <- function(x,
                     alpha = alpha,
                     fill = fill
                     ) +
-        #scale_y_continuous(limits = c(0, max.val)) +
         labs(subtitle = total_title,
              x  = NULL,
              y = NULL) +
@@ -440,6 +441,11 @@ plot.theil_list <- function(x,
 
 
 #' @method print theil
+#' @return
+#'
+#' ### print.theil
+#'
+#' The print returns nothing and method prints a summary of results to the R console.
 #' @rdname theil_methods
 #' @importFrom scales comma percent
 #' @export

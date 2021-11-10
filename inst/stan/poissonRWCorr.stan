@@ -8,7 +8,7 @@ data {
   vector[K] prior_eta_1_scale;  
   vector[K] prior_sigma_location;
   vector[K] prior_sigma_scale;
-  real<lower=0> prior_omega;  
+  real<lower=0> prior_omega;
 }
 
 parameters {

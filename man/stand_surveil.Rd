@@ -43,10 +43,22 @@
 
 \item{lwd}{Line width; for \code{style = "mean_qi"}, the default is \code{lwd = 1}; for \code{style = "lines"}, the default is \code{lwd = 0.05}.}
 }
+\value{
+\subsection{print.stand_surveil}{
+
+The print method returns nothing but prints a summary of results to the console.
+}
+
+\subsection{plot.stand_surveil}{
+
+The plot method returns an object of class \code{ggplot}.
+}
+}
 \description{
 Print and plot methods for \code{stand_surveil} (standardized rates obtained from a fitted \code{surveil} model)
 }
 \details{
+Calling \code{standardize} on a fitted \code{surveil} model will create a new object that contains the \code{surveil} model results as well standardized rates. This new \code{stand_surveil} object has its own methods for printing and plotting.
 \subsection{print.stand_surveil}{
 
 Any additional arguments (\code{...}) will be  passed to \code{\link[base]{print.data.frame}}

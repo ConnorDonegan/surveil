@@ -235,38 +235,32 @@
 
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>Theil's index is a good index of inequality in disease and mortality burdens when multiple groups are being considered. It provides a summary measure of inequality across a set of demographic groups that may be tracked over time. Also, it is interesting because it is additive, and thus admits of simple decompositions.</p>
+    <p>Theil's index is a good index of inequality in disease and mortality burdens when multiple groups are being considered. It provides a summary measure of inequality across a set of demographic groups that may be tracked over time (and/or space). Also, it is interesting because it is additive, and thus admits of simple decompositions.</p>
 <p>The index measures discrepancies between a population's share of the disease burden, <code>omega</code>, and their share of the population, <code>eta</code>. A situation of zero inequality would imply that each population's share of cases is equal to its population share, or, <code>omega=eta</code>. Each population's contribution to total inequality is calculated as:</p><pre><code>             T_i = omega_i * [log(omega_i/eta_i)],
 </code></pre>
 
 <p>the log-ratio of case-share to population-share, weighted by their share of cases. Theil's index for all areas is the sum of each area's T_i:</p><pre><code>             T = sum_(i=1)^n T_i.
 </code></pre>
 
-<p>Theil's T is thus a weighted mean of log-ratios of case shares to population shares, where each log-ratio (which we may describe as a raw inequality score) is weighted by its share of total cases. The index has a minimum of zero and a maximum of <code>log(N)</code>, where <code>N</code> is the number of units (e.g., number of counties).
-Theil's index is based on Shannon's information theory and Theil used it to study a variety of topics, including income inequality and racial segregation.</p>
-<p>Theil's index is often of great interest because it is additive across multiple scales. Surveillance data often consist of nested population structures, such as demographic groups nested within states.</p>
+<p>Theil's T is thus a weighted mean of log-ratios of case shares to population shares, where each log-ratio (which we may describe as a raw inequality score) is weighted by its share of total cases. The index has a minimum of zero and a maximum of <code>log(N)</code>, where <code>N</code> is the number of units (e.g., number of states).</p>
+<p>Theil's index, which is based on Shannon's information theory, can be extended to measure inequality across multiple groups nested within non-overlapping geographies (e.g., states).</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p><code><a href='theil_methods.html'>plot.theil</a></code> <code><a href='theil_methods.html'>print.theil</a></code> <code><a href='theil_methods.html'>plot.theil_list</a></code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <div class="ref-examples sourceCode"><pre class='sourceCode r'><code><span class='r-in'></span>
-<span class='r-in'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span></span>
-<span class='r-in'> <span class='va'>dfw</span> <span class='op'>&lt;-</span> <span class='va'>msa</span><span class='op'>[</span><span class='fu'><a href='https://rdrr.io/r/base/grep.html'>grep</a></span><span class='op'>(</span><span class='st'>"Dallas"</span>, <span class='va'>msa</span><span class='op'>$</span><span class='va'>MSA</span><span class='op'>)</span>, <span class='op'>]</span></span>
-<span class='r-in'> <span class='va'>fit</span> <span class='op'>&lt;-</span> <span class='fu'><a href='stan_rw.html'>stan_rw</a></span><span class='op'>(</span><span class='va'>dfw</span>, time <span class='op'>=</span> <span class='va'>Year</span>, group <span class='op'>=</span> <span class='va'>Race</span><span class='op'>)</span></span>
-<span class='r-in'> <span class='va'>theil.dfw</span> <span class='op'>&lt;-</span> <span class='fu'>theil</span><span class='op'>(</span><span class='va'>fit</span><span class='op'>)</span></span>
-<span class='r-in'> <span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>theil.dfw</span><span class='op'>)</span></span>
-<span class='r-in'><span class='op'>}</span></span>
-<span class='r-in'></span>
-<span class='r-in'></span>
-<span class='r-in'></span>
-<span class='r-in'><span class='va'>Count</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>10</span>, <span class='fl'>12</span>, <span class='fl'>3</span>, <span class='fl'>111</span><span class='op'>)</span></span>
-<span class='r-in'><span class='va'>Pop</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1000</span>, <span class='fl'>1200</span>, <span class='fl'>4000</span>, <span class='fl'>9000</span><span class='op'>)</span></span>
-<span class='r-in'><span class='fu'>theil2</span><span class='op'>(</span><span class='va'>Count</span>, <span class='va'>Pop</span><span class='op'>)</span></span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] 0.2252564</span>
-<span class='r-in'><span class='fu'>theil2</span><span class='op'>(</span><span class='va'>Count</span>, <span class='va'>Pop</span>, total <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span></span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> [1]  0.008178356  0.009814027 -0.054684740  0.261948709</span>
-<span class='r-in'></span>
+    <div class="ref-examples sourceCode"><pre class='sourceCode r'><code>
+ <span class='va'>houston</span> <span class='op'>&lt;-</span> <span class='va'>msa</span><span class='op'>[</span><span class='fu'><a href='https://rdrr.io/r/base/grep.html'>grep</a></span><span class='op'>(</span><span class='st'>"Houston"</span>, <span class='va'>msa</span><span class='op'>$</span><span class='va'>MSA</span><span class='op'>)</span>, <span class='op'>]</span>
+ <span class='va'>fit</span> <span class='op'>&lt;-</span> <span class='fu'><a href='stan_rw.html'>stan_rw</a></span><span class='op'>(</span><span class='va'>houston</span>, time <span class='op'>=</span> <span class='va'>Year</span>, group <span class='op'>=</span> <span class='va'>Race</span>, iter <span class='op'>=</span> <span class='fl'>1200</span><span class='op'>)</span>
+ <span class='va'>theil_dfw</span> <span class='op'>&lt;-</span> <span class='fu'>theil</span><span class='op'>(</span><span class='va'>fit</span><span class='op'>)</span>
+ <span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>theil_dfw</span><span class='op'>)</span>
+
+
+<span class='va'>Count</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>10</span>, <span class='fl'>12</span>, <span class='fl'>3</span>, <span class='fl'>111</span><span class='op'>)</span>
+<span class='va'>Pop</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1000</span>, <span class='fl'>1200</span>, <span class='fl'>4000</span>, <span class='fl'>9000</span><span class='op'>)</span>
+<span class='fu'>theil2</span><span class='op'>(</span><span class='va'>Count</span>, <span class='va'>Pop</span><span class='op'>)</span>
+<span class='fu'>theil2</span><span class='op'>(</span><span class='va'>Count</span>, <span class='va'>Pop</span>, total <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
+
 </code></pre></div>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

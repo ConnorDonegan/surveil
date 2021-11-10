@@ -179,38 +179,24 @@
     <div class='dont-index'><p><code><a href='stan_rw.html'>stan_rw</a></code>  <code><a href='stand_surveil.html'>plot.stand_surveil</a></code> <code><a href='stand_surveil.html'>print.stand_surveil</a></code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <div class="ref-examples sourceCode"><pre class='sourceCode r'><code><span class='r-in'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>cancer</span><span class='op'>)</span></span>
-<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>standard</span><span class='op'>)</span></span>
-<span class='r-in'></span>
-<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span><span class='op'>(</span><span class='va'>standard</span><span class='op'>)</span></span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span>   age.id   age standard_pop</span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> 1      1    &lt;1        13818</span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> 2      2   1-4        55317</span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> 3      3   5-9        72533</span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> 4      4 10-14        73032</span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> 5      5 15-19        72169</span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> 6      6 20-24        66478</span>
-<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span><span class='op'>(</span><span class='va'>cancer</span><span class='op'>)</span></span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span>   Year   Age Count Population</span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> 1 1999    &lt;1   866    3708753</span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> 2 1999   1-4  2959   14991152</span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> 3 1999   5-9  2226   20146188</span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> 4 1999 10-14  2447   19742631</span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> 5 1999 15-19  3875   19585857</span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> 6 1999 20-24  5969   18148795</span>
-<span class='r-in'></span>
-<span class='r-in'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span></span>
-<span class='r-in'><span class='va'>fit</span> <span class='op'>&lt;-</span> <span class='fu'><a href='stan_rw.html'>stan_rw</a></span><span class='op'>(</span><span class='va'>cancer</span>,</span>
-<span class='r-in'>              time <span class='op'>=</span> <span class='va'>Year</span>,</span>
-<span class='r-in'>              group <span class='op'>=</span> <span class='va'>Age</span></span>
-<span class='r-in'>              <span class='op'>)</span></span>
-<span class='r-in'></span>
-<span class='r-in'><span class='va'>stands</span> <span class='op'>&lt;-</span> <span class='fu'>standardize</span><span class='op'>(</span><span class='va'>fit</span>,</span>
-<span class='r-in'>                      label <span class='op'>=</span> <span class='va'>standard</span><span class='op'>$</span><span class='va'>age</span>,</span>
-<span class='r-in'>                      standard_pop <span class='op'>=</span> <span class='va'>standard</span><span class='op'>$</span><span class='va'>standard_pop</span><span class='op'>)</span></span>
-<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span><span class='op'>(</span><span class='va'>stands</span><span class='op'>)</span></span>
-<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>stands</span>, style <span class='op'>=</span> <span class='st'>"lines"</span><span class='op'>)</span></span>
-<span class='r-in'><span class='op'>}</span></span>
+    <div class="ref-examples sourceCode"><pre class='sourceCode r'><code><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>cancer</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>standard</span><span class='op'>)</span>
+
+<span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span><span class='op'>(</span><span class='va'>standard</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span><span class='op'>(</span><span class='va'>cancer</span><span class='op'>)</span>
+
+<span class='co'># \donttest{</span>
+<span class='va'>fit</span> <span class='op'>&lt;-</span> <span class='fu'><a href='stan_rw.html'>stan_rw</a></span><span class='op'>(</span><span class='va'>cancer</span>,
+              time <span class='op'>=</span> <span class='va'>Year</span>,
+              group <span class='op'>=</span> <span class='va'>Age</span>               
+              <span class='op'>)</span>
+
+<span class='va'>stands</span> <span class='op'>&lt;-</span> <span class='fu'>standardize</span><span class='op'>(</span><span class='va'>fit</span>,
+                      label <span class='op'>=</span> <span class='va'>standard</span><span class='op'>$</span><span class='va'>age</span>,
+                      standard_pop <span class='op'>=</span> <span class='va'>standard</span><span class='op'>$</span><span class='va'>standard_pop</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span><span class='op'>(</span><span class='va'>stands</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>stands</span>, style <span class='op'>=</span> <span class='st'>"lines"</span><span class='op'>)</span>
+<span class='co'># }</span>
 </code></pre></div>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

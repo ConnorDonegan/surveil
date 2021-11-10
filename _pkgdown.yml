@@ -19,7 +19,7 @@ reference:
 - title: "Rate adjustments"
 - contents:
   - apc
-  - print.apc_ls
+  - print.apc
   - standardize
   - print.stand_surveil  
 - title: "Inequality"
