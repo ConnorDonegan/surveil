@@ -5,7 +5,8 @@
 #' @seealso \code{\link[surveil]{stan_rw}}
 #' @author Connor Donegan (Connor.Donegan@UTSouthwestern.edu)
 #' @examples
-#' 
+#'
+#' \donttest{
 #' data(msa)
 #' houston <- msa[grep("Houston", msa$MSA), ]
 #' fit <- stan_rw(houston, time = Year, group = Race, iter = 1500)
@@ -19,6 +20,7 @@
 #'  ## as a ggplot, you can customize the output
 #' library(ggplot2)
 #' plot(fit) + theme_bw()
+#' }
 #' 
 #' @param x A fitted `surveil` model
 #' @param base_size Passed to `theme_classic()` to control size of plot components (text).

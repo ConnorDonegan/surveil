@@ -55,6 +55,7 @@ Print and plot methods for \code{surveil} model results
 }
 \examples{
 
+\donttest{
 data(msa)
 houston <- msa[grep("Houston", msa$MSA), ]
 fit <- stan_rw(houston, time = Year, group = Race, iter = 1500)
@@ -68,6 +69,7 @@ plot(fit, facet = TRUE, scale = 100e3)
  ## as a ggplot, you can customize the output
 library(ggplot2)
 plot(fit) + theme_bw()
+}
 
 }
 \seealso{
