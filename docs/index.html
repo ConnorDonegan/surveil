@@ -99,13 +99,15 @@
 <div id="installation" class="section level3">
 <h3 class="hasAnchor">
 <a href="#installation" class="anchor" aria-hidden="true"></a>Installation</h3>
-<p>The project is still under development.</p>
+<p><strong>surveil</strong> is available from CRAN; install from R using:</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"surveil"</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="usage" class="section level3">
 <h3 class="hasAnchor">
 <a href="#usage" class="anchor" aria-hidden="true"></a>Usage</h3>
 <p>Model time series data of mortality or disease incidence by loading the <strong>surveil</strong> package into R together with disease surveillance data. Tables exported from CDC WONDER are automatically in the correct format.</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://connordonegan.github.io/surveil/">surveil</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://yihui.org/knitr/" class="external-link">knitr</a></span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">cancer</span><span class="op">)</span>
@@ -160,7 +162,7 @@
 </tbody>
 </table>
 <p>Model trends in risk and easily view functions of risk estimates, such as cumulative percent change:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/stan_rw.html">stan_rw</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">cancer</span>,
                time <span class="op">=</span> <span class="va">Year</span>,
                group <span class="op">=</span> <span class="va">Age</span><span class="op">)</span>

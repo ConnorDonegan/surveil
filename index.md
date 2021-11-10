@@ -15,7 +15,11 @@ state-of-the-art platform for Bayesian inference.
 
 ### Installation
 
-The project is still under development.
+**surveil** is available from CRAN; install from R using:
+
+``` r
+install.packages("surveil")
+```
 
 ### Usage
 

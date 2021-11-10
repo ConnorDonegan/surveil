@@ -18,7 +18,11 @@ The **surveil** R package provides time series models for routine public health 
 
 ### Installation
 
-The project is still under development.
+**surveil** is available from CRAN; install from R using:
+
+```{r eval = FALSE}
+install.packages("surveil")
+```
 
 ### Usage
 

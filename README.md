@@ -18,7 +18,11 @@ state-of-the-art platform for Bayesian inference.
 
 ### Installation
 
-This project is still under development.
+**surveil** is available from CRAN; install from R using:
+
+``` r
+install.packages("surveil")
+```
 
 ### Usage
 
@@ -58,7 +62,7 @@ fit <- stan_rw(data = cancer,
 
     ## [1] "Setting normal prior(s) for eta_1: "
     ##  location scale
-    ##        -5    10
+    ##        -6     5
     ## [1] "\nSetting half-normal prior for sigma: "
     ##  location scale
     ##         0     1
@@ -68,7 +72,7 @@ fit_apc <- apc(fit)
 plot(fit_apc, cumulative = TRUE)
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-2-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-3-1.png)
 
 ### Citation
 
