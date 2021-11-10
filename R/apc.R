@@ -21,7 +21,7 @@
 #'  print(x)
 #'  plot(x, cumulative = TRUE)
 #' }
-#' @seealso \code{\link[surveil]{stan_rw}} \code{\link[surveil]{standardize}}
+#' @seealso \code{\link[surveil]{plot.apc}} \code{\link[surveil]{print.apc}} \code{\link[surveil]{stan_rw}} \code{\link[surveil]{standardize}}
 #' @md
 #' @export
 #' @rdname apc 
@@ -168,20 +168,22 @@ apc.stand_surveil <- function(x) {
 #' @param x An `apc` object returned by \code{\link[surveil]{apc}}
 #' @param digits Print this many digits (passed to \code{\link[base]{print.data.frame}})
 #' @param max Print this many rows
-#' @param ... additional arguments
-#' @details
-#' 
-#' ### print.apc
+#' @param ... additional arguments; for the print arugment, these will be passed to \code{\link[base]{print.data.frame}}. For the plot method, these will be passed to \code{\link[ggplot2]{theme}}.
 #'
-#' Any additional arguments (`...`) to the print method will be  passed to \code{\link[base]{print.data.frame}}
+#' @return
 #'
+#' ## print
+#'
+#' The print method does not have a return value, but prints a summary of results to the R console.
+#'
+#' @seealso \code{\link[surveil]{apc}} 
 #' @param max Maximum number of time periods (rows) to print 
 #' @importFrom scales comma
 #' @importFrom tidyr pivot_wider
 #' @method print apc
 #' @export
 #' @md
-#' @rdname apc
+#' @name print.apc
 print.apc <- function(x, digits = 1, max = 10, ...) {    
     message("Summary of cumulative and per-period percent change")
     message("Time periods: ", length(unique(x$time$time.df$time.label)))
@@ -220,24 +222,18 @@ print.apc <- function(x, digits = 1, max = 10, ...) {
 #' @param lwd Line width; for `style = "mean_qi"`, the default is `lwd = 1`; for `style = "lines"`, the default is `lwd = 0.05`.
 #' @param base_size Size of plot attributes, passed to `\code{\link[ggplot2]{theme_classic}}
 #' @param lwd Line width
-#' @param ... Additional arguments
 #' @md
 #' @import ggplot2
 #' @method plot apc
-#' @rdname apc
+#' @rdname print.apc
 #' @export
 #' 
-#' @details
-#' 
-#' ### plot.apc
-#' 
-#' Any additional arguments (`...`) will be passed to \code{\link[ggplot2]{theme}}.
 #'
 #' @return
 #'
-#' ### plot.apc
+#' ### Plot
 #'
-#' The plot method returns a `ggplot`
+#' The plot method returns a `ggplot`.
 #' 
 plot.apc <- function(x,
                         cumulative = FALSE,

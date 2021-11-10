@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Annual and cumulative percent change — apc • surveil</title>
+<title>Methods for APC objects — print.apc • surveil</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,8 +46,8 @@
 
 
 
-<meta property="og:title" content="Annual and cumulative percent change — apc" />
-<meta property="og:description" content="Summarize annual and cumulative percent change in risk" />
+<meta property="og:title" content="Methods for APC objects — print.apc" />
+<meta property="og:description" content="Methods for APC objects" />
 <meta property="og:image" content="https://connordonegan.github.io/surveil/logo.png" />
 
 
@@ -143,55 +143,102 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Annual and cumulative percent change</h1>
+    <h1>Methods for APC objects</h1>
     <small class="dont-index">Source: <a href='https://github.com/ConnorDonegan/surveil/blob/master/R/apc.R'><code>R/apc.R</code></a></small>
-    <div class="hidden name"><code>apc.Rd</code></div>
+    <div class="hidden name"><code>print.apc.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Summarize annual and cumulative percent change in risk</p>
+    <p>Methods for APC objects</p>
     </div>
 
-    <div class="ref-usage sourceCode"><pre class='sourceCode r'><code><span class='fu'>apc</span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span>
+    <div class="ref-usage sourceCode"><pre class='sourceCode r'><code><span class='co'># S3 method for apc</span>
+<span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span><span class='op'>(</span><span class='va'>x</span>, digits <span class='op'>=</span> <span class='fl'>1</span>, max <span class='op'>=</span> <span class='fl'>10</span>, <span class='va'>...</span><span class='op'>)</span>
 
-<span class='co'># S3 method for surveil</span>
-<span class='fu'>apc</span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span>
-
-<span class='co'># S3 method for stand_surveil</span>
-<span class='fu'>apc</span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span></code></pre></div>
+<span class='co'># S3 method for apc</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span>
+  <span class='va'>x</span>,
+  cumulative <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  style <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"mean_qi"</span>, <span class='st'>"lines"</span><span class='op'>)</span>,
+  M <span class='op'>=</span> <span class='fl'>250</span>,
+  col <span class='op'>=</span> <span class='st'>"black"</span>,
+  fill <span class='op'>=</span> <span class='st'>"black"</span>,
+  <span class='va'>alpha</span>,
+  <span class='va'>lwd</span>,
+  base_size <span class='op'>=</span> <span class='fl'>14</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span></code></pre></div>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>x</th>
-      <td><p>A fitted <code>surviel</code> model, or standardized rates (a <code>stand_surveil</code> object).</p></td>
+      <td><p>An <code>apc</code> object returned by <code><a href='apc.html'>apc</a></code></p></td>
+    </tr>
+    <tr>
+      <th>digits</th>
+      <td><p>Print this many digits (passed to <code><a href='https://rdrr.io/r/base/print.dataframe.html'>print.data.frame</a></code>)</p></td>
+    </tr>
+    <tr>
+      <th>max</th>
+      <td><p>Maximum number of time periods (rows) to print</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>additional arguments; for the print arugment, these will be passed to <code><a href='https://rdrr.io/r/base/print.dataframe.html'>print.data.frame</a></code>. For the plot method, these will be passed to <code><a href='https://ggplot2.tidyverse.org/reference/theme.html'>theme</a></code>.</p></td>
+    </tr>
+    <tr>
+      <th>cumulative</th>
+      <td><p>Plot cumulative percent change? Defaults to <code>cumulative = FALSE</code></p></td>
+    </tr>
+    <tr>
+      <th>style</th>
+      <td><p>If <code>style = "mean_qi"</code>, then the posterior mean and 95 percent credible interval will be plotted; if <code>style = "lines"</code>, then <code>M</code> samples from the joint probability distribution will be plotted.</p></td>
+    </tr>
+    <tr>
+      <th>M</th>
+      <td><p>If <code>style = "lines"</code>, then <code>M</code> is the number of samples from the posterior distribution that will be plotted; the default is <code>M = 250</code>.</p></td>
+    </tr>
+    <tr>
+      <th>col</th>
+      <td><p>Line color</p></td>
+    </tr>
+    <tr>
+      <th>fill</th>
+      <td><p>Fill color for the 95 percent credible interval</p></td>
+    </tr>
+    <tr>
+      <th>alpha</th>
+      <td><p>For <code>style = "mean_qi"</code>, this controls the transparency for the credible interval (passed to <code><a href='https://ggplot2.tidyverse.org/reference/geom_ribbon.html'>geom_ribbon</a></code>) and defaults to <code>alpha = 0.5</code>; for <code>style = "lines"</code>, this controls the transparency of the lines and defaults to <code>alpha = 0.7</code>.</p></td>
+    </tr>
+    <tr>
+      <th>lwd</th>
+      <td><p>Line width</p></td>
+    </tr>
+    <tr>
+      <th>base_size</th>
+      <td><p>Size of plot attributes, passed to `<code><a href='https://ggplot2.tidyverse.org/reference/ggtheme.html'>theme_classic</a></code></p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>An <code>apc</code> (list) object containing the following data frames:</p><dl>
-<dt>apc</dt><dd><p>A data frame containing a summary of the posterior distribution for period-specific percent change. This contains the posterior mean (<code>apc</code>) 95 percent credible intervals (<code>lwr</code> and <code>upr</code> bounds).</p></dd>
-<dt>cpc</dt><dd><p>A data frame containing a summary of the posterior distribution for the cumulative percent change in risk at each time period. This contains the posterior mean (<code>cpc</code>) and 95 percent credible interval (<code>lwr</code> and <code>upr</code> bounds).</p></dd>
-<dt>apc_samples</dt><dd><p>MCMC samples from the posterior distribution for period percent change</p></dd>
-<dt>cpc_samples</dt><dd><p>MCMC samples from the posterior distribution for cumulative percent change</p></dd>
+    
+<h3 class='hasAnchor' id='print'><a class='anchor' aria-hidden='true' href='#print'></a>print</h3>
 
-</dl>
+
+<p>The print method does not have a return value, but prints a summary of results to the R console.</p>
+
+<h3 class='hasAnchor' id='plot'><a class='anchor' aria-hidden='true' href='#plot'></a>Plot</h3>
+
+
+<p>The plot method returns a <code>ggplot</code>.</p>
 
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p><code><a href='print.apc.html'>plot.apc</a></code> <code><a href='print.apc.html'>print.apc</a></code> <code><a href='stan_rw.html'>stan_rw</a></code> <code><a href='standardize.html'>standardize</a></code></p></div>
+    <div class='dont-index'><p><code><a href='apc.html'>apc</a></code></p></div>
 
-    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <div class="ref-examples sourceCode"><pre class='sourceCode r'><code><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>cancer</span><span class='op'>)</span>
-<span class='co'># \donttest{</span>
- <span class='va'>fit</span> <span class='op'>&lt;-</span> <span class='fu'><a href='stan_rw.html'>stan_rw</a></span><span class='op'>(</span><span class='va'>cancer</span>, time <span class='op'>=</span> <span class='va'>Year</span>, group <span class='op'>=</span> <span class='va'>Age</span>, iter <span class='op'>=</span> <span class='fl'>2e3</span><span class='op'>)</span>
- <span class='va'>x</span> <span class='op'>&lt;-</span> <span class='fu'>apc</span><span class='op'>(</span><span class='va'>fit</span><span class='op'>)</span>
- <span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span>
- <span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>x</span>, cumulative <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
-<span class='co'># }</span>
-</code></pre></div>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

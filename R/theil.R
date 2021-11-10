@@ -318,10 +318,6 @@ plot.theil <- function(x,
 #'
 #' @return
 #'
-#' ### print.theil
-#'
-#' The print method returns nothing and prints a summary of results to the console.
-#'
 #' ### plot.theil_list
 #'
 #' If `style = "lines"`, the plot method for `theil_list` objects returns a `ggplot` with facets for each component of inequality (between-areas, within-areas, and total). For `style = "mean_qi"`, the plot method returns either a list of plots (all of class `ggplot`) or, when `plot = TRUE`, it will draw them to current plotting device using \code{\link[gridExtra]{grid.arrange}}.
