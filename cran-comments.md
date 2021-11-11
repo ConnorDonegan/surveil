@@ -6,8 +6,6 @@ This is a resubmission to CRAN. I fixed the following issues:
  * @return values have been added to .Rd manual pages that were previously missing it (stan_rw.Rd; surveil_diff.Rd; theil_methods.Rd; stand_surveil.Rd) and documentation of methods has been improved (I removed apc_ls.Rd).
  * Examples no longer use \dontrun{}; example models that require more than 5 seconds are wrapped in \dontest{}.
 
-Thank you for your help improving this package!
-
 # R CMD check results
 
 On my Linux machine there were no unavoidable notes; I confirmed that the "(possibly) invalid URL" is valid, it is "blocked" by an application on my web browser. I also checked that the 'Possible spelling errors' are indeed correct spellings of surnames.
