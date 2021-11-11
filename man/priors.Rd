@@ -51,9 +51,10 @@ prior$eta_1 <- normal(location = -6, scale = 4, k = 3)
 prior$sigma <- normal(scale = 1, k = 3)
 prior$omega <- lkj(2)
 
+\donttest{
 dfw <- msa[grep("Dallas", msa$MSA), ]
 fit <- stan_rw(dfw, time = Year, group = Race, prior = prior, iter = 1200)
 plot(fit)
-
+}
 
 }
