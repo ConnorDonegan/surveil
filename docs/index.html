@@ -164,7 +164,7 @@
 <p>Model trends in risk and easily view functions of risk estimates, such as cumulative percent change:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/stan_rw.html">stan_rw</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">cancer</span>,
-               time <span class="op">=</span> <span class="va">Year</span>,
+               time <span class="op">=</span> <span class="va">Year</span>, 
                group <span class="op">=</span> <span class="va">Age</span><span class="op">)</span>
 
 <span class="va">fit_apc</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/apc.html">apc</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span>
@@ -178,6 +178,8 @@
     <div class="links">
 <h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
+<li>Download from CRAN at <br><a href="https://cloud.r-project.org/package=surveil">https://​cloud.r-project.org/​package=surveil</a>
+</li>
 <li>Browse source code at <br><a href="https://github.com/ConnorDonegan/surveil/">https://​github.com/​ConnorDonegan/​surveil/​</a>
 </li>
 </ul>

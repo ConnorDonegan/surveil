@@ -38,12 +38,11 @@ kable(head(cancer),
       caption = "Table 1. A glimpse of cancer surveillance data")
 ```
 
-
 Model trends in risk and easily view functions of risk estimates, such as cumulative percent change:
 
 ```{r eval = FALSE}
 fit <- stan_rw(data = cancer,
-               time = Year,
+               time = Year, 
                group = Age)
 
 fit_apc <- apc(fit)

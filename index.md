@@ -51,7 +51,7 @@ as cumulative percent change:
 
 ``` r
 fit <- stan_rw(data = cancer,
-               time = Year,
+               time = Year, 
                group = Age)
 
 fit_apc <- apc(fit)
