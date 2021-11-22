@@ -7,8 +7,8 @@ Public health surveillance
 
 The **surveil** R package provides time series models for routine public
 health surveillance tasks: model time trends in mortality or disease
-incidence rates to make inferences about health inequalities, cumulative
-and period percent change, and age-standardized rates.
+incidence rates to make inferences about levels of risk, cumulative and
+period percent change, age-standardized rates, and health inequalities.
 
 **surveil** is an interface to [Stan](https://mc-stan.org), a
 state-of-the-art platform for Bayesian inference.
