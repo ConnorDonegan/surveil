@@ -12,6 +12,7 @@
   scale = 1,
   style = c("mean_qi", "lines"),
   facet = FALSE,
+  ncol = NULL,
   base_size = 14,
   palette = "Dark2",
   M = 250,
@@ -32,6 +33,8 @@
 \item{style}{If \code{style = "mean_qi"}, then the posterior mean and 95 percent credible interval will be plotted; if \code{style = "lines"}, then \code{M} samples from the joint probability distribution of the annual rates will be plotted.}
 
 \item{facet}{If \code{facet = TRUE}, \code{\link[ggplot2]{facet_wrap}} will be used instead of differentiating by line color.}
+
+\item{ncol}{Number of columns for the plotting device; optional and only used if \code{facet = TRUE}. If \code{ncol = 1}, the three plots will be aligned vertically in one column; if \code{ncol = 3} they will b aligned horizontally in one row. Defaults to \code{ncol = NULL} to allow \code{\link[ggplot2]{facet_wrap}} to automatically determine the number of columns.}
 
 \item{base_size}{Passed to \code{theme_classic()} to control size of plot components (text).}
 
@@ -58,7 +61,8 @@ Print and plot methods for \code{surveil} model results
 \donttest{
 data(msa)
 houston <- msa[grep("Houston", msa$MSA), ]
-fit <- stan_rw(houston, time = Year, group = Race, iter = 1500)
+fit <- stan_rw(houston, time = Year, group = Race,
+              chains = 2, iter = 900) # for speed only
 
 print(fit)
 

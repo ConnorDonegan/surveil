@@ -77,7 +77,7 @@ head(tx.msa) %>%
 
 ### The basics
 
-The base **surveil** model specification is specified as follows. The Poisson model is used as the likelihood: the probability of observing a given number of cases, $y_t$, conditional on unknown level of risk, $e^{\phi_t}$, and known population at risk, $p_t$:
+The base **surveil** model is specified as follows. The Poisson model is used as the likelihood: the probability of observing a given number of cases, $y_t$, conditional on a given level of risk, $e^{\phi_t}$, and known population at risk, $p_t$, is:
 $$y_t \sim \text{Pois}(p_t \cdot e^{\phi_t})$$
 where $t$ indexes the time period.
 
@@ -107,7 +107,7 @@ The time series model is fit by passing surveillance data to the `stan_rw` funct
 fit <- stan_rw(tx.msa, time = Year, group = Race)
 ```
 
-If we wanted to add a correlation structure to the model, we would add `cor = TRUE` (as opposed to the default, `cor = FALSE`). To speed things up, we could take advantage of parallel processing using the `cores` argument (e.g., by adding `cores = 4` to run on 4 cores simultaneously). 
+If we wanted to add a correlation structure to the model, we would add `cor = TRUE` (as opposed to the default, `cor = FALSE`). To speed things up, we could take advantage of parallel processing using the `cores` argument (e.g., add `cores = 4`) to run on 4 cores simultaneously. 
 
 ## MCMC diagnostics
 
@@ -158,13 +158,15 @@ These are all very near to 1. If any were approaching 1.05 or larger, we would w
 
 ## Divergent transitions
 
-Sometimes, MCMC algorithms are unable to provide unbiased samples that will converge on the target distribution given sufficient time. Stan's MCMC algorithm will issue a warning when it encounters a region of the probability model that it is unable to explore. These warnings of "divergent transitions" should not be ignored, as they indicate that something may have gone wrong [@betancourt_2017]. They will be printed to the console just after the model finishes sampling.
+Sometimes, MCMC algorithms are unable to provide unbiased samples that will converge on the target distribution given sufficient time. Stan's MCMC algorithm will issue a warning when it encounters a region of the probability model that it is unable to explore. These warnings of "divergent transitions" should not be ignored, as they indicate that something may have gone wrong [@betancourt_2017;@betancourt_2017b]. They will be printed to the console just after the model finishes sampling. Note that other MCMC platforms are simply unable to identify this bias (they will not issue a warning like Stan's divergent transitions).
 
-For the simple models provided by **surveil**, there will almost always be a way to address divergent transitions. If you receive a divergent transition warning from a **surveil** model, these are the three most probable solutions:
+For the simple models provided by **surveil**, there will often be a way to address divergent transitions. If you receive a divergent transition warning from a **surveil** model, these are the three most probable solutions:
 
-  1. Draw more samples: if you also have low ESS, the divergent transitions may disappear by increasing the number of iterations. This is controlled by the `iter` argument of `stan_rw`; e.g., `stan_rw(data, time = Year, iter = 3e3)`. However, the default value of `iter = 3000` should generally be sufficient.
+  1. Draw more samples: if you also have low ESS, the divergent transitions may disappear by increasing the number of iterations (lengthening Stan's adaptation or warm-up period). This is controlled by the `iter` argument of `stan_rw`; e.g., `stan_rw(data, time = Year, iter = 3e3)`. However, the default value of `iter = 3000` should generally be more than sufficient.
   2. Raise `adapt_delta`: you can also control an important tuning parameter related to divergent transitions. Simply raising the `adapt_delta` value to, say, 0.99 or so, may be sufficient; e.g., `stan_rw(data, time = Year, control = list(adapt_delta = 0.99))`. If you find yourself needing to try ever larger values, then the problem lies elsewhere.
-  3. Check your prior distributions: If your prior information is in conflict with the data, this can create a difficult probability distribution to sample from. The most probable cause for such a situation is that you have made a mistake when specifying your prior distribution. Look first to the prior for $\eta_1$, the prior for the first log-rate. Note that the parameter is on the *log* scale, where small changes have big impact on incidence rates. You may find that increasing the scale parameter for the `surveil::normal` prior distribution on $\eta_1$ (making the prior more diffuse) causes the divergent transition warnings to disappear.
+  3. Check your prior distributions: If your prior information is in strong conflict with the data, this can create a difficult probability distribution to sample from. The most probable cause for such a situation is that you have made a mistake when specifying your (custom) prior distribution. Look first to the prior for $\eta_1$, the prior for the first log-rate. Note that the parameter is on the *log* scale. You may find that increasing the scale parameter for the `surveil::normal` prior distribution on $\eta_1$ (making the prior more diffuse) causes the divergent transition warnings to disappear. 
+
+Despite your best efforts, there may be times when you are not able to prevent divergent transitions. This may occur when the population at risk is small and observations are particularly noisy; introducing the covariance structure (using `core = TRUE`) may make these issues more difficult to address. If the number of divergent transitions is very low (e.g., less than five out of 2,000), you may determine that the amount of bias introduced appears acceptable for your purposes and then report the issue along with results. For obtaining the joint posterior probability distribution of these models, there is no alternative to MCMC. 
 
 ## Visualizing results
 
@@ -200,7 +202,7 @@ A selection of complementary pairwise inequality measures can be calculated usin
  * Rate Ratio (RR): $\frac{\text{Target}}{\text{Reference}}$;
  * Excess Cases (EC): $\text{RD} \times \text{[At Risk]}$.
  
-Notice that the PAR is simply the rate difference expressed as a fraction of total risk; it indicates the fraction of risk in the target population that would have been removed had the target rate equaled the reference rate [@menvielle_2019].
+Notice that the PAR is simply the rate difference expressed as a fraction of total risk; it indicates the fraction of risk in the target population that would have been removed had the target rate been equal to the reference rate [@menvielle_2019].
 
 To calculate all of these measures for two groups in our data, we call `group_diff` on our fitted model:
 
@@ -213,13 +215,13 @@ All of the **surveil** plotting and printing methods provide an option to scale 
 
 The plot method for `surveil_diff` produces one time series ``ggplot`` each for RD, PAR, and EC. The means of the probability distributions for each measure are plotted as lines, while the shading indicates a 95\% credible interval:
 
-```{r fig.width = 3.5, fig.height = 4.5}
+```{r fig.width = 7, fig.height = 3}
 plot(gd, scale = 100e3)
 ```
 
 If we wanted to replace the plot of the PAR with one of the RR, we would set the `PAR` option to `FALSE`:
 
-```{r fig.width = 3.5, fig.height = 4.5}
+```{r fig.width = 7, fig.height = 3}
 plot(gd, scale = 100e3, PAR = FALSE, style = "lines")
 ```
 
@@ -240,13 +242,13 @@ print(Ts)
 
 The probability distribution for Theil's T can be summarized visualy using the `"lines"` style plot or by plotting estimates with shaded 95\% credible intervals:
 
-```{r fig.width = 5, fig.height = 3}
+```{r fig.width = 4, fig.height = 3}
 plot(Ts)
 ```
 
-While the minimum of Theil's index is always zero, the maximum value varies with the structure of the population under observation. The index is useful for comparisons such as monitoring change over time, and should generally not be used as a indication of the absolute level of inequality. 
+While the minimum of Theil's index is always zero, the maximum value varies with the structure of the population under observation. The index is useful for comparisons such as monitoring change over time, and should generally not be used as a indication of the absolute level of inequality. Instead, percent change can provide a strong summary of results.
 
-The index also has interesting extensions; for example, given disease data for a nested population structure---such as racial-ethnic groups within states---Theil's index can provide a measure of geographic inequality across states (between-state inequality), and social inequality within states (within-state inequality). For details, see `?theil`.
+The index also has interesting extensions; for example, given disease data for a nested population structure---such as racial-ethnic groups within states---Theil's index can provide a measure of geographic inequality across states (between-state inequality), and social inequality within states (within-state inequality) [@conceiccao_2001]. For details, see `?theil`.
 
 ## References
 

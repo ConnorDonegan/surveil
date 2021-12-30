@@ -37,7 +37,8 @@
 #'
 #' \donttest{
 #'  houston <- msa[grep("Houston", msa$MSA), ]
-#'  fit <- stan_rw(houston, time = Year, group = Race, iter = 1200)
+#'  fit <- stan_rw(houston, time = Year, group = Race,
+#'                chains = 2, iter = 900) # for speed only
 #'  theil_dfw <- theil(fit)
 #'  plot(theil_dfw)
 #' }
@@ -317,6 +318,8 @@ plot.theil <- function(x,
 #' @param within_title Plot title for the within geography component of Theil's T; defaults to "Within".
 #' @param total_title Plot title for Theil's index; defaults to "Total".
 #'
+#' @param ncol Number of columns for the plotting device. If `ncol = 1`, the three plots will be aligned vertically in one column; if `ncol = 3` they will b aligned horizontally in one row.
+#' 
 #' @return
 #'
 #' ### plot.theil_list
@@ -345,6 +348,7 @@ plot.theil_list <- function(x,
                             total_title = "Total",
                             scale = 100,
                             plot = TRUE,
+                            ncol = 3,
                             base_size = 14,
                             ...) {
     style <- match.arg(style, c("mean_qi", "lines"))
@@ -372,7 +376,7 @@ plot.theil_list <- function(x,
             labs(x = NULL,
                  y = NULL) +
             theme_classic(base_size = base_size) +
-            facet_wrap(~ component, scales = "free") +
+            facet_wrap(~ component, scales = "free", ncol = ncol) +
             theme(...)    
         return(gg)
     }    
@@ -431,7 +435,7 @@ plot.theil_list <- function(x,
         glist <- list(between = g1, within = g2, total = g3)
         return (glist)
     } else {
-        gridExtra::grid.arrange(g1, g2, g3, nrow = 1)
+        gridExtra::grid.arrange(g1, g2, g3, ncol = ncol)
     }
 }
 

@@ -8,19 +8,17 @@ editor_options:
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# Surveil
-
-## Public Health Surveillance
+## surveil: Public health surveillance 
 
 <img src="man/figures/logo.png" align="right" width="160" />
 
-The **surveil** R package provides time series models for routine public health surveillance tasks: model time trends in mortality or disease incidence rates to make inferences about health inequalities, cumulative and period percent change, and age-standardized rates. 
+The **surveil** R package provides time series models for routine public health surveillance tasks: model time trends in mortality or disease incidence rates to make inferences about levels of risk, cumulative and period percent change, age-standardized rates, and health inequalities. 
 
-**surveil** is an interface to [Stan](https://mc-stan.org), a state-of-the-art platform for Bayesian inference. 
+**surveil** is an interface to [Stan](https://mc-stan.org), a state-of-the-art platform for Bayesian inference. For analysis of spatial health data see the [**geostan**](https://connordonegan.github.io/geostan/) R package.
 
 ### Installation
 
-**surveil** is available from CRAN; install from R using:
+**surveil** is available on CRAN; install from R using:
 
 ```{r eval = FALSE}
 install.packages("surveil")
@@ -40,46 +38,17 @@ kable(head(cancer),
       caption = "Table 1. A glimpse of cancer surveillance data")
 ```
 
-Model trends in risk and easily obtain functions of risk estimates, such as cumulative percent change:
+Model trends in risk and easily view functions of risk estimates, such as cumulative percent change:
 
-```{r message = FALSE, warning = FALSE}
+```{r eval = FALSE}
 fit <- stan_rw(data = cancer,
-               time = Year,
-               group = Age,
-	       refresh = 0 ## silence some printing
-	       )
+               time = Year, 
+               group = Age)
 
 fit_apc <- apc(fit)
 plot(fit_apc, cumulative = TRUE)
 ```
 
-### Citation
-
-> Donegan, Connor (2021). surveil: Public health surveillance. R package version 0.1.0., https://connordonegan.github.io/surveil/
-
-```
-bibentry(
-  bibtype = "Manual",
-  title= "surveil: Public Health Surveillance",
-  author= "Donegan, Connor",
-  url = "https://connordonegan.github.io/surveil/",
-  year = 2021,
-  note = "R package version 0.1.0"
-)
-```
-
-All **surveil** models were built using Stan:
-
-> Stan Development Team. 2021. Stan Modeling Language Users Guide and Reference Manual, 2.28. https://mc-stan.org
-
-```
-bibentry(
-  bibtype = "Manual",
-  title= "Stan Modeling Language Users Guide and Reference Manual",
-  author= "{Stan Development Team}",
-  url = "https://mc-stan.org",
-  year = 2021,
-  note = "Version 2.28"
-)
-```
+<img src="man/figures/cpc-plot.png" align="center" width="800" />
+*Cumulative percent change in US cancer incidence by age group*
 

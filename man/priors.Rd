@@ -53,7 +53,8 @@ prior$omega <- lkj(2)
 
 \donttest{
 dfw <- msa[grep("Dallas", msa$MSA), ]
-fit <- stan_rw(dfw, time = Year, group = Race, prior = prior, iter = 1200)
+fit <- stan_rw(dfw, time = Year, group = Race, prior = prior,
+               chains = 2, iter = 900) # for speed only
 plot(fit)
 }
 

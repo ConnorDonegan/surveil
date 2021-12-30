@@ -16,7 +16,8 @@
 #' @examples
 #' data(cancer)
 #' \donttest{
-#'  fit <- stan_rw(cancer, time = Year, group = Age, iter = 2e3)
+#'  fit <- stan_rw(cancer, time = Year, group = Age,
+#'                 iter = 900) # low iter for speed only
 #'  x <- apc(fit)
 #'  print(x)
 #'  plot(x, cumulative = TRUE)
@@ -184,33 +185,33 @@ apc.stand_surveil <- function(x) {
 #' @export
 #' @md
 #' @name print.apc
-print.apc <- function(x, digits = 1, max = 10, ...) {    
+print.apc <- function(x, digits = 1, max = 20, ...) {    
     message("Summary of cumulative and per-period percent change")
     message("Time periods: ", length(unique(x$time$time.df$time.label)))
-    GG <- !is.null(x$apc$group)
-    if (GG > 1) {
-        x$apc <- tidyr::pivot_wider(x$apc,
-                                     id_cols = .data$time,
-                                     names_from = .data$group,
-                                     values_from = .data$apc
-                                     )
-        x$cpc <- tidyr::pivot_wider(x$cpc,
-                                       id_cols = .data$time,
-                                       names_from = .data$group,
-                                       values_from = .data$cpc
-                                    )
-        message("Cumulative percent change:")
-        print.data.frame(x$cpc[nrow(x$cpc), -which(names(x$cpc) == "time")], digits = digits, row.names = FALSE, ...)        
-        message("\nPeriod percent change")
-        print.data.frame(x$apc, digits = digits, max = max * ncol(x$apc), row.names = FALSE, ...)        
-    } else {
+    single_group <- is.null(x$group)
+    if (single_group) {
         c.est <- round(x$cpc$cpc[nrow(x$cpc)], digits)
         lwr <- round(x$cpc$lwr[nrow(x$cpc)], digits)
         upr <- round(x$cpc$upr[nrow(x$cpc)], digits)
         message("Cumulative percent change: ", c.est, " [", lwr, ", ", upr, "]")  
         message("Period percent change:")
         print.data.frame(x$apc, digits = digits, max = max * ncol(x$apc), row.names = FALSE, ...)
-    }
+    } else {
+        x$apc <- tidyr::pivot_wider(x$apc,
+                                    id_cols = .data$time,
+                                    names_from = .data$group,
+                                    values_from = .data$apc
+                                    )
+        x$cpc <- tidyr::pivot_wider(x$cpc,
+                                    id_cols = .data$time,
+                                    names_from = .data$group,
+                                    values_from = .data$cpc
+                                    )
+        message("Cumulative percent change:")
+        print.data.frame(x$cpc[nrow(x$cpc), -which(names(x$cpc) == "time")], digits = digits, row.names = FALSE, ...)        
+        message("\nPeriod percent change")
+        print.data.frame(x$apc, digits = digits, max = max * ncol(x$apc), row.names = FALSE, ...)        
+    }    
 }
 
 #' @param cumulative Plot cumulative percent change? Defaults to `cumulative = FALSE`
@@ -257,7 +258,6 @@ plot.apc <- function(x,
             s_df <- x$apc_samples
         }
         s_df <- dplyr::filter(s_df, .data$.draw %in% sample(max(.data$.draw), size = M))
-                                print('these are lines')
         if (length(unique(s_df$group)) > 1) s_df$group <- factor(s_df$group, ordered = TRUE, levels = unique(s_df$group))
         gg <- ggplot(s_df, aes(.data$time, .data$value,
                                group = factor(.data$.draw))

@@ -24,7 +24,8 @@
 #' \donttest{
 #' data(msa)
 #' houston <- msa[grep("Houston", msa$MSA), ]
-#' fit <- stan_rw(houston, time = Year, group = Race, iter = 1500)
+#' fit <- stan_rw(houston, time = Year, group = Race,
+#'                iter = 900) # low iter for speed only
 #' gd <- group_diff(fit, "Black or African American", "White")
 #' print(gd, scale = 100e3)
 #' plot(gd, scale = 100e3)
@@ -128,6 +129,7 @@ group_diff <- function(fit, target, reference) {
 #' @param lwd Linewidth
 #' @param alpha transparency; for `style = "mean_qi", controls the credible interval shading; for `style = "lines"`, this is applied to the lines
 #' @param PAR Return population attributable risk? IF `FALSE`, then the rate ratio will be used instead of PAR.
+#' @param ncol Number of columns for the plotting device. If `ncol = 1`, the three plots will be aligned vertically in one column; if `ncol = 3` they will b aligned horizontally in one row.
 #' @param base_size Passed to `theme_classic` to control size of plot elements (e.g., text)
 #' @param ... additional plot arguments passed to \code{\link[ggplot2]{theme}}
 #'
@@ -153,13 +155,16 @@ plot.surveil_diff <- function(x,
                               plot = TRUE,
                               scale = 100e3,
                               PAR = TRUE,
+                              ncol = 3,
                               base_size = 14,
                               ...) {
     style <- match.arg(style, c("mean_qi", "lines"))
     if (missing(lwd)) lwd <- ifelse(style == "mean_qi", 1, 0.05)
     if (missing(alpha)) alpha <- ifelse(style == "mean_qi", 0.5, 0.7)
     message("Rate differences (RD) are per ", scales::comma(scale), " at risk")    
-    if (style == "lines") {        
+    if (style == "lines") {
+        time_df <- data.frame(time = 1:nrow(x$summary),
+                              label = x$summary$time)
         s_df <- x$samples
         s_df$RD <- s_df$RD * scale        
         TT <- max(s_df$time)
@@ -177,11 +182,12 @@ plot.surveil_diff <- function(x,
                                     values_to = "value"
                                     )
         s_df <- arrange(s_df, .data$time)
-        n_samples <- max(s_df$.draw)
+        s_df <- left_join(s_df, time_df, by = "time")
+        n_samples <- max(s_df$.draw)        
         s_df <- s_df[which(s_df$.draw %in% sample(n_samples, size = M)),]
         gg <- ggplot(s_df) +
             geom_line(
-                aes(.data$time, .data$value,
+                aes(.data$label, .data$value,
                     group = factor(.data$.draw)),
                 lwd = lwd,
                 col = col,
@@ -189,7 +195,7 @@ plot.surveil_diff <- function(x,
             ) +
             facet_wrap(~ measure,
                        scales = "free",
-                       ncol = 1) +
+                       ncol = ncol) +
             labs(x = NULL,
                  y = NULL) +
             theme_classic(base_size = base_size) +
@@ -276,7 +282,7 @@ plot.surveil_diff <- function(x,
         scale_y_continuous(labels = f.lab) +
         theme(...)
     if (plot) {
-        return ( gridExtra::grid.arrange(gg.rd,  gg.relative, gg.ec, ncol = 1) )
+        return ( gridExtra::grid.arrange(gg.rd,  gg.relative, gg.ec, ncol = ncol) )
     } else return (list(RD = gg.rd, Relative = gg.relative, EC = gg.ec))
 }
 

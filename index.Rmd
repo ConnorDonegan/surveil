@@ -8,17 +8,17 @@ editor_options:
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# Public health surveillance 
+## surveil: Public health surveillance 
 
 <img src="man/figures/logo.png" align="right" width="160" />
 
 The **surveil** R package provides time series models for routine public health surveillance tasks: model time trends in mortality or disease incidence rates to make inferences about levels of risk, cumulative and period percent change, age-standardized rates, and health inequalities. 
 
-**surveil** is an interface to [Stan](https://mc-stan.org), a state-of-the-art platform for Bayesian inference. 
+**surveil** is an interface to [Stan](https://mc-stan.org), a state-of-the-art platform for Bayesian inference. For analysis of spatial health data see the [**geostan**](https://connordonegan.github.io/geostan/) R package.
 
 ### Installation
 
-**surveil** is available from CRAN; install from R using:
+**surveil** is available on CRAN; install from R using:
 
 ```{r eval = FALSE}
 install.packages("surveil")

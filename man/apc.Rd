@@ -30,7 +30,8 @@ Summarize annual and cumulative percent change in risk
 \examples{
 data(cancer)
 \donttest{
- fit <- stan_rw(cancer, time = Year, group = Age, iter = 2e3)
+ fit <- stan_rw(cancer, time = Year, group = Age,
+                iter = 900) # low iter for speed only
  x <- apc(fit)
  print(x)
  plot(x, cumulative = TRUE)

@@ -29,7 +29,8 @@ head(cancer)
 \donttest{
 fit <- stan_rw(cancer,
               time = Year,
-              group = Age               
+              group = Age,
+              chains = 2, iter = 900 # for speed only
               )
 
 stands <- standardize(fit,

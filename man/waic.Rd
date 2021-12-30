@@ -27,7 +27,8 @@ Widely Application Information Criteria (WAIC) for model comparison
 data(msa)
 austin <- msa[grep("Austin", msa$MSA), ]
 austin.w <- austin[grep("White", austin$Race),]
-fit <- stan_rw(austin.w, time = Year, iter = 1200)
+fit <- stan_rw(austin.w, time = Year,
+               chains = 2, iter = 1200) # for speed only
 waic(fit)
  
 }

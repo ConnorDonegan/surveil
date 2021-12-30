@@ -92,7 +92,8 @@ Theil's index, which is based on Shannon's information theory, can be extended t
 
 \donttest{
  houston <- msa[grep("Houston", msa$MSA), ]
- fit <- stan_rw(houston, time = Year, group = Race, iter = 1200)
+ fit <- stan_rw(houston, time = Year, group = Race,
+               chains = 2, iter = 900) # for speed only
  theil_dfw <- theil(fit)
  plot(theil_dfw)
 }

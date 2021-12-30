@@ -17,6 +17,7 @@
   plot = TRUE,
   scale = 1e+05,
   PAR = TRUE,
+  ncol = 3,
   base_size = 14,
   ...
 )
@@ -43,6 +44,8 @@
 \item{scale}{Print rates and rate differences as per \code{scale} at risk, e.g., per 10,000 at risk.}
 
 \item{PAR}{Return population attributable risk? IF \code{FALSE}, then the rate ratio will be used instead of PAR.}
+
+\item{ncol}{Number of columns for the plotting device. If \code{ncol = 1}, the three plots will be aligned vertically in one column; if \code{ncol = 3} they will b aligned horizontally in one row.}
 
 \item{base_size}{Passed to \code{theme_classic} to control size of plot elements (e.g., text)}
 

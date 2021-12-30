@@ -109,7 +109,7 @@ austin <- msa[grep("Austin", msa$MSA), ]
 fit <- stan_rw(austin,
                time = Year,
                group = Race,
-               iter = 1500)
+               chains = 2, iter = 900) # for speed only
 
 ## MCMC diagnostics
 rstan::stan_mcse(fit$samples)
@@ -125,13 +125,16 @@ plot(fit, style = 'lines')
 
 ## age-specific rates and cumulative percent change
 data(cancer)
-fit <- stan_rw(cancer, time = Year, group = Age, iter = 2000)
+fit <- stan_rw(cancer, time = Year, group = Age,
+              chains = 2, iter = 900) # for speed only
 fit_apc <- apc(fit)
 plot(fit_apc, cumulative = TRUE)
 
 # age-standardized rates
 data(standard)
-fit_stands <- standardize(fit, label = standard$age, standard_pop = standard$standard_pop)
+fit_stands <- standardize(fit,
+                          label = standard$age,
+                          standard_pop = standard$standard_pop)
 print(fit_stands)
 plot(fit_stands)
 fit_stands_apc <- apc(fit_stands)

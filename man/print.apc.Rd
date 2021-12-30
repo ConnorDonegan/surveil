@@ -5,7 +5,7 @@
 \alias{plot.apc}
 \title{Methods for APC objects}
 \usage{
-\method{print}{apc}(x, digits = 1, max = 10, ...)
+\method{print}{apc}(x, digits = 1, max = 20, ...)
 
 \method{plot}{apc}(
   x,

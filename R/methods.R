@@ -9,7 +9,8 @@
 #' \donttest{
 #' data(msa)
 #' houston <- msa[grep("Houston", msa$MSA), ]
-#' fit <- stan_rw(houston, time = Year, group = Race, iter = 1500)
+#' fit <- stan_rw(houston, time = Year, group = Race,
+#'               chains = 2, iter = 900) # for speed only
 #'
 #' print(fit)
 #' 
@@ -28,6 +29,7 @@
 #' @param style If `style = "mean_qi"`, then the posterior mean and 95 percent credible interval will be plotted; if `style = "lines"`, then `M` samples from the joint probability distribution of the annual rates will be plotted.
 #' @param M If `style = "lines"`, then `M` is the number of samples from the posterior distribution that will be plotted; the default is `M = 250`.
 #' @param facet If \code{facet = TRUE}, \code{\link[ggplot2]{facet_wrap}} will be used instead of differentiating by line color.
+#' @param ncol Number of columns for the plotting device; optional and only used if `facet = TRUE`. If `ncol = 1`, the three plots will be aligned vertically in one column; if `ncol = 3` they will b aligned horizontally in one row. Defaults to `ncol = NULL` to allow \code{\link[ggplot2]{facet_wrap}} to automatically determine the number of columns.
 #' @param palette For multiple groups, choose the color palette. For a list of options, see \code{\link[ggplot2]{scale_color_brewer}}. The default is `palette = "Dark2"`. Not used if `facet = TRUE`.
 #' 
 #' @param alpha Numeric value from zero to one. When `style = "lines"`,  this controls transparency of lines; passed to \code{\link[ggplot2]{geom_line}}. For `style = "mean_qi", this controls the transparency of the shaded credible interval; passed to \code{\link[ggplot2]{geom_ribbon}}.
@@ -67,6 +69,7 @@ plot.surveil <- function(x,
                          scale = 1,
                          style = c("mean_qi", "lines"),
                          facet = FALSE,
+                         ncol = NULL,
                          base_size = 14,
                          palette = "Dark2",
                          M = 250,
@@ -79,8 +82,8 @@ plot.surveil <- function(x,
     style <- match.arg(style, c("mean_qi", "lines"))
     if (missing(lwd)) lwd <- ifelse(style == "mean_qi", 1, 0.05)
     if (missing(alpha)) alpha <- ifelse(style == "mean_qi", 0.5, 0.7)
-    if (style == "lines") return(plot_lines(x, scale, facet, base_size, palette, M, alpha, lwd, ...))
-    if (style == "mean_qi") return(plot_mean_qi(x, scale, facet, base_size, palette, alpha, lwd, fill, size, ...))
+    if (style == "lines") return(plot_lines(x, scale, facet, ncol, base_size, palette, M, alpha, lwd, ...))
+    if (style == "mean_qi") return(plot_mean_qi(x, scale, facet, ncol, base_size, palette, alpha, lwd, fill, size, ...))
 }
 
 #' @import ggplot2
@@ -89,6 +92,7 @@ plot.surveil <- function(x,
 plot_mean_qi <- function(x,
                          scale,
                          facet,
+                         ncol,
                          base_size,
                          palette,
                          alpha,
@@ -105,7 +109,9 @@ plot_mean_qi <- function(x,
         if (facet) {
             gform <- stats::as.formula(paste0("~ ", x$group$group))
                 gg <- ggplot(x$summary) +
-                    facet_wrap(gform, scales = "free" )
+                    facet_wrap(gform,
+                               scales = "fixed",
+                               ncol = ncol)
             } else {            
                 gg <- ggplot(x$summary,
                              aes(group = {{ group }},
@@ -159,6 +165,7 @@ plot_mean_qi <- function(x,
 plot_lines <- function(x,
                        scale,
                        facet,
+                       ncol,                       
                        base_size,
                        palette,
                        M,
@@ -216,7 +223,9 @@ plot_lines <- function(x,
                  y = NULL) +
             theme_classic() +
             theme(...) +
-            facet_wrap(~ group.label, scales = "free" )
+            facet_wrap(~ group.label,
+                       scales = "fixed",
+                       ncol = ncol)
         return(gg)
     }        
     gg <- ggplot(s_df, aes(.data$time.label, .data$rate,
@@ -260,7 +269,8 @@ plot_lines <- function(x,
 #' \donttest{
 #' fit <- stan_rw(cancer,
 #'               time = Year,
-#'               group = Age               
+#'               group = Age,
+#'               chains = 2, iter = 900 # for speed only
 #'               )
 #'
 #' stands <- standardize(fit,
@@ -446,7 +456,8 @@ plot.stand_surveil <- function(x,
 #' data(msa)
 #' austin <- msa[grep("Austin", msa$MSA), ]
 #' austin.w <- austin[grep("White", austin$Race),]
-#' fit <- stan_rw(austin.w, time = Year, iter = 1200)
+#' fit <- stan_rw(austin.w, time = Year,
+#'                chains = 2, iter = 1200) # for speed only
 #' waic(fit)
 #'  
 #' @source

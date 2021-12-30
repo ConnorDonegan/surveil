@@ -3,9 +3,13 @@ template:
     bootswatch: sandstone
     ganalytics: UA-116873024-1
 destination: docs
-url: https://connordonegan.github.io/surveil/
+url: https://connordonegan.github.io/surveil/, https://cloud.r-project.org/web/packages/surveil/index.html
 home:
   title: Public Health Surveillance
+articles:
+- title: "Package vignettes"
+  contents:
+  - demonstration
 reference:
 - title: "Package overview"
 - contents:

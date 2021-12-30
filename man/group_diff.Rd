@@ -46,7 +46,8 @@ As the math communicates, the PAR is the rate difference expressed as a fraction
 \donttest{
 data(msa)
 houston <- msa[grep("Houston", msa$MSA), ]
-fit <- stan_rw(houston, time = Year, group = Race, iter = 1500)
+fit <- stan_rw(houston, time = Year, group = Race,
+               iter = 900) # low iter for speed only
 gd <- group_diff(fit, "Black or African American", "White")
 print(gd, scale = 100e3)
 plot(gd, scale = 100e3)

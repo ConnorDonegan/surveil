@@ -34,6 +34,7 @@
   total_title = "Total",
   scale = 100,
   plot = TRUE,
+  ncol = 3,
   base_size = 14,
   ...
 )
@@ -72,6 +73,8 @@
 \item{total_title}{Plot title for Theil's index; defaults to "Total".}
 
 \item{plot}{If \code{FALSE}, return a list of \code{ggplot}s. Not used when \code{style = "lines"}.}
+
+\item{ncol}{Number of columns for the plotting device. If \code{ncol = 1}, the three plots will be aligned vertically in one column; if \code{ncol = 3} they will b aligned horizontally in one row.}
 
 \item{digits}{number of digits to print (passed to \code{\link[base]{print.data.frame}})}
 }

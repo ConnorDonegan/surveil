@@ -1,10 +1,10 @@
 pandoc: '2.5'
-pkgdown: 1.6.1.9001
-pkgdown_sha: 43e88ecfda6b625beaca50eb1bd7c69c0e956955
+pkgdown: 2.0.1
+pkgdown_sha: ~
 articles:
   demonstration: demonstration.html
-last_built: 2021-11-22T03:23Z
+last_built: 2021-12-30T16:24Z
 urls:
-  reference: https://connordonegan.github.io/surveil/reference
-  article: https://connordonegan.github.io/surveil/articles
+  reference: https://connordonegan.github.io/surveil/, https://cloud.r-project.org/web/packages/surveil/index.html/reference
+  article: https://connordonegan.github.io/surveil/, https://cloud.r-project.org/web/packages/surveil/index.html/articles
 
