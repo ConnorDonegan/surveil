@@ -142,7 +142,7 @@ To view a histogram of MCSEs for all parameters in the **surveil** model, we can
 rstan::stan_mcse(samples)
 ```
 
-Notice that instead of returing the MCSEs themselves, **rstan** divides the MCSEs by the scale of the probability distribution, $\frac{MCSE(\theta)}{SD(\theta)}$. We can see that these values are all under 0.03, which is quite sufficient. We can always obtain smaller MCSEs by drawing a larger number of samples. For a more detailed view, you can start by printing results with `print(samples)` to examine the `n_eff` (ESS) column.
+Notice that instead of returning the MCSEs themselves, **rstan** divides the MCSEs by the scale of the probability distribution, $\frac{MCSE(\theta)}{SD(\theta)}$. We can see that these values are all under 0.03, which is quite sufficient. We can always obtain smaller MCSEs by drawing a larger number of samples. For a more detailed view, you can start by printing results with `print(samples)` to examine the `n_eff` (ESS) column.
 
 ## R-hat
 

@@ -66,9 +66,9 @@ Additional columns contain the upper and lower limits of the 95 percent credible
 The data frame of samples contains the following columns: \describe{
 \item{time}{Time period indicator}
 \item{.draw}{An id for each MCMC sample; note that samples are from the joint distribution}
-\item{Theil_between}{The between-geographies component of Thiel's index}
+\item{Theil_between}{The between-geographies component of Theil's index}
 \item{Theil_within}{The within-geographies component of Theil's index}
-\item{Theil}{Theil's indequality index (T = Between + Within)}.
+\item{Theil}{Theil's inequality index (T = Between + Within)}.
 }
 }
 }

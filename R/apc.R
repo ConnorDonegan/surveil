@@ -169,7 +169,7 @@ apc.stand_surveil <- function(x) {
 #' @param x An `apc` object returned by \code{\link[surveil]{apc}}
 #' @param digits Print this many digits (passed to \code{\link[base]{print.data.frame}})
 #' @param max Print this many rows
-#' @param ... additional arguments; for the print arugment, these will be passed to \code{\link[base]{print.data.frame}}. For the plot method, these will be passed to \code{\link[ggplot2]{theme}}.
+#' @param ... additional arguments; for the print argument, these will be passed to \code{\link[base]{print.data.frame}}. For the plot method, these will be passed to \code{\link[ggplot2]{theme}}.
 #'
 #' @return
 #'
