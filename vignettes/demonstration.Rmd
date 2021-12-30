@@ -176,7 +176,7 @@ If we call `plot` on a `surveil` model, we get a `ggplot` object depicting risk 
 plot(fit, scale = 100e3)
 ```
 
-Instead of viewing the default plot, we can first store the ``ggplot` in our working environment and then modify the figure as we please:
+Instead of viewing the default plot, we can first store the `ggplot` in our working environment and then modify the figure as we please:
 
 ```{r fig.width = 4, fig.height = 3.5}
 fig <- plot(fit, scale = 100e3)
