@@ -424,8 +424,7 @@ plot.stand_surveil <- function(x,
         df <- dplyr::filter(df, .data$.draw <= M)
         TT <- max(df$time_index)        
         df$draw <- rep(1:M, each = TT)
-        df$stand_rate * scale
-        gg <- ggplot(df, aes(.data$time_label, .data$stand_rate,
+        gg <- ggplot(df, aes(.data$time_label, scale * .data$stand_rate,
                              group = factor(.data$draw))
                      ) +
             geom_line(col = col,
