@@ -1,3 +1,9 @@
+# surveil 0.1.2
+
+## Feature updates
+
+ - The group_diff function, for calculating pairwise measures of inequality, can now be used to compare two age-standardized rates. This includes a calculation of total annual (and cumulative) excess cases and attributable risk derived from all of the age-specific rates and population sizes.
+
 # surveil 0.1.1
 
 ## Bug fixes

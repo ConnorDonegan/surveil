@@ -2,11 +2,11 @@
 #'
 #' @description Calculate pairwise measures of health inequality from a fitted `surveil` time series model, with credible intervals and MCMC samples. Calculates absolute and fractional rate differences (RD and population attributable risk (PAR)), rate ratios, and excess cases.
 #'
-#' @param fit A fitted `surveil` time series model
+#' @param x Either a fitted `surveil` time series model, or a list of two `stand_surveil` objects (i.e., `surveil` models with age-standardized rates, as returned by \code{\link[surveil]{standardize}}).
 #'
-#' @param target The name (character string) of the disadvantaged group that is the target of inference. 
+#' @param target The name (character string) of the disadvantaged group that is the target of inference. If `x` is a list of `stand_surveil` objects, the `target` argument is ignored and the first listed model will serve as the `target` group.
 #'
-#' @param reference The name (character string) of the reference group to which `target` will be compared.
+#' @param reference The name (character string) of the reference group to which `target` will be compared. If `x` is a list of `stand_surveil` objects, the `reference` argument is ignored and the second listed model will serve as the `reference` group.
 #'
 #' @return
 #'
@@ -25,7 +25,7 @@
 #' data(msa)
 #' houston <- msa[grep("Houston", msa$MSA), ]
 #' fit <- stan_rw(houston, time = Year, group = Race,
-#'                iter = 900) # low iter for speed only
+#'                chains = 2, iter = 900) # low iter for speed only
 #' gd <- group_diff(fit, "Black or African American", "White")
 #' print(gd, scale = 100e3)
 #' plot(gd, scale = 100e3)
@@ -33,6 +33,8 @@
 #' 
 #' @details
 #'
+#' ## Comparing incidence rates
+#' 
 #' For the following calculations, the terms `reference` and `target` refer to incidence rates for the respective groups; `p` is the size of the target population. (Target is the group that is the 'target' of our inferences, so that it is the numerator in rate ratios, etc.) The following measures are calculated by `group_diff`:
 #' 
 #' ```
@@ -46,6 +48,11 @@
 #' EC = RD * p
 #' ```
 #' As the math communicates, the PAR is the rate difference expressed as a fraction of total risk for the target population. This could also be read as the fraction of risk in the target population that would have been removed had the target rate equaled the reference rate (Menvielle et al. 2017).
+#'
+#' ## Comparing age-standardized rates
+#' 
+#' If the user provides a list of `stand_surveil` objects with age-standardized rates (instead of a single `surveil` model), then the exact calculations will be completed as follows. The RR is simply the ratio of age-standardized rates, and the rate difference is similarly the difference between age-standardized rates. However, excess cases is calculated for each age group separately, and the total excess cases across all age groups is returned. Similarly, the attributable risk is calculated by taking the total excess cases across all age groups per year and dividing by the total risk (i.e., by the sum of the whole number of cases per age group). Cumulative excess cases is the sum of the time-period specific total number of excess cases. (Notice that the PAR is not equal to (RR-1)/RR when the PAR is derived from a number of age-specific rates and the RR is based on age-standardized rates.)
+#'
 #' 
 #' @source
 #' 
@@ -53,26 +60,35 @@
 #'
 #' @seealso \code{\link[surveil]{plot.surveil_diff}} \code{\link[surveil]{print.surveil_diff}} \code{\link[surveil]{theil}}
 #' 
-#' @importFrom ggdist mean_qi
-#' @importFrom stats quantile
-#' @importFrom dplyr group_by mutate `%>%`
 #' @export
 #' @md
 #' 
-group_diff <- function(fit, target, reference) {
-    stopifnot(inherits(fit, "surveil"))
+group_diff <- function(x, target, reference) {
+    UseMethod("group_diff", x)
+}
+
+#' group_diff.surveil
+#' @importFrom ggdist mean_qi
+#' @importFrom stats quantile
+#' @importFrom dplyr group_by mutate `%>%`
+#' @importFrom rstan extract
+#' @md
+#' @rdname group_diff
+#' @method group_diff surveil
+#' @export
+group_diff.surveil <- function(x, target, reference) {
     stopifnot(inherits(target, "character"))
     stopifnot(inherits(reference, "character"))
-    stopifnot(all(c(target, reference) %in% names(fit$data$at_risk)))
-    lambda = rstan::extract(fit$samples, pars = "rate")$rate
-    ref.idx <- which(names(fit$data$at_risk) == reference)
-    target.idx <- which(names(fit$data$at_risk) == target)
-    Time.index <- unique(fit$summary$time)
+    stopifnot(all(c(target, reference) %in% names(x$data$at_risk)))
+    lambda = rstan::extract(x$samples, pars = "rate")$rate
+    ref.idx <- which(names(x$data$at_risk) == reference)
+    target.idx <- which(names(x$data$at_risk) == target)
+    Time.index <- unique(x$summary$time)
     T <- 1:length(Time.index)
     res.list <- list()
     for (t in seq_along(T)) {
         ref.rate <- lambda[, ref.idx, t]        
-        at.risk <- as.numeric(fit$data$at_risk[t, target.idx])
+        at.risk <- as.numeric(x$data$at_risk[t, target.idx])
         target.rate <- lambda[, target.idx, t]
         M <- length(target.rate)
         RD <- target.rate - ref.rate
@@ -116,6 +132,143 @@ group_diff <- function(fit, target, reference) {
     class(return.list) <- append("surveil_diff", class(return.list))
     return( return.list )
 }
+
+
+#' group_diff.list
+#' @importFrom dplyr `%>%` inner_join transmute group_by summarise mutate
+#' @importFrom stats quantile
+#' @importFrom rstan extract
+#' @md
+#' @rdname group_diff
+#' @method group_diff list
+#' @export
+group_diff.list <- function(x) {
+    stopifnot( length(x) == 2 )
+    stopifnot( all(unlist(lapply(x, inherits, "stand_surveil"))) )
+    # check that age-group order is identical for both models
+    stopifnot( all( names(x[[1]]$data$at_risk) == names(x[[2]]$data$at_risk) ) )
+    # check that time label is the same for both models
+    stopifnot( all( names(x[[1]]$time$time.label) == names(x[[2]]$time$time.label) ) )
+    x.a <- x[[1]]
+    x.b <- x[[2]]
+    S.a <- x.a$standard_samples
+    S.b <- x.b$standard_samples
+    S <- dplyr::inner_join(S.a, S.b,
+                    by = c(".draw", "time_index"),
+                    suffix = c("_a", "_b")
+                    )
+    # get RD and RR from standardize rates (samples, then summary)
+    S.df.1 <- S %>%
+        dplyr::transmute(
+                   .draw = .data$.draw,
+                   time = .data$time_label_a,
+                   Rate = .data$stand_rate_a,
+                   Reference_Rate = .data$stand_rate_b,
+                   RD.s = (.data$Rate - .data$Reference_Rate),
+                   RR.s = .data$Rate / .data$Reference_Rate
+        )    
+    res.df.1 <- S.df.1 %>%
+        dplyr::group_by(.data$time) %>%    
+        dplyr::summarise(
+                   Rate = mean(.data$Rate),
+                   RD = mean(.data$RD.s),                
+                   RD.lower = stats::quantile(.data$RD.s, probs = 0.025),
+                   RD.upper = stats::quantile(.data$RD.s, probs = 0.975),
+                   RR = mean(.data$RR.s),                
+                   RR.lower = stats::quantile(.data$RR.s, probs = 0.025),
+                   RR.upper = stats::quantile(.data$RR.s, probs = 0.975)
+        )
+    ## get EC and AR from age-specific rates (samples, then summary)
+    groups <- names(x.a$data$at_risk)
+    a.lambda = rstan::extract(x.a$samples, pars = "rate")$rate
+    b.lambda = rstan::extract(x.b$samples, pars = "rate")$rate
+    Time.label <- x.a$time$time.df$time.label
+    T <- 1:length(Time.label)
+    res.list <- list()
+    for (t in seq_along(T)) {
+        for (g in seq_along(groups)) {
+            ref.rate <- b.lambda[, g, t]
+            at.risk <- as.numeric(x.a$data$at_risk[t, g])
+            target.rate <- a.lambda[, g, t]
+            M <- length(target.rate)
+            RD <- target.rate - ref.rate
+            actual.cases <- target.rate * at.risk
+            excess.cases <- RD * at.risk
+            res <- data.frame(.draw = 1:M,
+                              t = Time.label[t],
+                              g = g,
+                              EC = excess.cases,
+                              AC = actual.cases
+                              )
+            res.list <- c(res.list, list(res))
+        }
+    }
+    suppressMessages(    
+        S.df.2 <- do.call("rbind", res.list)  %>%
+            dplyr::mutate(time = .data$t) %>%
+            dplyr::group_by(.data$time, .data$.draw) %>%
+            dplyr::summarise(
+                       AC.s = sum(.data$AC),
+                       PAR.s = sum(.data$EC) / sum(.data$AC),
+                       EC.s = sum(.data$EC)
+                   )
+    )
+    suppressMessages(
+        res.df.2 <- S.df.2 %>%
+            dplyr::group_by(time) %>%
+            dplyr::summarise(
+                       EC = mean(.data$EC.s),        
+                       EC.lower = stats::quantile(.data$EC.s, probs = 0.025),
+                       EC.upper = stats::quantile(.data$EC.s, probs = 0.975),
+                       PAR = mean(.data$PAR.s),
+                       PAR.lower = stats::quantile(.data$PAR.s, probs = 0.025),
+                       PAR.upper = stats::quantile(.data$PAR.s, probs = 0.975)        
+                   ) 
+        )
+        ## main output: summary, samples
+    summary.df <- dplyr::inner_join(res.df.1, res.df.2, by = "time") 
+    samples.df <- dplyr::inner_join(S.df.1, S.df.2, by = c(".draw", "time")) %>%
+        dplyr::transmute(
+                   time = .data$time,
+                   .draw = .data$.draw,
+                   Rate = .data$Rate,
+                   Reference_Rate = .data$Reference_Rate,
+                   RD = .data$RD.s,
+                   RR = .data$RR.s,
+                   PAR = .data$PAR.s,
+                   EC = .data$EC.s,
+                   Trend_Cases = .data$AC.s        
+               )
+    ## aggregate excess cases and AR (samples, summary): summing across all years and age groups
+    xs.cases.samples <- do.call("rbind", res.list) %>%
+        dplyr::group_by(.data$.draw) %>%
+        dplyr::summarise(
+                   AC.s = sum(.data$AC),
+                   EC.s = sum(.data$EC),                   
+                   PAR.s = sum(.data$EC) / sum(.data$AC)
+            ) %>%
+        dplyr::ungroup()
+    EC.cumulative.summary <- c(
+        EC = mean(xs.cases.samples$EC.s),
+        stats::quantile(xs.cases.samples$EC.s, probs = c(0.025, 0.975)),
+        PAR = mean(xs.cases.samples$PAR.s),
+        stats::quantile(xs.cases.samples$PAR.s, probs = c(0.025, 0.975))
+        )
+        
+
+    if ( is.null(names(x)) ) names(c) <- c("x[[1]]", "x[[2]]")
+    group_names <- c(target = names(x)[[1]], reference = names(x)[[2]])
+    return.list <- list(
+        summary = summary.df,
+        cumulative_cases = EC.cumulative.summary,
+        samples = samples.df,
+        cum_samples = xs.cases.samples,
+        groups = group_names
+    )
+    class(return.list) <- append("surveil_diff", class(return.list))    
+    return ( return.list )
+}
+
 
 #' Methods for `surveil_diff` objects
 #'

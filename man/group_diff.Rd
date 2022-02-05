@@ -2,19 +2,25 @@
 % Please edit documentation in R/group-diff.R
 \name{group_diff}
 \alias{group_diff}
+\alias{group_diff.surveil}
+\alias{group_diff.list}
 \title{Measures of pairwise inequality}
 \source{
 Menvielle, G, Kulhanaova, I, Machenbach, JP. Assessing the impact of a public health intervention to reduce social inequalities in cancer. In: Vaccarella, S, Lortet-Tieulent, J, Saracci, R, Conway, D, Straif, K, Wild, CP, editors. Reducing Social Inequalities in Cancer: Evidence and Priorities for Research. Geneva, Switzerland: WHO Press, 2017:185-192.
 }
 \usage{
-group_diff(fit, target, reference)
+group_diff(x, target, reference)
+
+\method{group_diff}{surveil}(x, target, reference)
+
+\method{group_diff}{list}(x)
 }
 \arguments{
-\item{fit}{A fitted \code{surveil} time series model}
+\item{x}{Either a fitted \code{surveil} time series model, or a list of two \code{stand_surveil} objects (i.e., \code{surveil} models with age-standardized rates, as returned by \code{\link[surveil]{standardize}}).}
 
-\item{target}{The name (character string) of the disadvantaged group that is the target of inference.}
+\item{target}{The name (character string) of the disadvantaged group that is the target of inference. If \code{x} is a list of \code{stand_surveil} objects, the \code{target} argument is ignored and the first listed model will serve as the \code{target} group.}
 
-\item{reference}{The name (character string) of the reference group to which \code{target} will be compared.}
+\item{reference}{The name (character string) of the reference group to which \code{target} will be compared. If \code{x} is a list of \code{stand_surveil} objects, the \code{reference} argument is ignored and the second listed model will serve as the \code{reference} group.}
 }
 \value{
 A list, also of class "surveil_diff", with the following elements: \describe{
@@ -29,6 +35,8 @@ A list, also of class "surveil_diff", with the following elements: \describe{
 Calculate pairwise measures of health inequality from a fitted \code{surveil} time series model, with credible intervals and MCMC samples. Calculates absolute and fractional rate differences (RD and population attributable risk (PAR)), rate ratios, and excess cases.
 }
 \details{
+\subsection{Comparing incidence rates}{
+
 For the following calculations, the terms \code{reference} and \code{target} refer to incidence rates for the respective groups; \code{p} is the size of the target population. (Target is the group that is the 'target' of our inferences, so that it is the numerator in rate ratios, etc.) The following measures are calculated by \code{group_diff}:\preformatted{# rate difference
 RD = target - reference
 # population attributable fraction
@@ -41,13 +49,19 @@ EC = RD * p
 
 As the math communicates, the PAR is the rate difference expressed as a fraction of total risk for the target population. This could also be read as the fraction of risk in the target population that would have been removed had the target rate equaled the reference rate (Menvielle et al. 2017).
 }
+
+\subsection{Comparing age-standardized rates}{
+
+If the user provides a list of \code{stand_surveil} objects with age-standardized rates (instead of a single \code{surveil} model), then the exact calculations will be completed as follows. The RR is simply the ratio of age-standardized rates, and the rate difference is similarly the difference between age-standardized rates. However, excess cases is calculated for each age group separately, and the total excess cases across all age groups is returned. Similarly, the attributable risk is calculated by taking the total excess cases across all age groups per year and dividing by the total risk (i.e., by the sum of the whole number of cases per age group). Cumulative excess cases is the sum of the time-period specific total number of excess cases. (Notice that the PAR is not equal to (RR-1)/RR when the PAR is derived from a number of age-specific rates and the RR is based on age-standardized rates.)
+}
+}
 \examples{
 
 \donttest{
 data(msa)
 houston <- msa[grep("Houston", msa$MSA), ]
 fit <- stan_rw(houston, time = Year, group = Race,
-               iter = 900) # low iter for speed only
+               chains = 2, iter = 900) # low iter for speed only
 gd <- group_diff(fit, "Black or African American", "White")
 print(gd, scale = 100e3)
 plot(gd, scale = 100e3)
