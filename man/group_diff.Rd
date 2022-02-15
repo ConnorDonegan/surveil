@@ -16,7 +16,7 @@ group_diff(x, target, reference)
 \method{group_diff}{list}(x)
 }
 \arguments{
-\item{x}{Either a fitted \code{surveil} time series model, or a list of two \code{stand_surveil} objects (i.e., \code{surveil} models with age-standardized rates, as returned by \code{\link[surveil]{standardize}}).}
+\item{x}{Either a fitted \code{surveil} time series model, or a list of two \code{stand_surveil} objects (i.e., \code{surveil} models with age-standardized rates, as returned by \code{\link[surveil]{standardize}}). If \code{x} is a list of \code{stand_surveil} objects, see details below and note that the models must contain the same number of MCMC samples---to ensure this is the case, when using \code{stan_rw} set \code{iter} and \code{chains} to the same values for each of the two models.}
 
 \item{target}{The name (character string) of the disadvantaged group that is the target of inference. If \code{x} is a list of \code{stand_surveil} objects, the \code{target} argument is ignored and the first listed model will serve as the \code{target} group.}
 
@@ -52,7 +52,7 @@ As the math communicates, the PAR is the rate difference expressed as a fraction
 
 \subsection{Comparing age-standardized rates}{
 
-If the user provides a list of \code{stand_surveil} objects with age-standardized rates (instead of a single \code{surveil} model), then the exact calculations will be completed as follows. The RR is simply the ratio of age-standardized rates, and the rate difference is similarly the difference between age-standardized rates. However, excess cases is calculated for each age group separately, and the total excess cases across all age groups is returned. Similarly, the attributable risk is calculated by taking the total excess cases across all age groups per year and dividing by the total risk (i.e., by the sum of the whole number of cases per age group). Cumulative excess cases is the sum of the time-period specific total number of excess cases. (Notice that the PAR is not equal to (RR-1)/RR when the PAR is derived from a number of age-specific rates and the RR is based on age-standardized rates.)
+If the user provides a list of \code{stand_surveil} objects with age-standardized rates (instead of a single \code{surveil} model), then the exact calculations will be completed as follows. The RR is simply the ratio of age-standardized rates, and the rate difference is similarly the difference between age-standardized rates. However, excess cases is calculated for each age group separately, and the total excess cases across all age groups is returned. Similarly, the attributable risk is calculated by taking the total excess cases across all age groups per year and dividing by the total risk (i.e., by the sum of the whole number of cases across all age groups). Cumulative excess cases is the sum of the time-period specific total number of excess cases. (Notice that the PAR is not equal to (RR-1)/RR when the PAR is derived from a number of age-specific rates and the RR is based on age-standardized rates.)
 }
 }
 \examples{

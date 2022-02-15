@@ -2,7 +2,7 @@
 #'
 #' @description Calculate pairwise measures of health inequality from a fitted `surveil` time series model, with credible intervals and MCMC samples. Calculates absolute and fractional rate differences (RD and population attributable risk (PAR)), rate ratios, and excess cases.
 #'
-#' @param x Either a fitted `surveil` time series model, or a list of two `stand_surveil` objects (i.e., `surveil` models with age-standardized rates, as returned by \code{\link[surveil]{standardize}}).
+#' @param x Either a fitted `surveil` time series model, or a list of two `stand_surveil` objects (i.e., `surveil` models with age-standardized rates, as returned by \code{\link[surveil]{standardize}}). If `x` is a list of `stand_surveil` objects, see details below and note that the models must contain the same number of MCMC samples---to ensure this is the case, when using `stan_rw` set `iter` and `chains` to the same values for each of the two models.
 #'
 #' @param target The name (character string) of the disadvantaged group that is the target of inference. If `x` is a list of `stand_surveil` objects, the `target` argument is ignored and the first listed model will serve as the `target` group.
 #'
@@ -51,7 +51,7 @@
 #'
 #' ## Comparing age-standardized rates
 #' 
-#' If the user provides a list of `stand_surveil` objects with age-standardized rates (instead of a single `surveil` model), then the exact calculations will be completed as follows. The RR is simply the ratio of age-standardized rates, and the rate difference is similarly the difference between age-standardized rates. However, excess cases is calculated for each age group separately, and the total excess cases across all age groups is returned. Similarly, the attributable risk is calculated by taking the total excess cases across all age groups per year and dividing by the total risk (i.e., by the sum of the whole number of cases per age group). Cumulative excess cases is the sum of the time-period specific total number of excess cases. (Notice that the PAR is not equal to (RR-1)/RR when the PAR is derived from a number of age-specific rates and the RR is based on age-standardized rates.)
+#' If the user provides a list of `stand_surveil` objects with age-standardized rates (instead of a single `surveil` model), then the exact calculations will be completed as follows. The RR is simply the ratio of age-standardized rates, and the rate difference is similarly the difference between age-standardized rates. However, excess cases is calculated for each age group separately, and the total excess cases across all age groups is returned. Similarly, the attributable risk is calculated by taking the total excess cases across all age groups per year and dividing by the total risk (i.e., by the sum of the whole number of cases across all age groups). Cumulative excess cases is the sum of the time-period specific total number of excess cases. (Notice that the PAR is not equal to (RR-1)/RR when the PAR is derived from a number of age-specific rates and the RR is based on age-standardized rates.)
 #'
 #' 
 #' @source
@@ -145,6 +145,8 @@ group_diff.surveil <- function(x, target, reference) {
 group_diff.list <- function(x) {
     stopifnot( length(x) == 2 )
     stopifnot( all(unlist(lapply(x, inherits, "stand_surveil"))) )
+    # check number of MCMC samples is same
+    stopifnot( nrow(x[[1]]$standard_samples) ==  nrow(x[[2]]$standard_samples) )
     # check that age-group order is identical for both models
     stopifnot( all( names(x[[1]]$data$at_risk) == names(x[[2]]$data$at_risk) ) )
     # check that time label is the same for both models
@@ -256,7 +258,7 @@ group_diff.list <- function(x) {
         )
         
 
-    if ( is.null(names(x)) ) names(c) <- c("x[[1]]", "x[[2]]")
+    if ( is.null(names(x)) ) names(x) <- c("x[[1]]", "x[[2]]")
     group_names <- c(target = names(x)[[1]], reference = names(x)[[2]])
     return.list <- list(
         summary = summary.df,
@@ -322,7 +324,6 @@ plot.surveil_diff <- function(x,
         s_df$RD <- s_df$RD * scale        
         TT <- max(s_df$time)
         n_samples <- nrow(s_df) / TT
-        cols <- c("time", ".draw", "RD", "EC")
         if (PAR) {
             cols <- c("time", ".draw", "RD", "PAR", "EC")
         } else {
@@ -340,7 +341,8 @@ plot.surveil_diff <- function(x,
         s_df <- s_df[which(s_df$.draw %in% sample(n_samples, size = M)),]
         gg <- ggplot(s_df) +
             geom_line(
-                aes(.data$label, .data$value,
+   #             aes(.data$label, .data$value,
+                aes(.data$time, .data$value,
                     group = factor(.data$.draw)),
                 lwd = lwd,
                 col = col,
