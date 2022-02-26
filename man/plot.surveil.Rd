@@ -3,6 +3,7 @@
 \name{plot.surveil}
 \alias{plot.surveil}
 \alias{print.surveil}
+\alias{plot.list}
 \title{Methods for fitted \code{surveil} models}
 \usage{
 \method{print}{surveil}(x, scale = 1, ...)
@@ -12,6 +13,7 @@
   scale = 1,
   style = c("mean_qi", "lines"),
   facet = FALSE,
+  facet_scales = c("fixed", "free"),
   ncol = NULL,
   base_size = 14,
   palette = "Dark2",
@@ -22,9 +24,26 @@
   size = 1.5,
   ...
 )
+
+\method{plot}{list}(
+  x,
+  scale = 1,
+  style = c("mean_qi", "lines"),
+  facet = FALSE,
+  ncol,
+  facet_scales = c("fixed", "free"),
+  M = 250,
+  base_size = 14,
+  palette = "Dark2",
+  fill = "gray80",
+  size = 1.5,
+  alpha,
+  lwd,
+  ...
+)
 }
 \arguments{
-\item{x}{A fitted \code{surveil} model}
+\item{x}{A fitted \code{surveil} model, or a list of \code{stand_surveil} objects (as produced by \code{\link[surveil]{standardize}}).}
 
 \item{scale}{Scale the rates by this amount; e.g., \code{scale = 100e3} will print rates per 100,000 at risk.}
 
@@ -33,6 +52,8 @@
 \item{style}{If \code{style = "mean_qi"}, then the posterior mean and 95 percent credible interval will be plotted; if \code{style = "lines"}, then \code{M} samples from the joint probability distribution of the annual rates will be plotted.}
 
 \item{facet}{If \code{facet = TRUE}, \code{\link[ggplot2]{facet_wrap}} will be used instead of differentiating by line color.}
+
+\item{facet_scales}{When \code{facet = TRUE}, this argument controls behavior of the scales for each sub-plot. See the \code{scales} argument to \code{\link[ggplot2]{facet_wrap}}.}
 
 \item{ncol}{Number of columns for the plotting device; optional and only used if \code{facet = TRUE}. If \code{ncol = 1}, the three plots will be aligned vertically in one column; if \code{ncol = 3} they will b aligned horizontally in one row. Defaults to \code{ncol = NULL} to allow \code{\link[ggplot2]{facet_wrap}} to automatically determine the number of columns.}
 
@@ -51,7 +72,7 @@
 \item{size}{Positive numeric value. For \code{style = "mean_qi"}, this controls the size of the points representing crude rates. To exclude these points from the plot altogether, use \code{size = 0}.}
 }
 \value{
-The plot method returns a \code{ggplot} object; the print method returns nothing but prints a summary of results to the R console.
+The plot method returns a \code{ggplot} object; the print method returns nothing but prints a summary of results to the R console. If \code{x} is a list of \code{stand_surveil} objects, the plotted lines will be labeled using the names returned by \code{names(x)}; if elements of the list are not named, plotted lines will simply be numbered.
 }
 \description{
 Print and plot methods for \code{surveil} model results

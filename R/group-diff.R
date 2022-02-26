@@ -8,6 +8,7 @@
 #'
 #' @param reference The name (character string) of the reference group to which `target` will be compared. If `x` is a list of `stand_surveil` objects, the `reference` argument is ignored and the second listed model will serve as the `reference` group.
 #'
+#' @param ... Additional arguments (not used).
 #' @return
 #'
 #' A list, also of class "surveil_diff", with the following elements: \describe{
@@ -142,7 +143,7 @@ group_diff.surveil <- function(x, target, reference) {
 #' @rdname group_diff
 #' @method group_diff list
 #' @export
-group_diff.list <- function(x) {
+group_diff.list <- function(x, ...) {
     stopifnot( length(x) == 2 )
     stopifnot( all(unlist(lapply(x, inherits, "stand_surveil"))) )
     # check number of MCMC samples is same
@@ -217,7 +218,7 @@ group_diff.list <- function(x) {
     )
     suppressMessages(
         res.df.2 <- S.df.2 %>%
-            dplyr::group_by(time) %>%
+            dplyr::group_by(.data$time) %>%
             dplyr::summarise(
                        EC = mean(.data$EC.s),        
                        EC.lower = stats::quantile(.data$EC.s, probs = 0.025),
@@ -353,8 +354,7 @@ plot.surveil_diff <- function(x,
                        ncol = ncol) +
             labs(x = NULL,
                  y = NULL) +
-            theme_classic(base_size = base_size) +
-            theme(...)
+       theme_surveil(base_size = base_size, ...) 
         return (gg)
     }    
     gg.ec <- ggplot(x$summary) +
@@ -373,9 +373,7 @@ plot.surveil_diff <- function(x,
             y = NULL,
             subtitle = "EC"
         ) +
-        #geom_hline(yintercept = 0) +
-        theme_classic(base_size = base_size) +
-        theme(...)
+        theme_surveil(base_size = base_size, ...) 
     if (PAR) {
         gg.relative <- ggplot(x$summary) +
             geom_ribbon(aes(.data$time,
@@ -392,9 +390,7 @@ plot.surveil_diff <- function(x,
                 y = NULL,
                 subtitle = "PAR"
             ) +
-            #geom_hline(yintercept = 0) +
-            theme_classic(base_size = base_size) +
-            theme(...)
+            theme_surveil(base_size = base_size, ...) 
     } else {
         gg.relative <- ggplot(x$summary) +
             geom_ribbon(aes(.data$time,
@@ -412,9 +408,7 @@ plot.surveil_diff <- function(x,
                 y = NULL,
                 subtitle = "RR"
             ) +
-           # geom_hline(yintercept = 0) +            
-            theme_classic(base_size = base_size) +
-            theme(...)
+            theme_surveil(base_size = base_size, ...) 
     }
     f.lab <- function(brks) scale * brks
     gg.rd <- ggplot(x$summary) +
@@ -432,10 +426,8 @@ plot.surveil_diff <- function(x,
             y = NULL,
             subtitle = "RD"
         ) +
-        #geom_hline(yintercept = 0) +        
-        theme_classic(base_size = base_size) +
         scale_y_continuous(labels = f.lab) +
-        theme(...)
+        theme_surveil(base_size = base_size, ...) 
     if (plot) {
         return ( gridExtra::grid.arrange(gg.rd,  gg.relative, gg.ec, ncol = ncol) )
     } else return (list(RD = gg.rd, Relative = gg.relative, EC = gg.ec))

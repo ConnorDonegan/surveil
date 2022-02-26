@@ -268,8 +268,7 @@ plot.apc <- function(x,
             geom_hline(yintercept = 0) +
             labs(y = ylab,
                  x = NULL) +
-            theme_classic(base_size = base_size) +
-            theme(...)
+            theme_surveil(base_size = base_size, ...) 
         if (length(unique(s_df$group)) > 1) {
             gg <- gg +
                 facet_wrap(~ .data$group )
@@ -304,11 +303,11 @@ plot.apc <- function(x,
         geom_ribbon(alpha = alpha,
                     fill = fill) +    
         geom_line(col = col,
-                  lwd = lwd) +
-        theme_classic(base_size = base_size)
+                  lwd = lwd) 
     if (length(unique(x$apc$group)) > 1) {
         gg <- gg + facet_wrap(~ .data$group)
     }    
-    gg +
-        theme(...)
+    gg <- gg +
+        theme_surveil(base_size = base_size, ...)
+    return (gg)
 }

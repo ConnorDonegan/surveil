@@ -13,7 +13,7 @@ group_diff(x, target, reference)
 
 \method{group_diff}{surveil}(x, target, reference)
 
-\method{group_diff}{list}(x)
+\method{group_diff}{list}(x, ...)
 }
 \arguments{
 \item{x}{Either a fitted \code{surveil} time series model, or a list of two \code{stand_surveil} objects (i.e., \code{surveil} models with age-standardized rates, as returned by \code{\link[surveil]{standardize}}). If \code{x} is a list of \code{stand_surveil} objects, see details below and note that the models must contain the same number of MCMC samples---to ensure this is the case, when using \code{stan_rw} set \code{iter} and \code{chains} to the same values for each of the two models.}
@@ -21,6 +21,8 @@ group_diff(x, target, reference)
 \item{target}{The name (character string) of the disadvantaged group that is the target of inference. If \code{x} is a list of \code{stand_surveil} objects, the \code{target} argument is ignored and the first listed model will serve as the \code{target} group.}
 
 \item{reference}{The name (character string) of the reference group to which \code{target} will be compared. If \code{x} is a list of \code{stand_surveil} objects, the \code{reference} argument is ignored and the second listed model will serve as the \code{reference} group.}
+
+\item{...}{Additional arguments (not used).}
 }
 \value{
 A list, also of class "surveil_diff", with the following elements: \describe{

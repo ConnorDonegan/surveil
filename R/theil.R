@@ -290,8 +290,7 @@ plot.theil <- function(x,
                       col = col) +
             labs(x = NULL,
                  y = NULL) +
-            theme_classic() +
-            theme(...)
+            theme_surveil(base_size = base_size, ...) 
         return (gg)
     }
     ggplot(x$summary) +
@@ -308,8 +307,7 @@ plot.theil <- function(x,
                   ) +
         labs(x = NULL,
              y = paste0("Theil x ", scale)) +
-        theme_classic(base_size = base_size) +
-        theme(...)
+        theme_surveil(base_size = base_size, ...) 
 }
 
 
@@ -375,9 +373,8 @@ plot.theil_list <- function(x,
                       col = col) +
             labs(x = NULL,
                  y = NULL) +
-            theme_classic(base_size = base_size) +
             facet_wrap(~ component, scales = "free", ncol = ncol) +
-            theme(...)    
+        theme_surveil(base_size = base_size, ...)
         return(gg)
     }    
     ## between geography inequality
@@ -395,8 +392,7 @@ plot.theil_list <- function(x,
         labs(subtitle = between_title,
              x  = NULL,
              y = NULL) +
-        theme_classic(base_size = base_size) +
-        theme(...)
+        theme_surveil(base_size = base_size, ...) 
     ## within geography inequality
     g2 <- ggplot(x$summary,
                  aes(.data$time,
@@ -413,8 +409,7 @@ plot.theil_list <- function(x,
             x = NULL,
             y = NULL
         ) +
-        theme_classic(base_size = base_size) +
-        theme(...)
+        theme_surveil(base_size = base_size, ...) 
     ## total inequality
     g3 <- ggplot(x$summary,
                  aes(.data$time,
@@ -429,8 +424,7 @@ plot.theil_list <- function(x,
         labs(subtitle = total_title,
              x  = NULL,
              y = NULL) +
-        theme_classic(base_size = base_size) +
-        theme(...)    
+        theme_surveil(base_size = base_size, ...) 
     if (!plot) {
         glist <- list(between = g1, within = g2, total = g3)
         return (glist)

@@ -3,6 +3,8 @@
 ## Feature updates
 
  - The group_diff function, for calculating pairwise measures of inequality, can now be used to compare two age-standardized rates. This includes a calculation of total annual (and cumulative) excess cases and attributable risk derived from all of the age-specific rates and population sizes.
+ - A new `plot` method now accepts a list of `stand_surveil` objects. This will allow multiple standardized rates to be visualized on the same plot.
+ - All plots have a new default, custom ggplot theme. 
 
 # surveil 0.1.1
 
