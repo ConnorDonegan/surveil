@@ -371,7 +371,7 @@ plot.surveil_diff <- function(x,
         labs(
             x = NULL,
             y = NULL,
-            subtitle = "EC"
+            subtitle = "Excess cases"
         ) +
         theme_surveil(base_size = base_size, ...) 
     if (PAR) {
@@ -388,7 +388,7 @@ plot.surveil_diff <- function(x,
             labs(
                 x = NULL,
                 y = NULL,
-                subtitle = "PAR"
+                subtitle = "Attributable risk"
             ) +
             theme_surveil(base_size = base_size, ...) 
     } else {
@@ -406,7 +406,7 @@ plot.surveil_diff <- function(x,
             labs(
                 x = NULL,
                 y = NULL,
-                subtitle = "RR"
+                subtitle = "Rate ratio"
             ) +
             theme_surveil(base_size = base_size, ...) 
     }
@@ -424,7 +424,7 @@ plot.surveil_diff <- function(x,
         labs(
             x = NULL,
             y = NULL,
-            subtitle = "RD"
+            subtitle = "Rate difference"
         ) +
         scale_y_continuous(labels = f.lab) +
         theme_surveil(base_size = base_size, ...) 
