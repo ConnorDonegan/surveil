@@ -397,7 +397,17 @@ plot.list <- function(x,
 #' @param label Labels (character strings) for the age groups that correspond to the values of `stand_pop`. The labels must match the grouping variable used to fit the model (i.e., `all(label %in% names(x$data$cases))` must be true).
 #' @param standard_pop Standard population values corresponding to the age groups specified by `label`
 #'
-#' @return A list, also of class "stand_surveil", containing a summary data frame (mean and 95 percent credible intervals) (named `summary`), a data frame of MCMC samples of standardized rates per time period (named `samples`), and the user-provided labels and standard population sizes (named `label` and `standard_pop`). In addition, all of the items from the user-provided `surveil` model are automatically appended to the list.
+#' @return A list, also of class "stand_surveil", containing the entire contents of the user-provided `surveil` model plus the following:
+#' \describe{
+#'  \item{standard_summary}{summary data frame of standardized rates (means and 95 percent credible intervals)}
+#'
+#' \item{standard_samples}{a data frame of Markov chain Monte Carlo (MCMC) samples from the posterior probability distribution for the standardized rates}
+#'
+#' \item{standard_label}{user-provided age-group labels}
+#'
+#' \item{standard_pop}{user-provided standardized population sizes (ordered as `standard_label`)}
+#' }
+#'
 #' 
 #' @examples
 #' data(cancer)
@@ -437,6 +447,7 @@ standardize <- function(x, label, standard_pop) {
     time_labels <- x$time$time.df$time.label
     time_df <- data.frame(time_index = 1:length(time_labels), time_label = time_labels)
     # samples of standardized rates
+    suppressMessages(
     stand_samples <- x$samples %>%
         tidybayes::gather_draws(rate[group_index, time_index]) %>%
         dplyr::select(.data$group_index, .data$time_index, .data$.draw, .data$.value) %>%
@@ -444,6 +455,7 @@ standardize <- function(x, label, standard_pop) {
         dplyr::group_by(.data$.draw, .data$time_index) %>%
         dplyr::summarise(stand_rate = standardize_rate(.data$.value, .data$standard_pop)) %>%
         dplyr::left_join(time_df, by ="time_index")
+    )
     # summary of marginal posterior distributions
     stand_summary <- stand_samples %>%
         dplyr::group_by(.data$time_index) %>%

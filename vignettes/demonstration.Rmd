@@ -34,7 +34,6 @@ The package also contains special methods for age-standardization, printing and 
 library(surveil)
 library(dplyr)
 library(ggplot2)
-theme_set(theme_classic())
 ## for the vignette
 library(knitr)
 ```

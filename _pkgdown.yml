@@ -10,6 +10,7 @@ articles:
 - title: "Package vignettes"
   contents:
   - demonstration
+  - age-standardization
 reference:
 - title: "Package overview"
 - contents:

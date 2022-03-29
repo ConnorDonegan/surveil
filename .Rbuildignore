@@ -16,3 +16,5 @@ README_files/
 ^data-raw/*
 ^cran-comments.md$
 ^CRAN-RELEASE$
+^doc$
+^Meta$

@@ -41,3 +41,5 @@ inst/doc
 
 # CRAN
 cran-comments
+/doc/
+/Meta/

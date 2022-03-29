@@ -23,7 +23,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">surveil</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.2</span>
       </span>
     </div>
 
@@ -71,6 +71,7 @@
   scale <span class="op">=</span> <span class="fl">1</span>,
   style <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"mean_qi"</span>, <span class="st">"lines"</span><span class="op">)</span>,
   facet <span class="op">=</span> <span class="cn">FALSE</span>,
+  facet_scales <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"fixed"</span>, <span class="st">"free"</span><span class="op">)</span>,
   ncol <span class="op">=</span> <span class="cn">NULL</span>,
   base_size <span class="op">=</span> <span class="fl">14</span>,
   palette <span class="op">=</span> <span class="st">"Dark2"</span>,
@@ -80,13 +81,31 @@
   fill <span class="op">=</span> <span class="st">"gray80"</span>,
   size <span class="op">=</span> <span class="fl">1.5</span>,
   <span class="va">...</span>
+<span class="op">)</span>
+
+<span class="co"># S3 method for list</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span>
+  <span class="va">x</span>,
+  scale <span class="op">=</span> <span class="fl">1</span>,
+  style <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"mean_qi"</span>, <span class="st">"lines"</span><span class="op">)</span>,
+  facet <span class="op">=</span> <span class="cn">FALSE</span>,
+  <span class="va">ncol</span>,
+  facet_scales <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"fixed"</span>, <span class="st">"free"</span><span class="op">)</span>,
+  M <span class="op">=</span> <span class="fl">250</span>,
+  base_size <span class="op">=</span> <span class="fl">14</span>,
+  palette <span class="op">=</span> <span class="st">"Dark2"</span>,
+  fill <span class="op">=</span> <span class="st">"gray80"</span>,
+  size <span class="op">=</span> <span class="fl">1.5</span>,
+  <span class="va">alpha</span>,
+  <span class="va">lwd</span>,
+  <span class="va">...</span>
 <span class="op">)</span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>x</dt>
-<dd><p>A fitted <code>surveil</code> model</p></dd>
+<dd><p>A fitted <code>surveil</code> model, or a list of <code>stand_surveil</code> objects (as produced by <code><a href="standardize.html">standardize</a></code>).</p></dd>
 <dt>scale</dt>
 <dd><p>Scale the rates by this amount; e.g., <code>scale = 100e3</code> will print rates per 100,000 at risk.</p></dd>
 <dt>...</dt>
@@ -95,6 +114,8 @@
 <dd><p>If <code>style = "mean_qi"</code>, then the posterior mean and 95 percent credible interval will be plotted; if <code>style = "lines"</code>, then <code>M</code> samples from the joint probability distribution of the annual rates will be plotted.</p></dd>
 <dt>facet</dt>
 <dd><p>If <code>facet = TRUE</code>, <code><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></code> will be used instead of differentiating by line color.</p></dd>
+<dt>facet_scales</dt>
+<dd><p>When <code>facet = TRUE</code>, this argument controls behavior of the scales for each sub-plot. See the <code>scales</code> argument to <code><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></code>.</p></dd>
 <dt>ncol</dt>
 <dd><p>Number of columns for the plotting device; optional and only used if <code>facet = TRUE</code>. If <code>ncol = 1</code>, the three plots will be aligned vertically in one column; if <code>ncol = 3</code> they will b aligned horizontally in one row. Defaults to <code>ncol = NULL</code> to allow <code><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></code> to automatically determine the number of columns.</p></dd>
 <dt>base_size</dt>
@@ -114,7 +135,7 @@
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>The plot method returns a <code>ggplot</code> object; the print method returns nothing but prints a summary of results to the R console.</p>
+    <p>The plot method returns a <code>ggplot</code> object; the print method returns nothing but prints a summary of results to the R console. If <code>x</code> is a list of <code>stand_surveil</code> objects, the plotted lines will be labeled using the names returned by <code>names(x)</code>; if elements of the list are not named, plotted lines will simply be numbered.</p>
     </div>
     <div id="see-also">
     <h2>See also</h2>

@@ -23,7 +23,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">surveil</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.2</span>
       </span>
     </div>
 
@@ -62,7 +62,13 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">group_diff</span><span class="op">(</span><span class="va">fit</span>, <span class="va">target</span>, <span class="va">reference</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">group_diff</span><span class="op">(</span><span class="va">x</span>, <span class="va">target</span>, <span class="va">reference</span><span class="op">)</span>
+
+<span class="co"># S3 method for surveil</span>
+<span class="fu">group_diff</span><span class="op">(</span><span class="va">x</span>, <span class="va">target</span>, <span class="va">reference</span><span class="op">)</span>
+
+<span class="co"># S3 method for list</span>
+<span class="fu">group_diff</span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span></code></pre></div>
     </div>
 
     <div id="source">
@@ -71,12 +77,14 @@
     </div>
     <div id="arguments">
     <h2>Arguments</h2>
-    <dl><dt>fit</dt>
-<dd><p>A fitted <code>surveil</code> time series model</p></dd>
+    <dl><dt>x</dt>
+<dd><p>Either a fitted <code>surveil</code> time series model, or a list of two <code>stand_surveil</code> objects (i.e., <code>surveil</code> models with age-standardized rates, as returned by <code><a href="standardize.html">standardize</a></code>). If <code>x</code> is a list of <code>stand_surveil</code> objects, see details below and note that the models must contain the same number of MCMC samples---to ensure this is the case, when using <code>stan_rw</code> set <code>iter</code> and <code>chains</code> to the same values for each of the two models.</p></dd>
 <dt>target</dt>
-<dd><p>The name (character string) of the disadvantaged group that is the target of inference.</p></dd>
+<dd><p>The name (character string) of the disadvantaged group that is the target of inference. If <code>x</code> is a list of <code>stand_surveil</code> objects, the <code>target</code> argument is ignored and the first listed model will serve as the <code>target</code> group.</p></dd>
 <dt>reference</dt>
-<dd><p>The name (character string) of the reference group to which <code>target</code> will be compared.</p></dd>
+<dd><p>The name (character string) of the reference group to which <code>target</code> will be compared. If <code>x</code> is a list of <code>stand_surveil</code> objects, the <code>reference</code> argument is ignored and the second listed model will serve as the <code>reference</code> group.</p></dd>
+<dt>...</dt>
+<dd><p>Additional arguments (not used).</p></dd>
 </dl></div>
     <div id="value">
     <h2>Value</h2>
@@ -99,7 +107,12 @@
 </dl></div>
     <div id="details">
     <h2>Details</h2>
-    <p>For the following calculations, the terms <code>reference</code> and <code>target</code> refer to incidence rates for the respective groups; <code>p</code> is the size of the target population. (Target is the group that is the 'target' of our inferences, so that it is the numerator in rate ratios, etc.) The following measures are calculated by <code>group_diff</code>:</p><div class="sourceCode"><pre><code><span class="co"># rate difference</span>
+    
+<div class="section">
+<h3 id="comparing-incidence-rates">Comparing incidence rates<a class="anchor" aria-label="anchor" href="#comparing-incidence-rates"></a></h3>
+
+
+<p>For the following calculations, the terms <code>reference</code> and <code>target</code> refer to incidence rates for the respective groups; <code>p</code> is the size of the target population. (Target is the group that is the 'target' of our inferences, so that it is the numerator in rate ratios, etc.) The following measures are calculated by <code>group_diff</code>:</p><div class="sourceCode"><pre><code><span class="co"># rate difference</span>
 <span class="va">RD</span> <span class="op">=</span> <span class="va">target</span> <span class="op">-</span> <span class="va">reference</span>
 <span class="co"># population attributable fraction</span>
 <span class="va">PAR</span> <span class="op">=</span> <span class="va">RD</span><span class="op">/</span><span class="va">target</span> <span class="op">=</span> <span class="op">(</span><span class="va">RR</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span><span class="op">/</span><span class="va">RR</span>
@@ -109,6 +122,15 @@
 <span class="va">EC</span> <span class="op">=</span> <span class="va">RD</span> <span class="op">*</span> <span class="va">p</span></code></pre></div>
 
 <p>As the math communicates, the PAR is the rate difference expressed as a fraction of total risk for the target population. This could also be read as the fraction of risk in the target population that would have been removed had the target rate equaled the reference rate (Menvielle et al. 2017).</p>
+</div>
+
+<div class="section">
+<h3 id="comparing-age-standardized-rates">Comparing age-standardized rates<a class="anchor" aria-label="anchor" href="#comparing-age-standardized-rates"></a></h3>
+
+
+<p>If the user provides a list of <code>stand_surveil</code> objects with age-standardized rates (instead of a single <code>surveil</code> model), then the exact calculations will be completed as follows. The RR is simply the ratio of age-standardized rates, and the rate difference is similarly the difference between age-standardized rates. However, excess cases is calculated for each age group separately, and the total excess cases across all age groups is returned. Similarly, the attributable risk is calculated by taking the total excess cases across all age groups per year and dividing by the total risk (i.e., by the sum of the whole number of cases across all age groups). Cumulative excess cases is the sum of the time-period specific total number of excess cases. (Notice that the PAR is not equal to (RR-1)/RR when the PAR is derived from a number of age-specific rates and the RR is based on age-standardized rates.)</p>
+</div>
+
     </div>
     <div id="see-also">
     <h2>See also</h2>
@@ -126,7 +148,7 @@
 <span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">msa</span><span class="op">)</span>
 <span class="va">houston</span> <span class="op">&lt;-</span> <span class="va">msa</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep</a></span><span class="op">(</span><span class="st">"Houston"</span>, <span class="va">msa</span><span class="op">$</span><span class="va">MSA</span><span class="op">)</span>, <span class="op">]</span>
 <span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="stan_rw.html">stan_rw</a></span><span class="op">(</span><span class="va">houston</span>, time <span class="op">=</span> <span class="va">Year</span>, group <span class="op">=</span> <span class="va">Race</span>,
-               iter <span class="op">=</span> <span class="fl">900</span><span class="op">)</span> <span class="co"># low iter for speed only</span>
+               chains <span class="op">=</span> <span class="fl">2</span>, iter <span class="op">=</span> <span class="fl">900</span><span class="op">)</span> <span class="co"># low iter for speed only</span>
 <span class="va">gd</span> <span class="op">&lt;-</span> <span class="fu">group_diff</span><span class="op">(</span><span class="va">fit</span>, <span class="st">"Black or African American"</span>, <span class="st">"White"</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">gd</span>, scale <span class="op">=</span> <span class="fl">100e3</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">gd</span>, scale <span class="op">=</span> <span class="fl">100e3</span><span class="op">)</span>

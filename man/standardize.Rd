@@ -14,7 +14,16 @@ standardize(x, label, standard_pop)
 \item{standard_pop}{Standard population values corresponding to the age groups specified by \code{label}}
 }
 \value{
-A list, also of class "stand_surveil", containing a summary data frame (mean and 95 percent credible intervals) (named \code{summary}), a data frame of MCMC samples of standardized rates per time period (named \code{samples}), and the user-provided labels and standard population sizes (named \code{label} and \code{standard_pop}). In addition, all of the items from the user-provided \code{surveil} model are automatically appended to the list.
+A list, also of class "stand_surveil", containing the entire contents of the user-provided \code{surveil} model plus the following:
+\describe{
+\item{standard_summary}{summary data frame of standardized rates (means and 95 percent credible intervals)}
+
+\item{standard_samples}{a data frame of Markov chain Monte Carlo (MCMC) samples from the posterior probability distribution for the standardized rates}
+
+\item{standard_label}{user-provided age-group labels}
+
+\item{standard_pop}{user-provided standardized population sizes (ordered as \code{standard_label})}
+}
 }
 \description{
 Convert \code{surveil} model results to age standardized rates using a fixed age distribution

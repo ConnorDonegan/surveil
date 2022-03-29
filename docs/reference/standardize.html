@@ -23,7 +23,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">surveil</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.2</span>
       </span>
     </div>
 
@@ -76,8 +76,23 @@
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A list, also of class "stand_surveil", containing a summary data frame (mean and 95 percent credible intervals) (named <code>summary</code>), a data frame of MCMC samples of standardized rates per time period (named <code>samples</code>), and the user-provided labels and standard population sizes (named <code>label</code> and <code>standard_pop</code>). In addition, all of the items from the user-provided <code>surveil</code> model are automatically appended to the list.</p>
-    </div>
+    <p>A list, also of class "stand_surveil", containing the entire contents of the user-provided <code>surveil</code> model plus the following:</p><dl><dt>standard_summary</dt>
+<dd><p>summary data frame of standardized rates (means and 95 percent credible intervals)</p></dd>
+
+
+<dt>standard_samples</dt>
+<dd><p>a data frame of Markov chain Monte Carlo (MCMC) samples from the posterior probability distribution for the standardized rates</p></dd>
+
+
+<dt>standard_label</dt>
+<dd><p>user-provided age-group labels</p></dd>
+
+
+<dt>standard_pop</dt>
+<dd><p>user-provided standardized population sizes (ordered as <code>standard_label</code>)</p></dd>
+
+
+</dl></div>
     <div id="see-also">
     <h2>See also</h2>
     <div class="dont-index"><p><code><a href="stan_rw.html">stan_rw</a></code>  <code><a href="stand_surveil.html">plot.stand_surveil</a></code> <code><a href="stand_surveil.html">print.stand_surveil</a></code></p></div>
