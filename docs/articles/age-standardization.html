@@ -46,7 +46,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">surveil</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0</span>
       </span>
     </div>
 
@@ -304,7 +304,7 @@
 </li>
 </ol>
 <p>The numerator in the formula for AR contains each age-specific rate difference multiplied by the age-specific population at risk for group 1. If we describe the rate difference as a measure of excess risk, then we can describe the (age-specific) quantity <span class="math inline">\(RD_i * P_{i,1}\)</span> as the number of “excess cases,”, i.e., the excess risk expressed in terms of whole cases. The AR formula simply re-expresses excess risk as a fraction of total risk. This is convenient because the standardized RR is based on a fixed and false population distribution, whereas AR is based on the actual population distribution obtaining in reality, each year. Thus, we may often prefer AR over RR as a measure of relative inequality across two age-stratified groups.</p>
-<p>Pairwise measures of inequality have an important purpose (tracking health inequalities between historically or currently advantaged and disadvantaged groups), but we should keep in mind the limitations inherent in tracking the progress of any group by comparing that group to a moving target (particularly one that may move in an unfavorable direction). There are rarely only two groups of interest; to measure health inequality across multiple groups, consider Theil’s index (see <code><a href="../reference/theil.html">?theil</a></code>).</p>
+<p>Pairwise measures of inequality have an important purpose (tracking health inequalities between historically or currently advantaged and disadvantaged groups), but we should keep in mind the limitations inherent in tracking the progress of any group by comparing that group to a moving target (particularly one that may move in an unfavorable direction). There are rarely only two groups of interest; to measure health inequality across multiple groups, consider Theil’s index (see <code><a href="../reference/theil.html">?theil</a></code> and <code><a href="../articles/demonstration.html">vignette("demonstration")</a></code>).</p>
 </div>
 <div class="section level3">
 <h3 id="demonstration">Demonstration<a class="anchor" aria-label="anchor" href="#demonstration"></a>
@@ -352,28 +352,28 @@
 <span class="co">#&gt; Target group: B</span>
 <span class="co">#&gt; Reference group: A</span>
 <span class="co">#&gt; Time periods observed: 19</span>
-<span class="co">#&gt; Cumulative excess cases (EC): 4,494,947 [4482496, 4507656]</span>
+<span class="co">#&gt; Cumulative excess cases (EC): 4,492,615 [4480628, 4505423]</span>
 <span class="co">#&gt; Cumulative EC as a fraction of group risk (PAR): 0.18 [0.18, 0.18]</span>
 <span class="co">#&gt;  time   Rate      RD  PAR  RR     EC</span>
-<span class="co">#&gt;  1999 0.0060 0.00107 0.18 1.2 200272</span>
-<span class="co">#&gt;  2000 0.0061 0.00107 0.18 1.2 203867</span>
-<span class="co">#&gt;  2001 0.0062 0.00109 0.18 1.2 213367</span>
-<span class="co">#&gt;  2002 0.0061 0.00108 0.18 1.2 215613</span>
-<span class="co">#&gt;  2003 0.0060 0.00107 0.18 1.2 218688</span>
-<span class="co">#&gt;  2004 0.0060 0.00106 0.18 1.2 221655</span>
-<span class="co">#&gt;  2005 0.0060 0.00106 0.18 1.2 225651</span>
-<span class="co">#&gt;  2006 0.0061 0.00107 0.18 1.2 231813</span>
-<span class="co">#&gt;  2007 0.0061 0.00108 0.18 1.2 238942</span>
-<span class="co">#&gt;  2008 0.0061 0.00107 0.18 1.2 242137</span>
-<span class="co">#&gt;  2009 0.0060 0.00106 0.18 1.2 244968</span>
-<span class="co">#&gt;  2010 0.0059 0.00104 0.18 1.2 244327</span>
-<span class="co">#&gt;  2011 0.0059 0.00104 0.18 1.2 249151</span>
-<span class="co">#&gt;  2012 0.0057 0.00101 0.18 1.2 248657</span>
-<span class="co">#&gt;  2013 0.0057 0.00101 0.18 1.2 252708</span>
-<span class="co">#&gt;  2014 0.0057 0.00100 0.18 1.2 255877</span>
-<span class="co">#&gt;  2015 0.0057 0.00100 0.18 1.2 261060</span>
-<span class="co">#&gt;  2016 0.0056 0.00099 0.18 1.2 262961</span>
-<span class="co">#&gt;  2017 0.0055 0.00097 0.18 1.2 263233</span></code></pre></div>
+<span class="co">#&gt;  1999 0.0060 0.00106 0.18 1.2 199814</span>
+<span class="co">#&gt;  2000 0.0061 0.00107 0.18 1.2 204582</span>
+<span class="co">#&gt;  2001 0.0061 0.00109 0.18 1.2 212898</span>
+<span class="co">#&gt;  2002 0.0061 0.00108 0.18 1.2 215037</span>
+<span class="co">#&gt;  2003 0.0060 0.00106 0.18 1.2 217830</span>
+<span class="co">#&gt;  2004 0.0060 0.00106 0.18 1.2 221122</span>
+<span class="co">#&gt;  2005 0.0060 0.00106 0.18 1.2 225103</span>
+<span class="co">#&gt;  2006 0.0061 0.00107 0.18 1.2 232382</span>
+<span class="co">#&gt;  2007 0.0061 0.00108 0.18 1.2 238724</span>
+<span class="co">#&gt;  2008 0.0061 0.00107 0.18 1.2 242112</span>
+<span class="co">#&gt;  2009 0.0060 0.00106 0.18 1.2 245183</span>
+<span class="co">#&gt;  2010 0.0059 0.00104 0.18 1.2 244125</span>
+<span class="co">#&gt;  2011 0.0059 0.00104 0.18 1.2 248560</span>
+<span class="co">#&gt;  2012 0.0057 0.00101 0.18 1.2 248626</span>
+<span class="co">#&gt;  2013 0.0057 0.00101 0.18 1.2 252190</span>
+<span class="co">#&gt;  2014 0.0057 0.00100 0.18 1.2 256137</span>
+<span class="co">#&gt;  2015 0.0057 0.00100 0.18 1.2 260886</span>
+<span class="co">#&gt;  2016 0.0056 0.00099 0.18 1.2 263387</span>
+<span class="co">#&gt;  2017 0.0055 0.00097 0.18 1.2 263917</span></code></pre></div>
 </div>
 </div>
 <div class="section level2 unnumbered">

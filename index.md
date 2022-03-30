@@ -1,7 +1,7 @@
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-Public health surveillance
-==========================
+surveil: Public health surveillance
+-----------------------------------
 
 <img src="man/figures/logo.png" align="right" width="160" />
 
@@ -11,7 +11,9 @@ incidence rates to make inferences about levels of risk, cumulative and
 period percent change, age-standardized rates, and health inequalities.
 
 **surveil** is an interface to [Stan](https://mc-stan.org), a
-state-of-the-art platform for Bayesian inference.
+state-of-the-art platform for Bayesian inference. For analysis of
+spatial health data see the
+[**geostan**](https://connordonegan.github.io/geostan/) R package.
 
 ### Installation
 
@@ -20,6 +22,18 @@ state-of-the-art platform for Bayesian inference.
 ``` r
 install.packages("surveil")
 ```
+
+### Vignettes
+
+Review the package vignettes to get started:
+
+-   `vignette("demonstration")`: An introduction to health modeling with
+    **surveil**
+-   `vignette("age-standardization")`: How to age-standardize
+    **surveil** model results and compare age-stratified populations
+
+Also see the online
+[documentation](https://connordonegan.github.io/surveil/reference/index.html).
 
 ### Usage
 

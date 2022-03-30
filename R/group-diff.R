@@ -336,14 +336,20 @@ plot.surveil_diff <- function(x,
                                     names_to = "measure",
                                     values_to = "value"
                                     )
+        s_df$measure <- dplyr::recode(s_df$measure,
+                                      RD = "Rate difference",
+                                      RR = "Rate ratio",
+                                      PAR = "Attributable risk",
+                                      EC = "Excess cases"                                      
+                                      )
         s_df <- arrange(s_df, .data$time)
         s_df <- left_join(s_df, time_df, by = "time")
         n_samples <- max(s_df$.draw)        
         s_df <- s_df[which(s_df$.draw %in% sample(n_samples, size = M)),]
         gg <- ggplot(s_df) +
             geom_line(
-   #             aes(.data$label, .data$value,
-                aes(.data$time, .data$value,
+                aes(.data$label, .data$value,
+   #             aes(.data$time, .data$value,
                     group = factor(.data$.draw)),
                 lwd = lwd,
                 col = col,

@@ -2,7 +2,7 @@
 % Please edit documentation in R/methods.R
 \name{standardize}
 \alias{standardize}
-\title{Standardized rates}
+\title{Age-standardized rates}
 \usage{
 standardize(x, label, standard_pop)
 }
@@ -50,5 +50,5 @@ plot(stands, style = "lines")
 }
 }
 \seealso{
-\code{\link[surveil]{stan_rw}}  \code{\link[surveil]{plot.stand_surveil}} \code{\link[surveil]{print.stand_surveil}}
+\code{vignette("age-standardization", package = "surveil")} \code{\link[surveil]{stan_rw}}  \code{\link[surveil]{plot.stand_surveil}} \code{\link[surveil]{print.stand_surveil}}
 }

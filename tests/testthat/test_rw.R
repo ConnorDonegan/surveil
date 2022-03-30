@@ -16,6 +16,18 @@ test_that("cor = FALSE works with stan_rw", {
     expect_s3_class(fit, "surveil")
 })
 
+test_that("cor = FALSE, family = bionomial works with stan_rw", {    
+    fit <- stan_rw(
+        data = dfw[grep("Hispanic", dfw$Race), ],
+        time = Year,
+        iter = iter,
+        cor = FALSE,
+        family = binomial(),
+        chains = 1
+    )
+    expect_s3_class(fit, "surveil")
+})
+
 test_that("cor = TRUE works with stan_rw", {
     fit2 <- stan_rw(
         data = dfw,
@@ -27,6 +39,20 @@ test_that("cor = TRUE works with stan_rw", {
     )
     expect_s3_class(fit2, "surveil")
 })
+
+test_that("cor = TRUE, family = binomial works with stan_rw", {
+    fit2 <- stan_rw(
+        data = dfw,
+        group = Race,
+        time = Year,
+        iter = iter,
+        chains = 1,
+        cor = TRUE,
+        family = binomial()
+    )
+    expect_s3_class(fit2, "surveil")
+})
+
 
 test_that("priors work: k = 1", {
     prior <- list()
@@ -72,6 +98,20 @@ test_that("group_diff works", {
     })
 
 
+test_that("group_diff works, family = binomial", {
+    fit2 <- stan_rw(        
+        dfw,
+        group = Race,
+        time = Year,
+        iter = iter,
+        chains = 1,
+        family = binomial()
+        )
+        x <- group_diff(fit2, "Black or African American", "White")
+        expect_s3_class(x, "list")
+    })
+
+
 test_that("theil.surveil works", {
     fit <- stan_rw(        
         dfw,
@@ -82,7 +122,8 @@ test_that("theil.surveil works", {
     )
     x <- theil(fit)
     expect_s3_class(x, "theil")
-    })
+})
+
 test_that("theil.list works", {
     fit <- stan_rw(        
         dfw,
@@ -104,6 +145,5 @@ test_that("stand_surveil works", {
                chains = 1
                )
     x = standardize(fit, label = standard$age, standard$standard_pop)
-    print(x, 10e3)
-    plot(x)
+    expect_s3_class(x, "stand_surveil")
     })

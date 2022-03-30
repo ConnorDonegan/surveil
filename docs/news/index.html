@@ -23,7 +23,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">surveil</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0</span>
       </span>
     </div>
 
@@ -57,25 +57,27 @@
     </div>
 
     <div class="section level2">
-<h2 class="page-header" data-toc-text="0.1.2" id="surveil-012">surveil 0.1.2<a class="anchor" aria-label="anchor" href="#surveil-012"></a></h2>
-<div class="section level3">
-<h3 id="feature-updates-0-1-2">Feature updates<a class="anchor" aria-label="anchor" href="#feature-updates-0-1-2"></a></h3>
-<ul><li>The group_diff function, for calculating pairwise measures of inequality, can now be used to compare two age-standardized rates. This includes a calculation of total annual (and cumulative) excess cases and attributable risk derived from all of the age-specific rates and population sizes.</li>
+<h2 class="page-header" data-toc-text="0.2.0" id="surveil-020">surveil 0.2.0<a class="anchor" aria-label="anchor" href="#surveil-020"></a></h2>
+<div class="section level4">
+<h4 id="feature-updates-0-2-0">Feature updates<a class="anchor" aria-label="anchor" href="#feature-updates-0-2-0"></a></h4>
+<ul><li>The <code>stan_rw</code> model-fitting function now supports binomial models.</li>
+<li>There is a new vignette on age-standardization and comparing risk across two age-stratified populations: <code><a href="../articles/age-standardization.html">vignette("age-standardization")</a></code>.</li>
+<li>The <code>group_diff</code> function, for calculating pairwise measures of inequality, can now be used to compare age-stratified populations. This includes a calculation of total annual (and cumulative) excess cases and attributable risk derived from all of the age-specific rates and population sizes. See <code><a href="../articles/age-standardization.html">vignette("age-standardization")</a></code>.</li>
 <li>A new <code>plot</code> method now accepts a list of <code>stand_surveil</code> objects. This will allow multiple standardized rates to be visualized on the same plot.</li>
 <li>All plots have a new default, custom ggplot theme.</li>
 </ul></div>
 </div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.1.1" id="surveil-011">surveil 0.1.1<small>2022-01-03</small><a class="anchor" aria-label="anchor" href="#surveil-011"></a></h2>
-<div class="section level3">
-<h3 id="bug-fixes-0-1-1">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-1-1"></a></h3>
+<div class="section level4">
+<h4 id="bug-fixes-0-1-1">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-1-1"></a></h4>
 <ul><li><p>Previously, if multiple groups had been modeled, the cumulative percent change summary was printed incorrectly. Now, the print method will return a summary of the cumulative percent change for each group.</p></li>
 <li><p>The plotting method for the group_diff object (pairwise inequality measures) has been adjusted so that the correct labels are used to identify the time periods on the x axis of the plots. Previously, if the <code>style = 'lines'</code> argument was used, the x axis used generic index values on the x axis instead of the labeled time periods provided by the user.</p></li>
 </ul></div>
 </div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.1.0" id="surveil-010">surveil 0.1.0<small>2021-11-11</small><a class="anchor" aria-label="anchor" href="#surveil-010"></a></h2>
-<p>November 6, 2021. surveil’s first release.</p>
+<p>November 2021: surveil’s first release.</p>
 </div>
   </div>
 

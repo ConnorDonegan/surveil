@@ -1,6 +1,6 @@
 #' Time series models for mortality and disease incidence 
 
-#' @description Model time-varying disease risk given time series of case (or death) counts and population at risk.
+#' @description Model time-varying incidence rates given a time series of case (or death) counts and population at risk.
 #'
 #' @param data A `data.frame` containing the following columns: \describe{
 #'  \item{Count}{Number of cases or deaths; this column must be named 'Count'.}
@@ -14,6 +14,8 @@
 #' @param group If `data` is aggregated by demographic group, provide the (unquoted) name of the column in `data` containing the grouping structure, such as age brackets or race-ethnicity. E.g., if `data` has column names `Year`, `Race`, `Cases`, and `Population`, then you would provide `group = Race`. 
 #'
 #' @param cor  For correlated random walks use `cor = TRUE`; default value is `FALSE`. Note this only applies when the `group` argument is used.
+#'
+#' @param family The default specification is a Poisson model with log link function (`family = poisson()`). For a Binomial model with logit link function, use `family = binomial()`.
 #' 
 #' @param prior Optionally provide a named `list` with prior parameters. If any of the following items are missing, default priors will be assigned and printed to the console.
 #'
@@ -53,31 +55,44 @@
 #' \item{time}{A list containing the name of the time-period column in the user-provided data and a `data.frame` of observed time periods and their index.}
 #'
 #' \item{group}{If a grouping variable was used, this will be a list containing the name of the grouping variable and a `data.frame` with group labels and index values.}
+#'
+#' \item{family}{The user-provided `family` argument.}
 #' }
 #' 
 #' @details
 #'
-#' For time t = 1,...n, the models have Poisson likelihoods for the case counts, given log-risk `eta` and population at tirks P; the log-risk is modeled using the first-difference (or random-walk) prior:
+#' By default, the models have Poisson likelihoods for the case counts, with log link function. Alternatively, a Binomial model with logit link function can be specified using the `family` argument (`family = binomial()`).
+#' 
+#' For time t = 1,...n, the models assign Poisson probability distribution to the case counts, given log-risk `eta` and population at tirks P; the log-risk is modeled using the first-difference (or random-walk) prior:
 #' 
 #' ```
-#'        y_t ~ Poisson(p_t * exp(eta_t))
-#'        eta_t ~ Normal(eta_{t-1}, sigma)
-#'        eta_1 ~ Normal(-6, 5) (-Inf, 0)
-#'        sigma ~ Normal(0, 1) (0, Inf)
+#'  y_t ~ Poisson(p_t * exp(eta_t))
+#'  eta_t ~ Normal(eta_{t-1}, sigma)
+#'  eta_1 ~ Normal(-6, 5) (-Inf, 0)
+#'  sigma ~ Normal(0, 1) (0, Inf)
 #' ```
 #' This style of model has been discussed in Bayesian (bio)statistics for quite some time. See Clayton (1996).
 #'
-#' The above model can be used for multiple distinct groups; in that case, each group will have its own independent time series model. However, it is also possible to add a correlation structure to that set of models. Let `Y_t` be a k-length vector of observations for each of k groups at time t (the capital letter now indicates a vector), then:
+#' The above model can be used for multiple distinct groups; in that case, each group will have its own independent time series model.
+#'
+#' It is also possible to add a correlation structure to that set of models. Let `Y_t` be a k-length vector of observations for each of k groups at time t (the capital letter now indicates a vector), then:
 #'
 #' ```
-#'        Y_t ~ Poisson(P_t * exp(Eta_t))
-#'        Eta_t ~ MVNormal(Eta_{t-1}, Sigma)
-#'        Eta_1 ~ Normal(-6, 5)  (-Inf, 0)
-#'        Sigma = diag(sigma) * Omega * diag(sigma)
-#'        Omega ~ LKJ(2)
-#'        sigma ~ Normal(0, 1) (0, Inf)
+#'  Y_t ~ Poisson(P_t * exp(Eta_t))
+#'  Eta_t ~ MVNormal(Eta_{t-1}, Sigma)
+#'  Eta_1 ~ Normal(-6, 5)  (-Inf, 0)
+#'  Sigma = diag(sigma) * Omega * diag(sigma)
+#'  Omega ~ LKJ(2)
+#'  sigma ~ Normal(0, 1) (0, Inf)
 #' ```
 #' where `Omega` is a correlation matrix and `diag(sigma)` is a diagonal matrix with scale parameters on the diagonal. This was adopted from Brandt and Williams (2007); for the LKJ prior, see the Stan Users Guide and Reference Manual.
+#'
+#' If the binomial model is used instead of the Poisson, then the first line of the model specifications will be:
+#'
+#' ```
+#'  y_t ~ binomial(P_t, inverse_logit(eta_t))
+#' ```
+#' All else is remains the same. The logit function is `log(r/(1-r))`, where `r` is a rate between zero and one; the inverse-logit function is `exp(x)/(1 + exp(x))`.
 #' 
 #' @source
 #'
@@ -127,16 +142,20 @@
 #' fit_stands_apc <- apc(fit_stands)
 #' plot(fit_stands_apc)
 #' }
+#'
+#' @seealso \code{vignette("demonstration", package = "surveil")} \code{vignette("age-standardization", package = "surveil")} \code{\link[surveil]{apc}} \code{\link[surveil]{standardize}}
+#' 
 #' @export
 #' @importFrom parallel detectCores
 #' @importFrom dplyr `%>%` mutate arrange full_join distinct select group_by ungroup n select
 #' @importFrom tidyr pivot_wider
-#' @importFrom stats quantile
+#' @importFrom stats quantile poisson 
 #' @md
 stan_rw <- function(data,
                     group,
                     time,
                     cor = FALSE,
+                    family = poisson(),
                     prior = list(),
                     chains = 4,
                     cores = 1,
@@ -148,6 +167,8 @@ stan_rw <- function(data,
     stopifnot(inherits(data, "data.frame"))
     stopifnot(all(c("Count", "Population") %in% names(data)))
     stopifnot(rlang::as_label(dplyr::enquo(time)) %in% names(data))
+    stopifnot(inherits(family, "family"))
+    stopifnot(family$family %in% c("poisson", "binomial"))    
     stopifnot(min(data$Count)>=0)
     stopifnot(min(data$Population)>=0)
     stopifnot(inherits(prior, "list"))
@@ -229,6 +250,9 @@ stan_rw <- function(data,
         K = ncol(cases),
         y = cases, #/# no transpose 
         log_E = log(at_risk),  #/# no transpose
+        population = at_risk, #/# no transpose
+        is_poisson = as.integer(family$family == "poisson"),
+        is_binomial = as.integer(family$family == "binomial"),
         prior_eta_1_location = as.array(prior$eta_1$location),
         prior_eta_1_scale = as.array(prior$eta_1$scale),
         prior_sigma_location = as.array(prior$sigma$location),
@@ -236,7 +260,7 @@ stan_rw <- function(data,
         prior_omega = prior$omega$eta
     )
     if (cor) {
-        samples <- rstan::sampling(stanmodels$poissonRWCorr,
+        samples <- rstan::sampling(stanmodels$RWCorr,
                                    data = standata,
                                    pars = c("rate", "sigma", "Omega", "log_lik"),
                                    iter = iter,
@@ -246,8 +270,9 @@ stan_rw <- function(data,
                                    control = control, ...)
     } else {  
         standata$y <- t(standata$y) #/# transpose
-        standata$log_E <- t(standata$log_E)  #/# transpose  
-        samples <- rstan::sampling(stanmodels$poissonRW,
+        standata$log_E <- t(standata$log_E)  #/# transpose
+        standata$population <- t(standata$population)
+        samples <- rstan::sampling(stanmodels$RW,
                                    data = standata,
                                    pars = c("rate", "sigma", "log_lik"),
                                    iter = iter,
@@ -292,6 +317,7 @@ stan_rw <- function(data,
                 samples = samples,
                 cor = cor,
                 time = time_list,
+                family = family,
                 data = list(cases = cases,
                             at_risk = at_risk,
                             prior = prior,

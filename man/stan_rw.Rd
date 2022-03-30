@@ -16,6 +16,7 @@ stan_rw(
   group,
   time,
   cor = FALSE,
+  family = poisson(),
   prior = list(),
   chains = 4,
   cores = 1,
@@ -38,6 +39,8 @@ stan_rw(
 \item{time}{Specify the (unquoted) name of the time variable in \code{data}, as in \code{time = Year}. This variable must be numeric-alike (i.e., \code{as.numeric(data$time)} will not fail).}
 
 \item{cor}{For correlated random walks use \code{cor = TRUE}; default value is \code{FALSE}. Note this only applies when the \code{group} argument is used.}
+
+\item{family}{The default specification is a Poisson model with log link function (\code{family = poisson()}). For a Binomial model with logit link function, use \code{family = binomial()}.}
 
 \item{prior}{Optionally provide a named \code{list} with prior parameters. If any of the following items are missing, default priors will be assigned and printed to the console.
 
@@ -76,29 +79,40 @@ The function returns a list, also of class \code{surveil}, containing the follow
 \item{time}{A list containing the name of the time-period column in the user-provided data and a \code{data.frame} of observed time periods and their index.}
 
 \item{group}{If a grouping variable was used, this will be a list containing the name of the grouping variable and a \code{data.frame} with group labels and index values.}
+
+\item{family}{The user-provided \code{family} argument.}
 }
 }
 \description{
-Model time-varying disease risk given time series of case (or death) counts and population at risk.
+Model time-varying incidence rates given a time series of case (or death) counts and population at risk.
 }
 \details{
-For time t = 1,...n, the models have Poisson likelihoods for the case counts, given log-risk \code{eta} and population at tirks P; the log-risk is modeled using the first-difference (or random-walk) prior:\preformatted{       y_t ~ Poisson(p_t * exp(eta_t))
-       eta_t ~ Normal(eta_\{t-1\}, sigma)
-       eta_1 ~ Normal(-6, 5) (-Inf, 0)
-       sigma ~ Normal(0, 1) (0, Inf)
+By default, the models have Poisson likelihoods for the case counts, with log link function. Alternatively, a Binomial model with logit link function can be specified using the \code{family} argument (\code{family = binomial()}).
+
+For time t = 1,...n, the models assign Poisson probability distribution to the case counts, given log-risk \code{eta} and population at tirks P; the log-risk is modeled using the first-difference (or random-walk) prior:\preformatted{ y_t ~ Poisson(p_t * exp(eta_t))
+ eta_t ~ Normal(eta_\{t-1\}, sigma)
+ eta_1 ~ Normal(-6, 5) (-Inf, 0)
+ sigma ~ Normal(0, 1) (0, Inf)
 }
 
 This style of model has been discussed in Bayesian (bio)statistics for quite some time. See Clayton (1996).
 
-The above model can be used for multiple distinct groups; in that case, each group will have its own independent time series model. However, it is also possible to add a correlation structure to that set of models. Let \code{Y_t} be a k-length vector of observations for each of k groups at time t (the capital letter now indicates a vector), then:\preformatted{       Y_t ~ Poisson(P_t * exp(Eta_t))
-       Eta_t ~ MVNormal(Eta_\{t-1\}, Sigma)
-       Eta_1 ~ Normal(-6, 5)  (-Inf, 0)
-       Sigma = diag(sigma) * Omega * diag(sigma)
-       Omega ~ LKJ(2)
-       sigma ~ Normal(0, 1) (0, Inf)
+The above model can be used for multiple distinct groups; in that case, each group will have its own independent time series model.
+
+It is also possible to add a correlation structure to that set of models. Let \code{Y_t} be a k-length vector of observations for each of k groups at time t (the capital letter now indicates a vector), then:\preformatted{ Y_t ~ Poisson(P_t * exp(Eta_t))
+ Eta_t ~ MVNormal(Eta_\{t-1\}, Sigma)
+ Eta_1 ~ Normal(-6, 5)  (-Inf, 0)
+ Sigma = diag(sigma) * Omega * diag(sigma)
+ Omega ~ LKJ(2)
+ sigma ~ Normal(0, 1) (0, Inf)
 }
 
 where \code{Omega} is a correlation matrix and \code{diag(sigma)} is a diagonal matrix with scale parameters on the diagonal. This was adopted from Brandt and Williams (2007); for the LKJ prior, see the Stan Users Guide and Reference Manual.
+
+If the binomial model is used instead of the Poisson, then the first line of the model specifications will be:\preformatted{ y_t ~ binomial(P_t, inverse_logit(eta_t))
+}
+
+All else is remains the same. The logit function is \code{log(r/(1-r))}, where \code{r} is a rate between zero and one; the inverse-logit function is \code{exp(x)/(1 + exp(x))}.
 }
 \examples{
 \donttest{
@@ -140,6 +154,10 @@ plot(fit_stands)
 fit_stands_apc <- apc(fit_stands)
 plot(fit_stands_apc)
 }
+
+}
+\seealso{
+\code{vignette("demonstration", package = "surveil")} \code{vignette("age-standardization", package = "surveil")} \code{\link[surveil]{apc}} \code{\link[surveil]{standardize}}
 }
 \author{
 Connor Donegan (Connor.Donegan@UTSouthwestern.edu)

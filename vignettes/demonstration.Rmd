@@ -30,11 +30,9 @@ The package also contains special methods for age-standardization, printing and 
 ## Getting started
 
 ```{r message=FALSE, warning=FALSE, eval=T}
-## packages required for the analysis
 library(surveil)
 library(dplyr)
 library(ggplot2)
-## for the vignette
 library(knitr)
 ```
 
@@ -49,7 +47,7 @@ head(msa) %>%
         caption = "Glimpse of colorectal cancer incidence data (CDC Wonder)") 
 ```
 
-**surveil**'s model fitting function, `stan_rw`, requires that the user provide a `data.frame` with specific column names. There must be one column named `Cases` containing case counts, and another column named `Population`, containing the sizes of the populations at risk. The user also must provide the name of the column containing the time period, and, optionally, a grouping factor. For the MSA data printed above, the grouping column is Race and the time column is Year.
+**surveil**'s model fitting function, `stan_rw`, requires that the user provide a `data.frame` with specific column names. There must be one column named `Count` containing case counts, and another column named `Population`, containing the sizes of the populations at risk. The user also must provide the name of the column containing the time period, and, optionally, a grouping factor. For the MSA data printed above, the grouping column is Race and the time column is Year.
 
 ## Preparing the data
 
@@ -80,7 +78,11 @@ The base **surveil** model is specified as follows. The Poisson model is used as
 $$y_t \sim \text{Pois}(p_t \cdot e^{\phi_t})$$
 where $t$ indexes the time period.
 
-Next, we build a model for the log-rates, ${\phi_t}$. The first-difference prior states that our expectation for the log-rate at any time is its previous value, and we assign a Gaussian probability distribution to deviations from the previous value [@clayton_1996]. This is also known as the random-walk prior:
+Alternatively, the binomial model is available:
+$$y_t \sim \text{Binom}(p_t \cdot g^{-1}(\phi_t))$$
+where $g$ is the logit function and $g^{-1}(x) = \frac{exp(x)}{1 + exp(x)}$ (the inverse-logit function). The Poisson model is often preferred for 'rare' events (such as rates below .01), otherwise the binomial model is generally more appropriate. The remainder of this vignette will proceed using the Poisson model only.
+
+Next, we build a model for the log-rates, ${\phi_t}$ (for the binomial model, the rates are logit-transformed, rather than log-transformed). The first-difference prior states that our expectation for the log-rate at any time is its previous value, and we assign a Gaussian probability distribution to deviations from the previous value [@clayton_1996]. This is also known as the random-walk prior:
 $$\phi_t \sim \text{Gau}(\phi_{t-1}, \tau^2)$$
 This places higher probability on a smooth trend through time, specifically implying that underlying disease risk tends to have less variation than crude incidence.
 
@@ -106,7 +108,7 @@ The time series model is fit by passing surveillance data to the `stan_rw` funct
 fit <- stan_rw(tx.msa, time = Year, group = Race)
 ```
 
-If we wanted to add a correlation structure to the model, we would add `cor = TRUE` (as opposed to the default, `cor = FALSE`). To speed things up, we could take advantage of parallel processing using the `cores` argument (e.g., add `cores = 4`) to run on 4 cores simultaneously. 
+If we wanted to add a correlation structure to the model, we would add `cor = TRUE` (as opposed to the default, `cor = FALSE`). To speed things up, we could take advantage of parallel processing using the `cores` argument (e.g., add `cores = 4`) to run on 4 cores simultaneously. For age-standardization, see `vignette("age-standardization")`.
 
 ## MCMC diagnostics
 
@@ -162,39 +164,45 @@ Sometimes, MCMC algorithms are unable to provide unbiased samples that will conv
 For the simple models provided by **surveil**, there will often be a way to address divergent transitions. If you receive a divergent transition warning from a **surveil** model, these are the three most probable solutions:
 
   1. Draw more samples: if you also have low ESS, the divergent transitions may disappear by increasing the number of iterations (lengthening Stan's adaptation or warm-up period). This is controlled by the `iter` argument of `stan_rw`; e.g., `stan_rw(data, time = Year, iter = 3e3)`. However, the default value of `iter = 3000` should generally be more than sufficient.
-  2. Raise `adapt_delta`: you can also control an important tuning parameter related to divergent transitions. Simply raising the `adapt_delta` value to, say, 0.99 or so, may be sufficient; e.g., `stan_rw(data, time = Year, control = list(adapt_delta = 0.99))`. If you find yourself needing to try ever larger values, then the problem lies elsewhere.
-  3. Check your prior distributions: If your prior information is in strong conflict with the data, this can create a difficult probability distribution to sample from. The most probable cause for such a situation is that you have made a mistake when specifying your (custom) prior distribution. Look first to the prior for $\eta_1$, the prior for the first log-rate. Note that the parameter is on the *log* scale. You may find that increasing the scale parameter for the `surveil::normal` prior distribution on $\eta_1$ (making the prior more diffuse) causes the divergent transition warnings to disappear. 
+  2. Raise `adapt_delta`: you can also control an important tuning parameter related to divergent transitions. Simply raising the `adapt_delta` value to, say, 0.99 or so, may be sufficient; e.g., `stan_rw(data, time = Year, control = list(adapt_delta = 0.99, max_treedepth = 13))`. (When raising `adapt_delta`, raising `max_treedepth` may improve sampling speed.) Raising `adapt_delta` ever closer to 1 (e.g., to .9999) is generally not helpful.
+  3. Check your prior distributions: If your prior information is in strong conflict with the data, this can create a difficult probability distribution to sample from. The most probable cause for such a situation is that you have made a mistake when specifying your (custom) prior distribution. Look first to the prior for $\eta_1$, the prior for the first *log*-rate or, for the binomial model, *log-odds*. You may find that increasing the scale parameter for the `surveil::normal` prior distribution on $\eta_1$ (making the prior more diffuse) causes the divergent transition warnings to disappear. 
 
-Despite your best efforts, there may be times when you are not able to prevent divergent transitions. This may occur when the population at risk is small and observations are particularly noisy; introducing the covariance structure (using `core = TRUE`) may make these issues more difficult to address. If the number of divergent transitions is very low (e.g., less than five out of 2,000), you may determine that the amount of bias introduced appears acceptable for your purposes and then report the issue along with results. For obtaining the joint posterior probability distribution of these models, there is no alternative to MCMC. 
+Despite your best efforts, there may be times when you are not able to prevent divergent transitions. This may occur when the population at risk is small and observations are particularly noisy; introducing the covariance structure (using `core = TRUE`) may make these issues more difficult to address. If the number of divergent transitions is very low (e.g., a handful out of 4,000 samples), you may determine that the amount of bias introduced appears acceptable for your purposes and report the issue along with results. For obtaining the joint posterior probability distribution of these models, there is no alternative to MCMC. 
 
 ## Visualizing results
 
-If we call `plot` on a `surveil` model, we get a `ggplot` object depicting risk estimates with 95\% credible intervals:
+If we call `plot` on a **surveil** model, we get a `ggplot` object depicting risk estimates with 95\% credible intervals:
 
-```{r fig.width = 4, fig.height = 3.5}
-plot(fit, scale = 100e3)
+```{r fig.width = 4.5, fig.height = 3.5}
+plot(fit, scale = 100e3, base_size = 11)
 ```
+Crude incidence rates are also plotted as points.
 
-Instead of viewing the default plot, we can first store the `ggplot` in our working environment and then modify the figure as we please:
+The `plot` method has a number of options to control its appearance. For example, the `base_size` argument controls the size of labels. The size of the points for the crude rates can be adjusted using `size`, and `size = 0` removes them altogether. We can also use `ggplot` to add custom modifications:
 
-```{r fig.width = 4, fig.height = 3.5}
-fig <- plot(fit, scale = 100e3)
-fig + theme_bw() + theme(legend.position = "bottom")
+```{r fig.width = 7, fig.height = 3.5}
+fig <- plot(fit, scale = 100e3, base_size = 11, size = 0)
+fig +
+  theme(legend.position = "right") +
+  labs(title = "CRC incidence per 100,000",
+       subtitle = "Texas MSAs")
 ```
 
 The plot method has a `style` argument that controls how the probability distribution is represented. The default, `style = "mean_qi"`, shows the mean of the posterior distribution of the risk at each time period with a shaded 95\% credible interval (as above). The alternative, `style = "lines"`, plots MCMC samples from the joint probability distribution across all time periods:
 
-```{r fig.width = 4, fig.height = 3.5}
-plot(fit, scale = 100e3, style = "lines")
+```{r fig.width = 4.5, fig.height = 3.5}
+plot(fit, scale = 100e3, base_size = 11, style = "lines")
 ```
 
-By default, `M = 250` samples are plotted. The `style` option is available for all of the `surveil` plot methods.
+By default, `M = 250` samples are plotted. The `style` option is available for all of the **surveil** plot methods.
 
 ## Measuring pairwise inequality
 
 **surveil** also provides a number of functions and methods for measuring health inequalities.
 
-A selection of complementary pairwise inequality measures can be calculated using the `group_diff` function. The function requires a fitted **surveil** model and character strings corresponding, respectively, to the target population (indicating which group is the target of our inference, typically the overburdened or disadvantaged group), and the reference population. It returns probability distributions and summary statements for the following quantities, where `target` and `reference` indicate disease risk for the respective populations:
+A selection of complementary pairwise inequality measures can be calculated using the `group_diff` function. The function requires a fitted **surveil** model and character strings corresponding, respectively, to the target population (indicating which group is the target of our inference, typically the overburdened or disadvantaged group), and the reference population. You can also use `group_diff` to compare two age-stratified populations with age-standardized rates (for details, see `vignette("age-standardization")` and `?group_diff`).
+
+It returns probability distributions and summary statements for the following quantities, where `target` and `reference` indicate disease risk for the respective populations:
 
  * Rate Difference (RD): $\text{Target} - \text{Reference}$;
  * Population Attributable Risk (PAR): $\frac{\text{RD}}{\text{Target}}$;

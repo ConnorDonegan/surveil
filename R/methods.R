@@ -37,7 +37,7 @@
 #' 
 #' @param alpha Numeric value from zero to one. When `style = "lines"`,  this controls transparency of lines; passed to \code{\link[ggplot2]{geom_line}}. For `style = "mean_qi", this controls the transparency of the shaded credible interval; passed to \code{\link[ggplot2]{geom_ribbon}}.
 #' @param lwd Numeric value indicating linewidth. Passed to \code{\link[ggplot2]{geom_line}}
-#' @param fill Color for the shaded credible intervalsl; only used when `style = "mean_qi"`.
+#' @param fill Color for the shaded credible intervals; only used when `style = "mean_qi"`.
 #' @param size Positive numeric value. For `style = "mean_qi"`, this controls the size of the points representing crude rates. To exclude these points from the plot altogether, use `size = 0`.
 #' @param ... For the plot method, additional arguments will be passed to `\code{\link[ggplot2]{theme}}; for the print method, additional arguments will be passed to \code{\link[base]{print.data.frame}}.
 #' 
@@ -390,7 +390,7 @@ plot.list <- function(x,
 }
 
 
-#' Standardized rates
+#' Age-standardized rates
 #' @description Convert `surveil` model results to age standardized rates using a fixed age distribution
 #'
 #' @param x A fitted `surveil` model
@@ -429,7 +429,7 @@ plot.list <- function(x,
 #' print(stands)
 #' plot(stands, style = "lines")
 #' }
-#' @seealso \code{\link[surveil]{stan_rw}}  \code{\link[surveil]{plot.stand_surveil}} \code{\link[surveil]{print.stand_surveil}} 
+#' @seealso \code{vignette("age-standardization", package = "surveil")} \code{\link[surveil]{stan_rw}}  \code{\link[surveil]{plot.stand_surveil}} \code{\link[surveil]{print.stand_surveil}} 
 #' @md
 #' @export
 #' @importFrom dplyr `%>%` left_join select group_by summarise
@@ -472,7 +472,7 @@ standardize <- function(x, label, standard_pop) {
 
 standardize_rate <- function(rate, stand_pop) sum(rate * stand_pop) / sum(stand_pop)
 
-#' Methods for standardized rates
+#' Methods for age-standardized rates
 #'
 #' @description Print and plot methods for `stand_surveil` (standardized rates obtained from a fitted `surveil` model)
 #'

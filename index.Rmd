@@ -23,6 +23,14 @@ The **surveil** R package provides time series models for routine public health 
 ```{r eval = FALSE}
 install.packages("surveil")
 ```
+### Vignettes
+
+Review the package vignettes to get started:
+
+ - `vignette("demonstration")`: An introduction to health modeling with **surveil**
+ - `vignette("age-standardization")`: How to age-standardize **surveil** model results and compare age-stratified populations
+
+Also see the online [documentation](https://connordonegan.github.io/surveil/reference/index.html).
 
 ### Usage
 

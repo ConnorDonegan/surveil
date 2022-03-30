@@ -23,6 +23,18 @@ spatial health data see the
 install.packages("surveil")
 ```
 
+### Vignettes
+
+Review the package vignettes to get started:
+
+-   `vignette("demonstration")`: An introduction to health modeling with
+    **surveil**
+-   `vignette("age-standardization")`: How to age-standardize
+    **surveil** model results and compare age-stratified populations
+
+Also see the online
+[documentation](https://connordonegan.github.io/surveil/reference/index.html).
+
 ### Usage
 
 Model time series data of mortality or disease incidence by loading the
@@ -54,7 +66,9 @@ as cumulative percent change:
 ``` r
 fit <- stan_rw(data = cancer,
                time = Year, 
-               group = Age)
+               group = Age,
+           cores = 4 # multi-core processing for speed
+           )
 
 fit_apc <- apc(fit)
 plot(fit_apc, cumulative = TRUE)

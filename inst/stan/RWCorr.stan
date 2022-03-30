@@ -3,7 +3,10 @@ data {
   int<lower=1> TT;   // length of time series
   int<lower=1> K;   // J outcomes
   int y[TT, K];     // outcome datda
-  vector[K] log_E[TT];  // population at risk
+  int population[TT, K];  
+  vector[K] log_E[TT];  // log population at risk
+  int is_poisson;
+  int is_binomial;
   vector[K] prior_eta_1_location;
   vector[K] prior_eta_1_scale;  
   vector[K] prior_sigma_location;
@@ -20,36 +23,52 @@ parameters {
 
 transformed parameters {
   vector[K] eta[TT];           // annual risk per group  
-  vector[K] mu_y[TT];  
+  vector[is_poisson ? K : 0] mu_y[is_poisson ? TT : 0];  
   matrix[K, K] L;
   L = diag_pre_multiply(sigma, L_Omega);
   eta[1] = eta_1;
   for (t in 2:TT) {
     eta[t] = eta[t-1] + L * z[t];
   }
-  for (t in 1:TT) mu_y[t] = log_E[t] + eta[t];
+  if (is_poisson) for (t in 1:TT) mu_y[t] = log_E[t] + eta[t];
 }
 
 model {
   target += lkj_corr_cholesky_lpdf(L_Omega | prior_omega);
   target += normal_lpdf(sigma | prior_sigma_location, prior_sigma_scale);
   target += normal_lpdf(eta_1 | prior_eta_1_location, prior_eta_1_scale);
+  if (is_poisson) {
   for (t in 1:TT) {
     target += poisson_log_lpmf(y[t] | mu_y[t]);
     target += std_normal_lpdf(z[t]);
-  }
+  }}
+  if (is_binomial) {
+  for (t in 1:TT) {
+    target += binomial_logit_lpmf(y[t] | population[t], eta[t]);
+    target += std_normal_lpdf(z[t]);
+  }} 
 }
 
 generated quantities {
   matrix[K, K] Omega = tcrossprod(L_Omega); 
   vector[TT] rate[K];
   vector[TT] log_lik[K];
-  for (t in 1:TT) {
-    for (j in 1:K) {
-      rate[j, t] = exp(eta[t, j]);
-      log_lik[j, t] = poisson_log_lpmf(y[t, j] | mu_y[t, j]);
+  if (is_poisson) {
+    for (t in 1:TT) {
+      for (j in 1:K) {
+	rate[j, t] = exp(eta[t, j]);
+	log_lik[j, t] = poisson_log_lpmf(y[t, j] | mu_y[t, j]);
+      }
     }
   }
+  if (is_binomial) {
+    for (t in 1:TT) {
+      for (j in 1:K) {
+	rate[j, t] = inv_logit(eta[t, j]);
+	log_lik[j, t] = binomial_logit_lpmf(y[t, j] | population[t, j], eta[t, j]);
+      }
+    }
+  }  
 }
 
 

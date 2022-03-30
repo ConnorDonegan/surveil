@@ -67,7 +67,7 @@
 
 \item{lwd}{Numeric value indicating linewidth. Passed to \code{\link[ggplot2]{geom_line}}}
 
-\item{fill}{Color for the shaded credible intervalsl; only used when \code{style = "mean_qi"}.}
+\item{fill}{Color for the shaded credible intervals; only used when \code{style = "mean_qi"}.}
 
 \item{size}{Positive numeric value. For \code{style = "mean_qi"}, this controls the size of the points representing crude rates. To exclude these points from the plot altogether, use \code{size = 0}.}
 }

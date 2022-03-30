@@ -275,7 +275,8 @@ plot.apc <- function(x,
         }
         return (gg)
     }
-    if (length(unique(x$apc$group)) > 1) {
+    multi_group <- as.logical( length(unique(x$apc$group)) > 1 )    
+    if (multi_group) {
         x$apc$group <- factor(x$apc$group, levels = unique(x$apc$group), ordered = TRUE)
         x$cpc$group <- factor(x$cpc$group, levels = unique(x$cpc$group), ordered = TRUE)
     }
@@ -304,7 +305,7 @@ plot.apc <- function(x,
                     fill = fill) +    
         geom_line(col = col,
                   lwd = lwd) 
-    if (length(unique(x$apc$group)) > 1) {
+    if (multi_group) {
         gg <- gg + facet_wrap(~ .data$group)
     }    
     gg <- gg +
