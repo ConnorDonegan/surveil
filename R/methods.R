@@ -134,15 +134,14 @@ plot_mean_qi <- function(x,
         x$summary <- dplyr::mutate(x$summary,
                                    group = factor({{ group }}, levels = unique({{ group }}), ordered = TRUE))
         if (facet) {
-            gform <- stats::as.formula(paste0("~ ", x$group$group))
                 gg <- ggplot(x$summary) +
-                    facet_wrap(gform,
+                    facet_wrap(~ group, #gform,
                                scales = facet_scales,
                                ncol = ncol)
             } else {            
                 gg <- ggplot(x$summary,
-                             aes(group = {{ group }},
-                                 col = {{ group }} )
+                             aes(group = group, 
+                                 col = group)   
                              )
                 if (length(x$group$group.df$group.index) > 8) {
                     warning("You have too many groups to use scale_color_brewer palettes; you may want to use facet = TRUE")
