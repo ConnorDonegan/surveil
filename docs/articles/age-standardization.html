@@ -232,6 +232,9 @@
 <span class="co">#&gt; Warning: Bulk Effective Samples Size (ESS) is too low, indicating posterior means and medians may be unreliable.</span>
 <span class="co">#&gt; Running the chains for more iterations may help. See</span>
 <span class="co">#&gt; https://mc-stan.org/misc/warnings.html#bulk-ess</span>
+<span class="co">#&gt; Warning: Tail Effective Samples Size (ESS) is too low, indicating posterior variances and tail quantiles may be unreliable.</span>
+<span class="co">#&gt; Running the chains for more iterations may help. See</span>
+<span class="co">#&gt; https://mc-stan.org/misc/warnings.html#tail-ess</span>
 <span class="co">#&gt; [1] "Setting normal prior(s) for eta_1: "</span>
 <span class="co">#&gt;  location scale</span>
 <span class="co">#&gt;        -6     5</span>
@@ -241,8 +244,8 @@
 <span class="co">#&gt; </span>
 <span class="co">#&gt; SAMPLING FOR MODEL 'RW' NOW (CHAIN 1).</span>
 <span class="co">#&gt; Chain 1: </span>
-<span class="co">#&gt; Chain 1: Gradient evaluation took 2.4e-05 seconds</span>
-<span class="co">#&gt; Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.24 seconds.</span>
+<span class="co">#&gt; Chain 1: Gradient evaluation took 3.7e-05 seconds</span>
+<span class="co">#&gt; Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.37 seconds.</span>
 <span class="co">#&gt; Chain 1: Adjust your expectations accordingly!</span>
 <span class="co">#&gt; Chain 1: </span>
 <span class="co">#&gt; Chain 1: </span>
@@ -250,15 +253,15 @@
 <span class="co">#&gt; Chain 1: Iteration:  751 / 1500 [ 50%]  (Sampling)</span>
 <span class="co">#&gt; Chain 1: Iteration: 1500 / 1500 [100%]  (Sampling)</span>
 <span class="co">#&gt; Chain 1: </span>
-<span class="co">#&gt; Chain 1:  Elapsed Time: 0.46089 seconds (Warm-up)</span>
-<span class="co">#&gt; Chain 1:                0.371732 seconds (Sampling)</span>
-<span class="co">#&gt; Chain 1:                0.832622 seconds (Total)</span>
+<span class="co">#&gt; Chain 1:  Elapsed Time: 0.59816 seconds (Warm-up)</span>
+<span class="co">#&gt; Chain 1:                0.641738 seconds (Sampling)</span>
+<span class="co">#&gt; Chain 1:                1.2399 seconds (Total)</span>
 <span class="co">#&gt; Chain 1: </span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; SAMPLING FOR MODEL 'RW' NOW (CHAIN 2).</span>
 <span class="co">#&gt; Chain 2: </span>
-<span class="co">#&gt; Chain 2: Gradient evaluation took 1.9e-05 seconds</span>
-<span class="co">#&gt; Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.19 seconds.</span>
+<span class="co">#&gt; Chain 2: Gradient evaluation took 2e-05 seconds</span>
+<span class="co">#&gt; Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.2 seconds.</span>
 <span class="co">#&gt; Chain 2: Adjust your expectations accordingly!</span>
 <span class="co">#&gt; Chain 2: </span>
 <span class="co">#&gt; Chain 2: </span>
@@ -266,9 +269,9 @@
 <span class="co">#&gt; Chain 2: Iteration:  751 / 1500 [ 50%]  (Sampling)</span>
 <span class="co">#&gt; Chain 2: Iteration: 1500 / 1500 [100%]  (Sampling)</span>
 <span class="co">#&gt; Chain 2: </span>
-<span class="co">#&gt; Chain 2:  Elapsed Time: 0.588442 seconds (Warm-up)</span>
-<span class="co">#&gt; Chain 2:                0.345975 seconds (Sampling)</span>
-<span class="co">#&gt; Chain 2:                0.934417 seconds (Total)</span>
+<span class="co">#&gt; Chain 2:  Elapsed Time: 0.627704 seconds (Warm-up)</span>
+<span class="co">#&gt; Chain 2:                0.429863 seconds (Sampling)</span>
+<span class="co">#&gt; Chain 2:                1.05757 seconds (Total)</span>
 <span class="co">#&gt; Chain 2:</span></code></pre></div>
 <p>The default plot method will return all of the age-specific cancer risk trends on the same plot; with many age groups and dissimilar risk levels, it is easier to understand the results if, instead, we use a grid of multiple small plots (<code>facet = TRUE</code>) and allow the scale of the y-axes to adjust for each age group (<code>facet_scales = "free"</code>):</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
@@ -315,17 +318,17 @@
 <span class="co">#&gt; Summary of age-standardized surveil model results</span>
 <span class="co">#&gt; Time periods: 19</span>
 <span class="co">#&gt;  time_label stand_rate  .lower  .upper</span>
-<span class="co">#&gt;        1999    0.00601 0.00600 0.00603</span>
+<span class="co">#&gt;        1999    0.00601 0.00599 0.00603</span>
 <span class="co">#&gt;        2000    0.00609 0.00608 0.00611</span>
-<span class="co">#&gt;        2001    0.00615 0.00613 0.00616</span>
+<span class="co">#&gt;        2001    0.00615 0.00613 0.00617</span>
 <span class="co">#&gt;        2002    0.00614 0.00612 0.00615</span>
 <span class="co">#&gt;        2003    0.00602 0.00601 0.00604</span>
 <span class="co">#&gt;        2004    0.00602 0.00600 0.00603</span>
 <span class="co">#&gt;        2005    0.00602 0.00601 0.00604</span>
 <span class="co">#&gt;        2006    0.00608 0.00607 0.00610</span>
 <span class="co">#&gt;        2007    0.00616 0.00614 0.00617</span>
-<span class="co">#&gt;        2008    0.00614 0.00613 0.00615</span>
-<span class="co">#&gt;        2009    0.00613 0.00612 0.00614</span>
+<span class="co">#&gt;        2008    0.00614 0.00612 0.00615</span>
+<span class="co">#&gt;        2009    0.00613 0.00611 0.00614</span>
 <span class="co">#&gt;        2010    0.00595 0.00594 0.00597</span>
 <span class="co">#&gt;        2011    0.00596 0.00595 0.00598</span>
 <span class="co">#&gt;        2012    0.00586 0.00584 0.00587</span>
@@ -375,7 +378,7 @@
 <p>Now we can model age-specific risk for Group B (<code>cancer_b</code>):</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">fit_b</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/stan_rw.html">stan_rw</a></span><span class="op">(</span><span class="va">cancer_b</span>, time <span class="op">=</span> <span class="va">Year</span>, group <span class="op">=</span> <span class="va">Age</span>, 
-                 refresh <span class="op">=</span> <span class="fl">0</span>,
+                 refresh <span class="op">=</span> <span class="fl">0</span>, <span class="co"># silences some printing</span>
          iter <span class="op">=</span> <span class="fl">1500</span>,
              chains <span class="op">=</span> <span class="fl">2</span>  <span class="co"># for speed only; use default chains=4</span>
              <span class="co"># cores = 4 # for multi-core processing</span>
@@ -385,6 +388,9 @@
 <span class="co">#&gt; Warning: Bulk Effective Samples Size (ESS) is too low, indicating posterior means and medians may be unreliable.</span>
 <span class="co">#&gt; Running the chains for more iterations may help. See</span>
 <span class="co">#&gt; https://mc-stan.org/misc/warnings.html#bulk-ess</span>
+<span class="co">#&gt; Warning: Tail Effective Samples Size (ESS) is too low, indicating posterior variances and tail quantiles may be unreliable.</span>
+<span class="co">#&gt; Running the chains for more iterations may help. See</span>
+<span class="co">#&gt; https://mc-stan.org/misc/warnings.html#tail-ess</span>
 <span class="co">#&gt; [1] "Setting normal prior(s) for eta_1: "</span>
 <span class="co">#&gt;  location scale</span>
 <span class="co">#&gt;        -6     5</span>
@@ -411,28 +417,28 @@
 <span class="co">#&gt; Target group: B</span>
 <span class="co">#&gt; Reference group: A</span>
 <span class="co">#&gt; Time periods observed: 19</span>
-<span class="co">#&gt; Cumulative excess cases (EC): 1,793,788 [1785974, 1800942]</span>
+<span class="co">#&gt; Cumulative excess cases (EC): 1,792,612 [1784877, 1800219]</span>
 <span class="co">#&gt; Cumulative EC as a fraction of group risk (PAR): 0.18 [0.18, 0.18]</span>
 <span class="co">#&gt;  time   Rate     RD  PAR  RR     EC</span>
-<span class="co">#&gt;  1999 0.0073 0.0013 0.18 1.2  73279</span>
-<span class="co">#&gt;  2000 0.0074 0.0013 0.18 1.2  75903</span>
-<span class="co">#&gt;  2001 0.0075 0.0013 0.18 1.2  80089</span>
-<span class="co">#&gt;  2002 0.0075 0.0013 0.18 1.2  82974</span>
-<span class="co">#&gt;  2003 0.0073 0.0013 0.18 1.2  84806</span>
-<span class="co">#&gt;  2004 0.0073 0.0013 0.18 1.2  87755</span>
-<span class="co">#&gt;  2005 0.0073 0.0013 0.18 1.2  90293</span>
-<span class="co">#&gt;  2006 0.0074 0.0013 0.18 1.2  93951</span>
-<span class="co">#&gt;  2007 0.0075 0.0013 0.18 1.2  97869</span>
-<span class="co">#&gt;  2008 0.0075 0.0013 0.18 1.2  99655</span>
-<span class="co">#&gt;  2009 0.0074 0.0013 0.18 1.2 101341</span>
-<span class="co">#&gt;  2010 0.0072 0.0013 0.18 1.2 101696</span>
-<span class="co">#&gt;  2011 0.0072 0.0013 0.18 1.2 103781</span>
-<span class="co">#&gt;  2012 0.0071 0.0013 0.18 1.2 102081</span>
-<span class="co">#&gt;  2013 0.0071 0.0013 0.18 1.2 102779</span>
-<span class="co">#&gt;  2014 0.0071 0.0013 0.18 1.2 103897</span>
-<span class="co">#&gt;  2015 0.0071 0.0013 0.18 1.2 104580</span>
-<span class="co">#&gt;  2016 0.0071 0.0012 0.18 1.2 104275</span>
-<span class="co">#&gt;  2017 0.0069 0.0012 0.18 1.2 102784</span></code></pre></div>
+<span class="co">#&gt;  1999 0.0073 0.0013 0.18 1.2  72849</span>
+<span class="co">#&gt;  2000 0.0074 0.0013 0.18 1.2  76165</span>
+<span class="co">#&gt;  2001 0.0075 0.0013 0.18 1.2  80042</span>
+<span class="co">#&gt;  2002 0.0075 0.0013 0.18 1.2  82931</span>
+<span class="co">#&gt;  2003 0.0073 0.0013 0.18 1.2  84939</span>
+<span class="co">#&gt;  2004 0.0073 0.0013 0.18 1.2  87761</span>
+<span class="co">#&gt;  2005 0.0073 0.0013 0.18 1.2  90347</span>
+<span class="co">#&gt;  2006 0.0074 0.0013 0.18 1.2  93866</span>
+<span class="co">#&gt;  2007 0.0075 0.0013 0.18 1.2  97745</span>
+<span class="co">#&gt;  2008 0.0075 0.0013 0.18 1.2  99664</span>
+<span class="co">#&gt;  2009 0.0074 0.0013 0.18 1.2 101601</span>
+<span class="co">#&gt;  2010 0.0072 0.0013 0.18 1.2 101523</span>
+<span class="co">#&gt;  2011 0.0072 0.0013 0.18 1.2 103465</span>
+<span class="co">#&gt;  2012 0.0071 0.0013 0.18 1.2 101793</span>
+<span class="co">#&gt;  2013 0.0071 0.0013 0.18 1.2 102661</span>
+<span class="co">#&gt;  2014 0.0071 0.0013 0.18 1.2 103410</span>
+<span class="co">#&gt;  2015 0.0071 0.0013 0.18 1.2 104451</span>
+<span class="co">#&gt;  2016 0.0071 0.0012 0.18 1.2 104376</span>
+<span class="co">#&gt;  2017 0.0069 0.0012 0.18 1.2 103022</span></code></pre></div>
 </div>
 </div>
 <div class="section level2 unnumbered">

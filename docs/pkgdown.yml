@@ -4,7 +4,7 @@ pkgdown_sha: ~
 articles:
   age-standardization: age-standardization.html
   demonstration: demonstration.html
-last_built: 2022-04-02T17:24Z
+last_built: 2022-04-03T17:28Z
 urls:
   reference: https://connordonegan.github.io/surveil/, https://cloud.r-project.org/web/packages/surveil/index.html/reference
   article: https://connordonegan.github.io/surveil/, https://cloud.r-project.org/web/packages/surveil/index.html/articles
