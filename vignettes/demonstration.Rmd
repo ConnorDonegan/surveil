@@ -25,7 +25,7 @@ knitr::opts_chunk$set(
 
 This vignette demonstrates basic usage of **surveil** for public health surveillance. **surveil** leverages the principles of Bayesian inference and Markov chain Monte Carlo (MCMC) [@jaynes_2003;@mackay_2003] to infer population risk of disease or death given time series data consisting of case counts and population at risk. Models were built using the [Stan](https://mc-stan.org/) modeling language, but users only need to be familiar with the R language.
 
-The package also contains special methods for age-standardization, printing and plotting model results, and for measuring and visualizing health inequalities.
+The package also contains special methods for age-standardization, printing and plotting model results, and for measuring and visualizing health inequalities. For age-standardization see `vignette("age-standardization")`.
 
 ## Getting started
 
@@ -36,7 +36,14 @@ library(ggplot2)
 library(knitr)
 ```
 
-Surveillance data minimally contain case counts, reliable population at risk estimates, and a discrete time period variable. They also may include one or more grouping variables, such as race-ethnicity. 
+The models will run much fast using parallel processing, which will automotically happen if you set the following option:
+
+```{r eval = FALSE}
+ # here the code is displayed only, not run; for package development reasons
+options(mc.cores = parallel::detectCores())
+```
+
+Surveillance data minimally contain case counts, reliable population at risk estimates, and a discrete time period variable. They also may include one or more grouping variables, such as race-ethnicity.Time periods should consist of equally spaced intervals.
 
 This vignette analyzes age-specific (ages 50-79) colorectal cancer incidence data by race-ethnicity, year, and Texas MSA, obtained through CDC Wonder. The race-ethnicity grouping includes (non-Hispanic) Black, (non-Hispanic) White, and Hispanic, and the MSAs include those centered on the cities of Austin, Dallas, Houston, and San Antonio.
 
@@ -90,7 +97,7 @@ The log-risk for time $t=1$ has no previous value to anchor its expectation; thu
 
 ### Multiple time series
 
-For multiple time series, **surveil** allows users to add a correlation structure to the model. This allows our inferences about each population to be mutually informed by inferences about all other observed populations.
+For multiple time series, **surveil** allows users to add a correlation structure to the model. This allows our inferences about each population to be mutually informed by inferences about all other observed populations. 
 
 The log-rates for $k$ populations, $\boldsymbol \phi_t$, are assigned a multivariate Gaussian model [@brandt_2007]:
 $$\boldsymbol \phi_t \sim \text{Gau}(\boldsymbol \phi_{t-1}, \boldsymbol \Sigma),$$
@@ -105,7 +112,13 @@ When the correlation structure is added to the model, then a prior distribution 
 The time series model is fit by passing surveillance data to the `stan_rw` function. Here, `Year` and `Race` indicate the appropriate time and grouping columns in the `tx.msa` data frame. 
 
 ```{r}
-fit <- stan_rw(tx.msa, time = Year, group = Race)
+fit <- stan_rw(tx.msa,
+               time = Year,
+	       group = Race,
+	       iter = 1500,
+	       chains = 2  #, for speed only; use default chains=4
+	       # cores = 4 # for multi-core processing
+               )
 ```
 
 If we wanted to add a correlation structure to the model, we would add `cor = TRUE` (as opposed to the default, `cor = FALSE`). To speed things up, we could take advantage of parallel processing using the `cores` argument (e.g., add `cores = 4`) to run on 4 cores simultaneously. For age-standardization, see `vignette("age-standardization")`.
@@ -125,11 +138,11 @@ class(samples)
 
 With `samples`, we can take advantage of the tools provided by **rstan** and other packages, such as **bayesplot** and **tidybayes**.
 
-Printing `samples` to the console (`print(samples)`) is an effective way to view the effective sample size, Monte Carlo standard error, and Rhat statistics for each model parameter.
+Printing `samples` to the console (`print(samples)`) is generally an effective way to view the effective sample size, Monte Carlo standard error, and Rhat statistics for each model parameter, in addition to a summary of their marginal posterior distributions.
 
 ### Monte Carlo standard errors
 
-An important difference between sampling with an MCMC algorithm and sampling from a pseudo random number generator (like `rnorm`) is that MCMC produces samples that are correlated with each other. This means that for any number of MCMC samples, there is less information than would be provided by the same number of independently drawn samples. To evaluate how far our MCMC estimates may be from the mean of the target probability distribution, we need to consider Monte Carlo standard errors (MCSEs) for each parameter. 
+An important difference between sampling with an MCMC algorithm and sampling from a pseudo random number generator (like `rnorm`) is that MCMC produces samples that are correlated with each other. This means that for any number of MCMC samples, there is less information than would be provided by the same number of independently drawn samples. To evaluate how far the mean of our MCMC samples may be from the mean of the target probability distribution, we need to consider Monte Carlo standard errors (MCSEs) for each parameter. 
 
 MCSEs are calculated as [@gelman_2014]
 
@@ -185,7 +198,7 @@ fig <- plot(fit, scale = 100e3, base_size = 11, size = 0)
 fig +
   theme(legend.position = "right") +
   labs(title = "CRC incidence per 100,000",
-       subtitle = "Texas MSAs")
+       subtitle = "Texas MSAs, 50-79 y.o.")
 ```
 
 The plot method has a `style` argument that controls how the probability distribution is represented. The default, `style = "mean_qi"`, shows the mean of the posterior distribution of the risk at each time period with a shaded 95\% credible interval (as above). The alternative, `style = "lines"`, plots MCMC samples from the joint probability distribution across all time periods:

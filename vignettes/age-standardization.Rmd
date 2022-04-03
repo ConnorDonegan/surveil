@@ -48,14 +48,19 @@ print(standard)
 
 Notice that the five-year age groups in the `cancer` data match the age groups provided by `standard`. 
 
-In some cases, one is only interested in a subset of age groups. For example, imagine if our cancer data only included persons of 20-39 years. In thatWe see that relative inequality (AR) is about constant (as expected), the rate difference falls (because the total level of cancer risk has fallen over time), and excess cases increase over time (because the total population at risk is both growing and aging). case, we would also limit our standard population to the same age groups:
+In some cases, one is only interested in a subset of age groups. For the following examples, we will limit the analysis to persons 40-64 years old:
 
 ```{r}
-standard_2 <- standard[6:9,]
-print(standard_2)
+cancer <- cancer[grep("40-44|45-49|50-54|55-59|60-64", cancer$Age),]
+standard <- standard[10:14,]
+head(cancer)
 ```
 
-Everything discussed below would proceed unchanged then, except we would replace `standard` with `standard_2`. 
+```{r}
+print(standard)
+```
+
+If, instead of making this selection, we were to use the entire age distrubtion in our analysis, all of the following discussion and code could proceed unchanged.
 
 ## Direct age-standardization
 
@@ -77,7 +82,7 @@ cancer_2$crude_rate <- cancer_2$Count / cancer_2$Population  # r_i
 cancer_2$crude_reweighted <- cancer_2$crude_rate * cancer_2$standard_pop  # r_i * w_i
 ```
 
-We need the denominator (which equals one million in this case, by design):
+We need the denominator (if we were including all age groups, this would equal one million, by design):
 ```{r}
 M <- sum(standard$standard_pop) # sum(w_i)
 M
@@ -107,13 +112,18 @@ plot(crude_sr$Year, crude_sr$SR, type = "l", xlab = "", ylab = 'SR')
 For research purposes, we almost always want to base our estimates of age-standardized risk on model-based inferences of age-specific risk $\theta_i$, as opposed to crude incidence rates. We model age-specific rates by providing `stan_rw` with the cancer data and telling it which column contains the time period indicator (`Year`) and which column contains the grouping variable (`Age`):
 
 ```{r}
-fit <- stan_rw(cancer, time = Year, group = Age, 
-               refresh = 0, iter = 1500)
+fit <- stan_rw(cancer,
+               time = Year,
+	       group = Age, 
+	       iter = 1500,
+	       chains = 2  #, for speed only; use default chains=4
+	       # cores = 4 # for multi-core processing
+	       )
 ```
 
 The default plot method will return all of the age-specific cancer risk trends on the same plot; with many age groups and dissimilar risk levels, it is easier to understand the results if, instead, we use a grid of multiple small plots (`facet = TRUE`) and allow the scale of the y-axes to adjust for each age group (`facet_scales = "free"`):
 
-```{r fig.width = 8, fig.height = 6}
+```{r fig.height = 4.5, fig.width = 6.5}
 plot(fit, 
      facet = TRUE,          # plot small multiples
      facet_scales = "free", # y-axes vary across plots
@@ -127,7 +137,7 @@ The lines indicate estimates of risk $\theta_i$ (the means of the posterior prob
 
 In addition to examining trends in age-specific risk (as above), we can also convert each age-specific trend to its annual percent change or cumulative percent change. This time, instead of using the default plotting style, we will use overlaid lines to depict the probability distributions for cumulative percent change:
 
-```{r fig.width = 8, fig.height = 6}
+```{r fig.height = 4.5, fig.width = 6.5}
 fit_apc <- apc(fit)
 plot(fit_apc, 
      style = "lines",
@@ -149,11 +159,12 @@ fit_sr <- standardize(fit,
 
 As usual, **surveil** provides a plotting method for the `fit_sr` object:
 
-```{r fig.width = 5.5, fig.heigth = 4.5}
+```{r fig.height = 4, fig.width = 5}
 # load ggplot2 to enable additional plot customization
 library(ggplot2)
 plot(fit_sr, scale = 100e3, base_size = 10) + 
-  labs(title = "US age-standardized cancer incidence per 100,000")
+  labs(title = "US age-standardized cancer incidence per 100,000",
+  subtitle = "Ages 40-64")
 ```
 
 as well as a printing method:
@@ -177,7 +188,7 @@ We can compare groups 1 and 2 on three measures of inequality:
  1. Standardized rate ratio: $RR = \frac{SR_1}{SR_2}$
  2. Standardized rate difference: $RD = SR_1 - SR_2$
  3. Total excess cases: $EC = \sum_i (\theta_{i,1} - \theta_{i,2}) * P_i = \sum_i RD_i * P_{i,1}$
- 3. Total attributable risk: $AR = \frac{\sum_i (\theta_{i,1} - \theta_{i,2}) * P_i}{\sum_i \theta_{i,1} * P_{i,1}}$ 
+ 3. Total attributable risk: $AR = \frac{\sum_i RD_i * P_{i,1}}{\sum_i \theta_{i,1} * P_{i,1}}$ 
 
 The numerator in the formula for AR contains each age-specific rate difference multiplied by the age-specific population at risk for group 1. If we describe the rate difference as a measure of excess risk, then we can describe the (age-specific) quantity $RD_i * P_{i,1}$ as the number of "excess cases,", i.e., the excess risk expressed in terms of whole cases. The AR formula simply re-expresses excess risk as a fraction of total risk. This is convenient because the standardized RR is based on a fixed and false population distribution, whereas AR is based on the actual population distribution obtaining in reality, each year. Thus, we may often prefer AR over RR as a measure of relative inequality across two age-stratified groups. 
 
@@ -204,7 +215,11 @@ Now we can model age-specific risk for Group B (`cancer_b`):
 
 ```{r}
 fit_b <- stan_rw(cancer_b, time = Year, group = Age, 
-                 refresh = 0, iter = 1500)
+                 refresh = 0, # silences some printing
+		 iter = 1500,
+	         chains = 2  # for speed only; use default chains=4
+	         # cores = 4 # for multi-core processing
+		 )
 ```
 
 And then age-standardize the results:
