@@ -27,8 +27,9 @@ install.packages("surveil")
 
 Review the package vignettes to get started:
 
- - `vignette("demonstration")`: An introduction to health modeling with **surveil**
+ - `vignette("surveil-demo")`: An introduction to health modeling with **surveil**
  - `vignette("age-standardization")`: How to age-standardize **surveil** model results and compare age-stratified populations
+ - `vignette("surveil-mcmc")`: A brief introduction to Markov chain Monte Carlo (MCMC) with **surveil**		      
 
 Also see the online [documentation](https://connordonegan.github.io/surveil/reference/index.html).
 

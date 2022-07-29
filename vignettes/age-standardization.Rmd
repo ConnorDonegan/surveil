@@ -25,7 +25,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-Age-standardization is used to improve comparison of disease incidence or mortality rates across populations. The term 'population' is used to reference any distinct grouping of people, whether it be geographic (e.g., two or more regions), temporal (e.g., two or more years), or social (e.g., two or more genders). Because disease and mortality risk vary strongly by age, we want to control for varying age distributions across groups. Examination of each age-specific rate is indispensable for any analysis, but age-standardized rates provide a single summary index of incidence or mortality risk. 
+Age-standardization is used to improve comparison of disease incidence or mortality rates across populations. The term 'population' is used to reference any distinct grouping of people, whether it be geographic (e.g., two or more regions), temporal (e.g., two or more years), or social (e.g., two or more genders). Because disease and mortality risk vary strongly by age, we want to control for varying age distributions across groups. Examination of each age-specific rate can be indispensable for an analysis, though age-standardized rates provide a single summary index of risk. 
 
 This vignette describes the method of direct age-standardization [@broemeling_2020] and then demonstrates implementation with **surveil**. The final section extends the methodology to the analysis of health inequality between two groups, where each group is age-stratified (e.g., two racial-ethnic groups in the same region).
 
@@ -60,64 +60,26 @@ head(cancer)
 print(standard)
 ```
 
-If, instead of making this selection, we were to use the entire age distrubtion in our analysis, all of the following discussion and code could proceed unchanged.
+If, instead of making this selection, we were to use the entire age distribution in our analysis, all of the following discussion and code could proceed unchanged.
 
 ## Direct age-standardization
-
-### Methodology
 
 Let $\theta_i$ be the disease risk in the $i^{th}$ age group, and let $\omega_i$ be the standard population count for that age group. Then the age-standardized risk is:
 $$SR = \frac{\sum_i \theta_i \omega_i}{\sum_i \omega_i}$$
 That is, age-standardization consists of multiplying actual age-specific risk levels by false, but fixed, population sizes.
 
-### Crude age-standardized rates
-
-To calculate crude age-standardized incidence rates, we use crude age-specific rates $r_i$ in place of the (modeled) risk levels $\theta_i$:
-$$SR_{\text{crude}} = \frac{\sum_i r_i \omega_i}{\sum_i \omega_i}$$
-We can calculate age-specific risks $r_i$ as follows: 
-```{r}
-standard$Age <- standard$age # make sure names match for the merge
-cancer_2 <- merge(cancer, standard, by = "Age")  # properly join data together
-cancer_2$crude_rate <- cancer_2$Count / cancer_2$Population  # r_i
-cancer_2$crude_reweighted <- cancer_2$crude_rate * cancer_2$standard_pop  # r_i * w_i
-```
-
-We need the denominator (if we were including all age groups, this would equal one million, by design):
-```{r}
-M <- sum(standard$standard_pop) # sum(w_i)
-M
-```
-
-For 1999, the age-standardized cancer rate per 100,000 at-risk can be calculated as follows:
-
-```{r}
-c2_1999 <- cancer_2[grep(1999, cancer_2$Year),]
-100e3 * sum(c2_1999$crude_reweighted) / M  # 100,000 * sum(r_i * w_i) / sum(w_i)
-```
-
-We can calculate crude age-standardized risk for each year, 1999-2017, as follows:
-
-```{r}
-crude_sr <- aggregate(crude_reweighted ~ Year, data = cancer_2, sum) 
-crude_sr$SR <- 100e3 * crude_sr$crude_reweighted / M
-print(crude_sr)
-```
-
-```{r fig.height = 5, fig.width = 6}
-plot(crude_sr$Year, crude_sr$SR, type = "l", xlab = "", ylab = 'SR')
-```
+There are two steps to producing age-standardized rates using **surveil**. First, model each age group using `stan_rw`. Second, convert the age-specific model results into age-standardized rates using the `standardize` function.
 
 ## Modeling age-specific risk
 
-For research purposes, we almost always want to base our estimates of age-standardized risk on model-based inferences of age-specific risk $\theta_i$, as opposed to crude incidence rates. We model age-specific rates by providing `stan_rw` with the cancer data and telling it which column contains the time period indicator (`Year`) and which column contains the grouping variable (`Age`):
+To model age-specific rates, provide the `stan_rw` function with the cancer data and tell it which column contains the time period indicator (`Year`) and which column contains the grouping variable (`Age`):
 
 ```{r}
 fit <- stan_rw(cancer,
                time = Year,
-	       group = Age, 
+	       group = Age,
 	       iter = 1500,
-	       chains = 2  #, for speed only; use default chains=4
-	       # cores = 4 # for multi-core processing
+	       chains = 2  #, for speed only; use default chains=4	       
 	       )
 ```
 
@@ -135,17 +97,14 @@ plot(fit,
 
 The lines indicate estimates of risk $\theta_i$ (the means of the posterior probability distributions for $\theta_i$) and the shaded intervals correspond to 95\% credible intervals for $\theta_i$.
 
-In addition to examining trends in age-specific risk (as above), we can also convert each age-specific trend to its annual percent change or cumulative percent change. This time, instead of using the default plotting style, we will use overlaid lines to depict the probability distributions for cumulative percent change:
+In addition to examining trends in age-specific risk (as above), we can also convert each age-specific trend to its annual percent change or cumulative percent change. 
 
 ```{r fig.height = 4.5, fig.width = 6.5}
 fit_apc <- apc(fit)
 plot(fit_apc, 
-     style = "lines",
      base_size = 10,
      cum = TRUE)
 ```
-
-Each line drawn on the figure is a draw (sample) from the joint posterior probability distribution for cumulative percent change in $\theta_i$: areas of high density of lines have higher probability than areas of low line density; likewise, the general spread of the lines at each time point indicates the range of plausible values.
 
 ## Age-standardizing model results
 
@@ -179,18 +138,19 @@ To learn about the contents of `fit_sr`, see `?standardize` or explores its cont
 
 ### Measures of pairwise inequality
 
-What if we are interested in measuring health inequality across two groups, each of which is age stratified? 
+The `group_diff` function can be used to obtain measures of inequality between two age-stratified groups. The measures of excess cases (EC) and proprotion attributable risk (PAR) are adjusted to account for age-specific rates with varying sizes of populations at risk.
 
-Let $\theta_{i,1}$ be the level of risk in the $i^{th}$ age group for the $1^{st}$ population, and $\theta_{i,2}$ be the risk for the $i^{th}$ age group in the $2^{nd}$ group; $P_{i,1}$ is the age-specific population at risk for group 1. Let group 1 be the group that is expected to have higher risk, and group 2 may be called the 'reference' group.
+In the following table, $D$ and $A$ refer to the age-standardized rates for the disadvantaged and advantaged populations, respectively. Age groups are indexed by $i$, such that $D_i$ is the incidence rate in the $i^{th}$ age group for the disadvantaged population.
 
-We can compare groups 1 and 2 on three measures of inequality:
+|    Concept   |  Formula for Age Stratified Groups |
+|:--------------|:-----:|
+| Rate Ratio (RR) | $\frac{D}{A}$ |
+| Rate Difference (RD) | $D - A$ |
+| Excess Cases (EC) | $\sum_i (D_i - A_i) * P_{d,i}$ |
+| Proportion Attributable Risk (PAR) | $\frac{\sum_i (D_i - A_i) * P_{d,i}}{ \sum_i D_i * P_{d,i} }$ | 
 
- 1. Standardized rate ratio: $RR = \frac{SR_1}{SR_2}$
- 2. Standardized rate difference: $RD = SR_1 - SR_2$
- 3. Total excess cases: $EC = \sum_i (\theta_{i,1} - \theta_{i,2}) * P_i = \sum_i RD_i * P_{i,1}$
- 3. Total attributable risk: $AR = \frac{\sum_i RD_i * P_{i,1}}{\sum_i \theta_{i,1} * P_{i,1}}$ 
 
-The numerator in the formula for AR contains each age-specific rate difference multiplied by the age-specific population at risk for group 1. If we describe the rate difference as a measure of excess risk, then we can describe the (age-specific) quantity $RD_i * P_{i,1}$ as the number of "excess cases,", i.e., the excess risk expressed in terms of whole cases. The AR formula simply re-expresses excess risk as a fraction of total risk. This is convenient because the standardized RR is based on a fixed and false population distribution, whereas AR is based on the actual population distribution obtaining in reality, each year. Thus, we may often prefer AR over RR as a measure of relative inequality across two age-stratified groups. 
+The EC measure sums the excess cases across all age groups, and the PAR devides the EC measure by the total risk across all age groups in the disadvantaged population. For age stratified populations, the PAR may be preferred over the RR as a measure of relative inequality because the PAR reflects the actual population sizes.
 
 Pairwise measures of inequality have an important purpose (tracking health inequalities between historically or currently advantaged and disadvantaged groups), but we should keep in mind the limitations inherent in tracking the progress of any group by comparing that group to a moving target (particularly one that may move in an unfavorable direction). There are rarely only two groups of interest; to measure health inequality across multiple groups, consider Theil's index (see `?theil` and `vignette("demonstration")`).
 
@@ -230,7 +190,7 @@ fit_sr_b <- standardize(fit_b,
                         standard_pop = standard$standard_pop)
 ```
 
-Finally, we place the two age-standardized models into a list (preferably a named list), and pass the list to the `group_diff` function (see `?group_diff` for more details):
+Finally, to obtain measures of the difference in risk between these two groups we place the two age-standardized models into a list (preferably a named list), and then pass the list to the `group_diff` function (see `?group_diff` for more details):
 
 ```{r}
 fit_sr_list <- list(B = fit_sr_b, A = fit_sr)

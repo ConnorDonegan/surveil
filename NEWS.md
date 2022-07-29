@@ -1,3 +1,7 @@
+# surveil 0.2.1
+
+The vignettes have been updated. The discussion of Markov chain Monte Carlo (MCMC) diagnostics, which was previously in the main package demo vignette, is now a stand-alone vignette with a bit of introductory discussion on MCMC analysis.
+
 # surveil 0.2.0
 
 ### Feature updates

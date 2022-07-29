@@ -9,8 +9,9 @@ home:
 articles:
 - title: "Package vignettes"
   contents:
-  - demonstration
+  - surveil-demo
   - age-standardization
+  - surveil-mcmc
 reference:
 - title: "Package overview"
 - contents:

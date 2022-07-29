@@ -23,7 +23,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-This vignette demonstrates basic usage of **surveil** for public health surveillance. **surveil** leverages the principles of Bayesian inference and Markov chain Monte Carlo (MCMC) [@jaynes_2003;@mackay_2003] to infer population risk of disease or death given time series data consisting of case counts and population at risk. Models were built using the [Stan](https://mc-stan.org/) modeling language, but users only need to be familiar with the R language.
+This vignette demonstrates basic usage of **surveil** for public health surveillance. **surveil** leverages the principles of Bayesian inference and Markov chain Monte Carlo (MCMC) [@jaynes_2003;@mackay_2003;@gelman_2014] to infer population risk of disease or death given time series data consisting of case counts and population at risk. Models were built using the [Stan](https://mc-stan.org/) modeling language, but users only need to be familiar with the R language.
 
 The package also contains special methods for age-standardization, printing and plotting model results, and for measuring and visualizing health inequalities. For age-standardization see `vignette("age-standardization")`.
 
@@ -36,16 +36,9 @@ library(ggplot2)
 library(knitr)
 ```
 
-The models will run much fast using parallel processing, which will automotically happen if you set the following option:
-
-```{r eval = FALSE}
- # here the code is displayed only, not run; for package development reasons
-options(mc.cores = parallel::detectCores())
-```
-
 Surveillance data minimally contain case counts, reliable population at risk estimates, and a discrete time period variable. They also may include one or more grouping variables, such as race-ethnicity.Time periods should consist of equally spaced intervals.
 
-This vignette analyzes age-specific (ages 50-79) colorectal cancer incidence data by race-ethnicity, year, and Texas MSA, obtained through CDC Wonder. The race-ethnicity grouping includes (non-Hispanic) Black, (non-Hispanic) White, and Hispanic, and the MSAs include those centered on the cities of Austin, Dallas, Houston, and San Antonio.
+This vignette analyzes age-specific (ages 50-79) colorectal cancer incidence data by race-ethnicity, year, and Texas MSA, obtained through CDC Wonder. The race-ethnicity grouping includes (non-Hispanic) Black, (non-Hispanic) White, and Hispanic, and the MSAs include those centered on the cities of Austin, Dallas, Houston, and San Antonio. 
 
 
 ```{r eval=T}
@@ -54,7 +47,7 @@ head(msa) %>%
         caption = "Glimpse of colorectal cancer incidence data (CDC Wonder)") 
 ```
 
-**surveil**'s model fitting function, `stan_rw`, requires that the user provide a `data.frame` with specific column names. There must be one column named `Count` containing case counts, and another column named `Population`, containing the sizes of the populations at risk. The user also must provide the name of the column containing the time period, and, optionally, a grouping factor. For the MSA data printed above, the grouping column is Race and the time column is Year.
+**surveil**'s model fitting function, `stan_rw`, requires that the user provide a `data.frame` with specific column names. There must be one column named `Count` containing case counts, and another column named `Population`, containing the sizes of the populations at risk. The user must provide the name of the column containing the time period, and may optionally provide a grouping factor. For the MSA data printed above, the grouping column is Race and the time column is Year.
 
 ## Preparing the data
 
@@ -97,7 +90,7 @@ The log-risk for time $t=1$ has no previous value to anchor its expectation; thu
 
 ### Multiple time series
 
-For multiple time series, **surveil** allows users to add a correlation structure to the model. This allows our inferences about each population to be mutually informed by inferences about all other observed populations. 
+For multiple time series, **surveil** allows users to add a correlation structure to the model. This allows our inferences about each population to be mutually informed by inferences about all other observed populations. Note that in many cases, the base model specification described above will be entirely sufficient.
 
 The log-rates for $k$ populations, $\boldsymbol \phi_t$, are assigned a multivariate Gaussian model [@brandt_2007]:
 $$\boldsymbol \phi_t \sim \text{Gau}(\boldsymbol \phi_{t-1}, \boldsymbol \Sigma),$$
@@ -117,7 +110,6 @@ fit <- stan_rw(tx.msa,
 	       group = Race,
 	       iter = 1500,
 	       chains = 2  #, for speed only; use default chains=4
-	       # cores = 4 # for multi-core processing
                )
 ```
 
@@ -125,62 +117,12 @@ If we wanted to add a correlation structure to the model, we would add `cor = TR
 
 ## MCMC diagnostics
 
-Before analyzing results, it is important to check MCMC diagnostics. Below, three diagnostics are discussed, each with its own purpose. Note that Stan will automatically print a warning to the R console when these diagnostics indicate trouble.
-
-MCMC algorithms, such as the Hamiltonian Monte Carlo algorithm that Stan uses, aim to draw samples from the probability distribution specified by the user. The algorithm tries to explore the probability distribution extensively, and when successful, the resulting samples provide an approximate image of the target probability distribution. 
-
-In what follows, we will use the `stanfit` object stored in our model:
-
-```{r}
-samples <- fit$samples
-class(samples)
+In this case, Stan did not issue any warnings; this means that all the R-hat values are near to 1 and the Monte Carlo standard errors are reasonably small. We can verify that chains have converged (and R-hats equal about 1):
+```{r fig.width = 4.5, fig.height = 3.5}
+rstan::stan_rhat(fit$samples)
 ```
 
-With `samples`, we can take advantage of the tools provided by **rstan** and other packages, such as **bayesplot** and **tidybayes**.
-
-Printing `samples` to the console (`print(samples)`) is generally an effective way to view the effective sample size, Monte Carlo standard error, and Rhat statistics for each model parameter, in addition to a summary of their marginal posterior distributions.
-
-### Monte Carlo standard errors
-
-An important difference between sampling with an MCMC algorithm and sampling from a pseudo random number generator (like `rnorm`) is that MCMC produces samples that are correlated with each other. This means that for any number of MCMC samples, there is less information than would be provided by the same number of independently drawn samples. To evaluate how far the mean of our MCMC samples may be from the mean of the target probability distribution, we need to consider Monte Carlo standard errors (MCSEs) for each parameter. 
-
-MCSEs are calculated as [@gelman_2014]
-
-$$MCSE(\theta) = \frac{\sqrt(Var(\theta))}{\sqrt(ESS(\theta))}$$
-
-where $Var(\theta)$ is the variance of the posterior distribution for parameter $\theta$ and ESS is the effective sample size. ESS is adjusted for autocorrelation in the MCMC samples.
-
-To view a histogram of MCSEs for all parameters in the **surveil** model, we can use **rstan**'s `stan_mcse` function:
-
-```{r fig.width = 4, fig.height = 3.5}
-rstan::stan_mcse(samples)
-```
-
-Notice that instead of returning the MCSEs themselves, **rstan** divides the MCSEs by the scale of the probability distribution, $\frac{MCSE(\theta)}{SD(\theta)}$. We can see that these values are all under 0.03, which is quite sufficient. We can always obtain smaller MCSEs by drawing a larger number of samples. For a more detailed view, you can start by printing results with `print(samples)` to examine the `n_eff` (ESS) column.
-
-## R-hat
-
-A second important difference between sampling with MCMC and sampling with functions like `rnorm` is that with MCMC we have to *find* the target distribution. The reason **rstan** (and **surveil**) samples from multiple, independent MCMC chains by default is that this allows us to check that they have all converged on the same distribution. If one or more chains does not resemble the others, then there is obviously a convergence failure. To make the most of the information provided by these MCMC chains, we can split each of them in half, effectively doubling the number of chains, before checking convergence. This is known as the split Rhat statistic [@gelman_2014]. When chains have converged, the Rhat statistics will all equal 1. 
-
-Since we always have at least as many parameters as we do time periods, it helps to visualize them all at once using `rstan::stan_rhat`:
-
-```{r fig.width = 4, fig.height = 3.5}
-rstan::stan_rhat(samples)
-```
-
-These are all very near to 1. If any were approaching 1.05 or larger, we would want to run the chains for longer and then check results again. 
-
-## Divergent transitions
-
-Sometimes, MCMC algorithms are unable to provide unbiased samples that will converge on the target distribution given sufficient time. Stan's MCMC algorithm will issue a warning when it encounters a region of the probability model that it is unable to explore. These warnings of "divergent transitions" should not be ignored, as they indicate that something may have gone wrong [@betancourt_2017;@betancourt_2017b]. They will be printed to the console just after the model finishes sampling. Note that other MCMC platforms are simply unable to identify this bias (they will not issue a warning like Stan's divergent transitions).
-
-For the simple models provided by **surveil**, there will often be a way to address divergent transitions. If you receive a divergent transition warning from a **surveil** model, these are the three most probable solutions:
-
-  1. Draw more samples: if you also have low ESS, the divergent transitions may disappear by increasing the number of iterations (lengthening Stan's adaptation or warm-up period). This is controlled by the `iter` argument of `stan_rw`; e.g., `stan_rw(data, time = Year, iter = 3e3)`. However, the default value of `iter = 3000` should generally be more than sufficient.
-  2. Raise `adapt_delta`: you can also control an important tuning parameter related to divergent transitions. Simply raising the `adapt_delta` value to, say, 0.99 or so, may be sufficient; e.g., `stan_rw(data, time = Year, control = list(adapt_delta = 0.99, max_treedepth = 13))`. (When raising `adapt_delta`, raising `max_treedepth` may improve sampling speed.) Raising `adapt_delta` ever closer to 1 (e.g., to .9999) is generally not helpful.
-  3. Check your prior distributions: If your prior information is in strong conflict with the data, this can create a difficult probability distribution to sample from. The most probable cause for such a situation is that you have made a mistake when specifying your (custom) prior distribution. Look first to the prior for $\eta_1$, the prior for the first *log*-rate or, for the binomial model, *log-odds*. You may find that increasing the scale parameter for the `surveil::normal` prior distribution on $\eta_1$ (making the prior more diffuse) causes the divergent transition warnings to disappear. 
-
-Despite your best efforts, there may be times when you are not able to prevent divergent transitions. This may occur when the population at risk is small and observations are particularly noisy; introducing the covariance structure (using `core = TRUE`) may make these issues more difficult to address. If the number of divergent transitions is very low (e.g., a handful out of 4,000 samples), you may determine that the amount of bias introduced appears acceptable for your purposes and report the issue along with results. For obtaining the joint posterior probability distribution of these models, there is no alternative to MCMC. 
+Other useful functions for examining MCMC diagnostics are `rstan::stan_ess(fit$samples)` and `rstan::stan_mcse(fit$samples)`. For an introduction to MCMC analysis with **surveil**, including MCMC diagnostics, see the vignette `vignette("surveil-mcmc")`. 
 
 ## Visualizing results
 
@@ -209,20 +151,36 @@ plot(fit, scale = 100e3, base_size = 11, style = "lines")
 
 By default, `M = 250` samples are plotted. The `style` option is available for all of the **surveil** plot methods.
 
+## Printing results
+
+The `print` method will print the estimates with 95\% credible intervals to the console:
+
+```{r}
+print(fit, scale = 100e3)
+```
+
+This information is also stored in a data frame, `fit$summary`:
+
+```{r}
+head(fit$summary)
+```
+
 ## Measuring pairwise inequality
 
-**surveil** also provides a number of functions and methods for measuring health inequalities.
+**surveil** provides a number of functions and methods for measuring health inequalities.
 
 A selection of complementary pairwise inequality measures can be calculated using the `group_diff` function. The function requires a fitted **surveil** model and character strings corresponding, respectively, to the target population (indicating which group is the target of our inference, typically the overburdened or disadvantaged group), and the reference population. You can also use `group_diff` to compare two age-stratified populations with age-standardized rates (for details, see `vignette("age-standardization")` and `?group_diff`).
 
-It returns probability distributions and summary statements for the following quantities, where `target` and `reference` indicate disease risk for the respective populations:
+It returns probability distributions and summary statements for the following quantities, where $A$ is the incidence rate for the advantaged group, $D$ is the incidence rate of the disadvantaged group, and $P_d$ is the size of the population at risk for the disadvantaged group.
 
- * Rate Difference (RD): $\text{Target} - \text{Reference}$;
- * Population Attributable Risk (PAR): $\frac{\text{RD}}{\text{Target}}$;
- * Rate Ratio (RR): $\frac{\text{Target}}{\text{Reference}}$;
- * Excess Cases (EC): $\text{RD} \times \text{[At Risk]}$.
- 
-Notice that the PAR is simply the rate difference expressed as a fraction of total risk; it indicates the fraction of risk in the target population that would have been removed had the target rate been equal to the reference rate [@menvielle_2019].
+|    Concept   |  Formula |
+|:--------------|:-----:|
+| Rate Ratio (RR) | $\frac{D}{A}$ |
+| Rate Difference (RD) | $D - A$ |
+| Excess Cases (EC) | $(D-A) \times P_d$ |
+| Proportion Attributable Risk (PAR) | $\frac{D-A}{D}$  | 
+
+Notice that the PAR is simply the rate difference expressed as a fraction of total risk; it indicates the fraction of risk in the target population that would have been removed had the target rate been equal to the reference rate [@menvielle_2019]. Each of these quantities (RD, RR, PAR, EC) provide a different perspective on the magnitude of a health disparity.
 
 To calculate all of these measures for two groups in our data, we call `group_diff` on our fitted model:
 
@@ -235,14 +193,14 @@ All of the **surveil** plotting and printing methods provide an option to scale 
 
 The plot method for `surveil_diff` produces one time series ``ggplot`` each for RD, PAR, and EC. The means of the probability distributions for each measure are plotted as lines, while the shading indicates a 95\% credible interval:
 
-```{r fig.width = 7, fig.height = 3}
+```{r fig.width = 7, fig.height = 2.5}
 plot(gd, scale = 100e3)
 ```
 
 If we wanted to replace the plot of the PAR with one of the RR, we would set the `PAR` option to `FALSE`:
 
-```{r fig.width = 7, fig.height = 3}
-plot(gd, scale = 100e3, PAR = FALSE, style = "lines")
+```{r fig.width = 7, fig.height = 2.5}
+plot(gd, scale = 100e3, PAR = FALSE)
 ```
 
 ## Measuring inequality with multiple groups
@@ -266,7 +224,7 @@ The probability distribution for Theil's T can be summarized visualy using the `
 plot(Ts)
 ```
 
-While the minimum of Theil's index is always zero, the maximum value varies with the structure of the population under observation. The index is useful for comparisons such as monitoring change over time, and should generally not be used as a indication of the absolute level of inequality. Instead, percent change can provide a strong summary of results.
+While the minimum of Theil's index is always zero, the maximum value varies with the structure of the population under observation. The index is useful for comparisons such as monitoring change over time, and should generally not be used as a indication of the absolute level of inequality. 
 
 The index also has interesting extensions; for example, given disease data for a nested population structure---such as racial-ethnic groups within states---Theil's index can provide a measure of geographic inequality across states (between-state inequality), and social inequality within states (within-state inequality) [@conceiccao_2001]. For details, see `?theil`.
 

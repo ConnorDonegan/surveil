@@ -1,6 +1,6 @@
 Package: surveil
 Title: Time Series Models for Disease Surveillance 
-Version: 0.2.0
+Version: 0.2.1
 Authors@R: 
     person(given = "Connor",
            family = "Donegan",
@@ -8,7 +8,7 @@ Authors@R:
            email = "connor.donegan@gmail.com",
            comment = c(ORCID = "0000-0002-9698-5443"))
 URL: https://connordonegan.github.io/surveil/, https://github.com/ConnorDonegan/surveil/, https://github.com/ConnorDonegan/surveil/, https://cran.r-project.org/web//packages/surveil/
-Description: Fits time series models for routine disease surveillance tasks and returns probability distributions for a variety of quantities of interest, including age-standardized rates, period and cumulative percent change, and measures of health inequality. Calculates Theil's index to measure inequality among multiple groups, and can be extended to measure inequality across multiple groups nested within geographies. Inference is completed using Markov chain Monte Carlo via the Stan modeling language. The models are appropriate for count data such as disease incidence and mortality data, employing a Poisson or binomial likelihood and the first-difference (random-walk) prior for unknown risk. Optionally add a covariance matrix for multiple, correlated time series models. References: Donegan, Hughes, and Lee (2022) <doi:10.2196/34589>; Stan Development Team (2021) <https://mc-stan.org>; Theil (1972, ISBN:0-444-10378-3).
+Description: Fits time series models for routine disease surveillance tasks and returns probability distributions for a variety of quantities of interest, including age-standardized rates, period and cumulative percent change, and measures of health inequality. Calculates Theil's index to measure inequality among multiple groups, and can be extended to measure inequality across multiple groups nested within geographies. Inference is completed using Markov chain Monte Carlo via the Stan modeling language. The models are appropriate for count data such as disease incidence and mortality data, employing a Poisson or binomial likelihood and the first-difference (random-walk) prior for unknown risk. Optionally add a covariance matrix for multiple, correlated time series models. References: Donegan, Hughes, and Lee (Forthcoming) <doi:10.2196/34589>; Stan Development Team (2021) <https://mc-stan.org>; Theil (1972, ISBN:0-444-10378-3).
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true

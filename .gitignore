@@ -1,3 +1,7 @@
+# use rstantools::rstan_config() to make these
+src/
+R/stanmodels.R
+
 # History files
 .Rhistory
 .Rapp.history
