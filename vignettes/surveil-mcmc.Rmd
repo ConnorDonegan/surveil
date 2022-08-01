@@ -25,11 +25,11 @@ knitr::opts_chunk$set(
 )
 ```
 
-This vignette shows **surveil** users how to access and review Markov chain Monte Carlo (MCMC) diagnostics from **surveil** models. This not a complete resource for understanding MCMC, and readers are encouraged to seek additional resources. 
+This vignette shows **surveil** users how to access and review Markov chain Monte Carlo (MCMC) diagnostics from **surveil** models. This is not a complete resource for understanding MCMC, and readers are encouraged to seek additional resources. 
 
 Markov chain Monte Carlo (MCMC) algorithms, such as the Hamiltonian Monte Carlo algorithm that Stan (and therefore **surveil**) uses, aim to draw samples from the probability distribution specified by the user. The algorithm tries to explore the probability distribution extensively, and when successful, the resulting samples provide an approximate image of the target probability distribution.
 
-Books that discuss MCMC include @mackay_2003 and @gelman_2014; see also @stan-dev_2022 and @vehtari_2021. 
+Books that discuss MCMC include @mackay_2003 and @gelman_2014; see also @stan-dev_2022 and @vehtari_2021. @mcelreath_2016 is helpful for learning Bayesian analysis using MCMC samples.
 
 The following topics will be introduced here:
 
@@ -63,9 +63,10 @@ The `print` method will return a summary of the marginal probability distributio
 print(fit, scale = 100e3)
 ```
 
-Adding `scale = 100e3` will report results in terms of cases per 100,000 persons at risk.
+Using `scale = 100e3` caused the results to be printed in terms of cases per 100,000 persons at risk.
 
-The `mean` refers to the mean of the MCMC samples and the `lwr_2.5` and `upr_97.5` report the bounds of the central 95\% quantile interval (or credible interval: CI).
+
+The `mean` refers to the mean of the respective marginal probability distributions and the `lwr_2.5` and `upr_97.5` report the bounds of their central 95\% quantile intervals (or credible interval: CI). The mean and CI can generally be interpreted as the "estimate" and its measure of uncertainty. However, one can visualize the entire probability distribution for any modeled quantity using a histogram of the MCMC samples.
 
 ## MCMC analysis
 
@@ -74,6 +75,9 @@ We can examine the MCMC samples themselves to see how the values provided by the
 ```{r}
 samples <- fit$samples
 class(samples)
+```
+
+```{r}
 phi <- as.matrix(samples, pars = "rate")
 dim(phi)
 ```
@@ -91,7 +95,7 @@ head(phi_1999)
 hist(phi_1999, main = "Rate per 100,000")
 ```
 
-To summarize this distribution, we can calculate the mean and select quantiles of the MCMC samples:
+To summarize this probability distribution, we can calculate the mean and select quantiles of the MCMC samples:
 
 ```{r}
 mean(phi_1999)
@@ -100,7 +104,7 @@ mean(phi_1999)
 quantile(phi_1999, probs = c(0.025, 0.1, 0.9, 0.975))
 ```
 
-If we did this for all years we would obtain the same information that was provided by `print(fit)`.
+If we repeated these steps for all years we would obtain the same information that was provided by `print(fit)`.
 
 In order to make inferences about quantities that involve more than one parameter, we need to use samples from the joint probability distribution. We can visualize the joint distribution using the `plot` method:
 
@@ -167,13 +171,11 @@ To make the most of the information provided by these MCMC chains, we can split 
 
 The default setting in **surveil** uses four MCMC chains, consistent with the above recommendation.
 
-The Rhat statistic can be examined by printing the Stanfit object `print(fit$samples)`. Since we always have at least as many parameters as we do time periods, it helps to visualize them all at once using `rstan::stan_rhat`:
+The Rhat statistic can be examined by printing the Stanfit object `print(fit$samples)`. We can also visualize them all at once using `rstan::stan_rhat`:
 
 ```{r fig.width = 4, fig.height = 3.5}
 rstan::stan_rhat(samples)
 ```
-
-These are all very near to 1. If any were approaching 1.05 or larger, we would want to run the chains for longer and then check results again. 
 
 ## Divergent transitions
 
@@ -185,7 +187,7 @@ If you receive a divergent transition warning from a **surveil** model, here are
   
   2. Raise `adapt_delta`: you can also control a tuning parameter related to divergent transitions. Simply raising the `adapt_delta` value to, say, 0.99 or 0.999 if need be, may be sufficient; e.g., `stan_rw(data, time = Year, control = list(adapt_delta = 0.99, max_treedepth = 13))`. (When raising `adapt_delta`, raising `max_treedepth` may improve sampling speed.) Raising `adapt_delta` ever closer to 1 (e.g., to .9999) is generally not helpful.
  
-There may be times when you are not able to prevent divergent transitions. This may occur when the population at risk is small and observations are particularly noisy; introducing the covariance structure (using `core = TRUE`) may make these issues more difficult to address. If your are working with multiple age groups, it may be the case that the group with the smallest population at risk is the source of the problem. To determine if that is the case, you can run the model without that age group, or run a model for only that age group.
+There may be times when you are not able to prevent divergent transitions. This may occur when the population at risk is small and observations are particularly noisy; introducing the covariance structure (using `core = TRUE`) may make these issues more difficult to address. If your are working with multiple age groups, it may be the case that the age groups with very low case counts are the source of the problem. To determine if that is the case, you can run the model without that age group (or groups), or run a model for only that age group.
 
 If there is a large number of divergent transitions, this is a serious warning. You may have made a mistake with your input data, or it could be that the model is just not very appropriate for the data.
 
