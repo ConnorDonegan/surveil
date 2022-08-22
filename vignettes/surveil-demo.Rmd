@@ -23,9 +23,9 @@ knitr::opts_chunk$set(
 )
 ```
 
-This vignette demonstrates basic usage of **surveil** for public health surveillance. **surveil** leverages the principles of Bayesian inference and Markov chain Monte Carlo (MCMC) [@jaynes_2003;@mackay_2003;@gelman_2014] to infer population risk of disease or death given time series data consisting of case counts and population at risk. Models were built using the [Stan](https://mc-stan.org/) modeling language, but users only need to be familiar with the R language.
+This vignette demonstrates basic usage of **surveil** for public health surveillance. **surveil** leverages the principles of Bayesian inference and Markov chain Monte Carlo (MCMC) [@mackay_2003;@gelman_2014] to infer population risk of disease or death given time series data consisting of case counts and population at risk. Models were built using the [Stan](https://mc-stan.org/) modeling language, but users only need to be familiar with the R language.
 
-The package also contains special methods for age-standardization, printing and plotting model results, and for measuring and visualizing health inequalities. For age-standardization see `vignette("age-standardization")`.
+The package also contains special methods for age-standardization, printing and plotting model results, and for measuring and visualizing health inequalities. For age-standardization see `vignette("age-standardization")`. For discussion and demonstration analysis see @donegan_2022.
 
 ## Getting started
 

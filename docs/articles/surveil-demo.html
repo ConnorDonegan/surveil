@@ -92,8 +92,8 @@
 
     
     
-<p>This vignette demonstrates basic usage of <strong>surveil</strong> for public health surveillance. <strong>surveil</strong> leverages the principles of Bayesian inference and Markov chain Monte Carlo (MCMC) <span class="citation">(Jaynes <a href="#ref-jaynes_2003">2003</a>; MacKay <a href="#ref-mackay_2003">2003</a>; Gelman et al. <a href="#ref-gelman_2014">2014</a>)</span> to infer population risk of disease or death given time series data consisting of case counts and population at risk. Models were built using the <a href="https://mc-stan.org/" class="external-link">Stan</a> modeling language, but users only need to be familiar with the R language.</p>
-<p>The package also contains special methods for age-standardization, printing and plotting model results, and for measuring and visualizing health inequalities. For age-standardization see <code><a href="../articles/age-standardization.html">vignette("age-standardization")</a></code>.</p>
+<p>This vignette demonstrates basic usage of <strong>surveil</strong> for public health surveillance. <strong>surveil</strong> leverages the principles of Bayesian inference and Markov chain Monte Carlo (MCMC) <span class="citation">(MacKay <a href="#ref-mackay_2003">2003</a>; Gelman et al. <a href="#ref-gelman_2014">2014</a>)</span> to infer population risk of disease or death given time series data consisting of case counts and population at risk. Models were built using the <a href="https://mc-stan.org/" class="external-link">Stan</a> modeling language, but users only need to be familiar with the R language.</p>
+<p>The package also contains special methods for age-standardization, printing and plotting model results, and for measuring and visualizing health inequalities. For age-standardization see <code><a href="../articles/age-standardization.html">vignette("age-standardization")</a></code>. For discussion and demonstration analysis see <span class="citation">Donegan, Hughes, and Lee (<a href="#ref-donegan_2022">2022</a>)</span>.</p>
 <div class="section level2">
 <h2 id="getting-started">Getting started<a class="anchor" aria-label="anchor" href="#getting-started"></a>
 </h2>
@@ -268,8 +268,8 @@
 <span class="co">#&gt; </span>
 <span class="co">#&gt; SAMPLING FOR MODEL 'RW' NOW (CHAIN 1).</span>
 <span class="co">#&gt; Chain 1: </span>
-<span class="co">#&gt; Chain 1: Gradient evaluation took 1.9e-05 seconds</span>
-<span class="co">#&gt; Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.19 seconds.</span>
+<span class="co">#&gt; Chain 1: Gradient evaluation took 2e-05 seconds</span>
+<span class="co">#&gt; Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.2 seconds.</span>
 <span class="co">#&gt; Chain 1: Adjust your expectations accordingly!</span>
 <span class="co">#&gt; Chain 1: </span>
 <span class="co">#&gt; Chain 1: </span>
@@ -277,15 +277,15 @@
 <span class="co">#&gt; Chain 1: Iteration:  751 / 1500 [ 50%]  (Sampling)</span>
 <span class="co">#&gt; Chain 1: Iteration: 1500 / 1500 [100%]  (Sampling)</span>
 <span class="co">#&gt; Chain 1: </span>
-<span class="co">#&gt; Chain 1:  Elapsed Time: 0.434431 seconds (Warm-up)</span>
-<span class="co">#&gt; Chain 1:                0.268743 seconds (Sampling)</span>
-<span class="co">#&gt; Chain 1:                0.703174 seconds (Total)</span>
+<span class="co">#&gt; Chain 1:  Elapsed Time: 0.258363 seconds (Warm-up)</span>
+<span class="co">#&gt; Chain 1:                0.231846 seconds (Sampling)</span>
+<span class="co">#&gt; Chain 1:                0.490209 seconds (Total)</span>
 <span class="co">#&gt; Chain 1: </span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; SAMPLING FOR MODEL 'RW' NOW (CHAIN 2).</span>
 <span class="co">#&gt; Chain 2: </span>
-<span class="co">#&gt; Chain 2: Gradient evaluation took 2.5e-05 seconds</span>
-<span class="co">#&gt; Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.25 seconds.</span>
+<span class="co">#&gt; Chain 2: Gradient evaluation took 1.3e-05 seconds</span>
+<span class="co">#&gt; Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.13 seconds.</span>
 <span class="co">#&gt; Chain 2: Adjust your expectations accordingly!</span>
 <span class="co">#&gt; Chain 2: </span>
 <span class="co">#&gt; Chain 2: </span>
@@ -293,9 +293,9 @@
 <span class="co">#&gt; Chain 2: Iteration:  751 / 1500 [ 50%]  (Sampling)</span>
 <span class="co">#&gt; Chain 2: Iteration: 1500 / 1500 [100%]  (Sampling)</span>
 <span class="co">#&gt; Chain 2: </span>
-<span class="co">#&gt; Chain 2:  Elapsed Time: 0.404673 seconds (Warm-up)</span>
-<span class="co">#&gt; Chain 2:                0.300087 seconds (Sampling)</span>
-<span class="co">#&gt; Chain 2:                0.70476 seconds (Total)</span>
+<span class="co">#&gt; Chain 2:  Elapsed Time: 0.316586 seconds (Warm-up)</span>
+<span class="co">#&gt; Chain 2:                0.245818 seconds (Sampling)</span>
+<span class="co">#&gt; Chain 2:                0.562404 seconds (Total)</span>
 <span class="co">#&gt; Chain 2:</span></code></pre></div>
 <p>If we wanted to add a correlation structure to the model, we would add <code>cor = TRUE</code> (as opposed to the default, <code>cor = FALSE</code>). To speed things up, we could take advantage of parallel processing using the <code>cores</code> argument (e.g., add <code>cores = 4</code>) to run on 4 cores simultaneously. For age-standardization, see <code><a href="../articles/age-standardization.html">vignette("age-standardization")</a></code>.</p>
 </div>
@@ -344,73 +344,73 @@
 <span class="co">#&gt; Grouping variable: Race</span>
 <span class="co">#&gt; Correlation matrix: FALSE</span>
 <span class="co">#&gt;    time                      Race      mean   lwr_2.5  upr_97.5</span>
-<span class="co">#&gt; 1  1999 Black or African American 170.03840 158.62311 182.14041</span>
-<span class="co">#&gt; 2  2000 Black or African American 166.22230 156.47275 175.68543</span>
-<span class="co">#&gt; 3  2001 Black or African American 168.16237 158.46291 178.04651</span>
-<span class="co">#&gt; 4  2002 Black or African American 169.15851 160.20320 179.47790</span>
-<span class="co">#&gt; 5  2003 Black or African American 167.04668 158.23476 176.08800</span>
-<span class="co">#&gt; 6  2004 Black or African American 166.92418 158.16215 176.85472</span>
-<span class="co">#&gt; 7  2005 Black or African American 159.35833 150.72407 168.21784</span>
-<span class="co">#&gt; 8  2006 Black or African American 154.88545 146.43215 163.31442</span>
-<span class="co">#&gt; 9  2007 Black or African American 152.84721 144.96717 161.19536</span>
-<span class="co">#&gt; 10 2008 Black or African American 149.99247 142.53448 158.69367</span>
-<span class="co">#&gt; 11 2009 Black or African American 143.49213 136.21466 151.31877</span>
-<span class="co">#&gt; 12 2010 Black or African American 138.89305 131.52916 146.44758</span>
-<span class="co">#&gt; 13 2011 Black or African American 130.84495 124.03431 137.87353</span>
-<span class="co">#&gt; 14 2012 Black or African American 125.23140 117.65708 132.09954</span>
-<span class="co">#&gt; 15 2013 Black or African American 124.78026 117.98552 131.59424</span>
-<span class="co">#&gt; 16 2014 Black or African American 126.24390 119.99730 132.83290</span>
-<span class="co">#&gt; 17 2015 Black or African American 122.53797 116.06110 128.86145</span>
-<span class="co">#&gt; 18 2016 Black or African American 121.94364 115.52972 128.33587</span>
-<span class="co">#&gt; 19 2017 Black or African American 122.50561 115.56555 129.81718</span>
-<span class="co">#&gt; 20 1999                  Hispanic 101.46848  94.34203 107.80394</span>
-<span class="co">#&gt; 21 2000                  Hispanic 104.23582  98.59472 110.85472</span>
-<span class="co">#&gt; 22 2001                  Hispanic 102.46220  97.11295 108.23892</span>
-<span class="co">#&gt; 23 2002                  Hispanic 101.50481  96.28233 107.04780</span>
-<span class="co">#&gt; 24 2003                  Hispanic 100.47386  95.36275 105.88057</span>
-<span class="co">#&gt; 25 2004                  Hispanic 100.93224  95.43272 107.03801</span>
-<span class="co">#&gt; 26 2005                  Hispanic  98.52413  93.66996 103.90225</span>
-<span class="co">#&gt; 27 2006                  Hispanic  96.93289  92.02614 102.04924</span>
-<span class="co">#&gt; 28 2007                  Hispanic  94.23187  89.59247  99.00382</span>
-<span class="co">#&gt; 29 2008                  Hispanic  90.48077  85.50347  94.88729</span>
-<span class="co">#&gt; 30 2009                  Hispanic  88.71338  84.03398  92.94741</span>
-<span class="co">#&gt; 31 2010                  Hispanic  87.92439  83.40380  92.28227</span>
-<span class="co">#&gt; 32 2011                  Hispanic  87.37643  83.19013  91.53738</span>
-<span class="co">#&gt; 33 2012                  Hispanic  87.84358  83.73483  92.14477</span>
-<span class="co">#&gt; 34 2013                  Hispanic  87.31459  83.13401  91.74759</span>
-<span class="co">#&gt; 35 2014                  Hispanic  85.78204  81.95993  89.59014</span>
-<span class="co">#&gt; 36 2015                  Hispanic  85.82557  82.04450  89.33380</span>
-<span class="co">#&gt; 37 2016                  Hispanic  84.80136  80.92421  88.49032</span>
-<span class="co">#&gt; 38 2017                  Hispanic  85.84868  81.70809  90.04414</span>
-<span class="co">#&gt; 39 1999                     White 135.20141 130.03695 140.15596</span>
-<span class="co">#&gt; 40 2000                     White 136.54007 131.82083 141.44498</span>
-<span class="co">#&gt; 41 2001                     White 134.17572 129.16184 139.19660</span>
-<span class="co">#&gt; 42 2002                     White 130.20711 126.07578 134.49887</span>
-<span class="co">#&gt; 43 2003                     White 127.43294 122.85598 132.45588</span>
-<span class="co">#&gt; 44 2004                     White 120.01825 116.02449 124.26255</span>
-<span class="co">#&gt; 45 2005                     White 115.10374 111.25894 118.95418</span>
-<span class="co">#&gt; 46 2006                     White 109.72719 105.71645 113.48171</span>
-<span class="co">#&gt; 47 2007                     White 108.25498 104.39242 112.10673</span>
-<span class="co">#&gt; 48 2008                     White 103.51905  99.92100 106.98423</span>
-<span class="co">#&gt; 49 2009                     White  98.90662  95.50226 102.50171</span>
-<span class="co">#&gt; 50 2010                     White  96.18687  93.01838  99.56646</span>
-<span class="co">#&gt; 51 2011                     White  93.64768  90.39259  96.87374</span>
-<span class="co">#&gt; 52 2012                     White  91.08852  87.97727  94.18956</span>
-<span class="co">#&gt; 53 2013                     White  90.10771  86.70109  93.33615</span>
-<span class="co">#&gt; 54 2014                     White  91.45455  88.37439  94.68719</span>
-<span class="co">#&gt; 55 2015                     White  93.12359  89.99944  96.44785</span>
-<span class="co">#&gt; 56 2016                     White  89.12679  85.89851  92.38205</span>
-<span class="co">#&gt; 57 2017                     White  92.33267  89.06169  95.67003</span></code></pre></div>
+<span class="co">#&gt; 1  1999 Black or African American 170.01246 157.98969 181.81119</span>
+<span class="co">#&gt; 2  2000 Black or African American 166.28707 156.30463 176.64155</span>
+<span class="co">#&gt; 3  2001 Black or African American 168.21979 158.49241 177.76281</span>
+<span class="co">#&gt; 4  2002 Black or African American 169.06382 159.68532 178.70871</span>
+<span class="co">#&gt; 5  2003 Black or African American 166.99554 157.25642 176.69423</span>
+<span class="co">#&gt; 6  2004 Black or African American 166.64963 157.32718 177.46076</span>
+<span class="co">#&gt; 7  2005 Black or African American 158.89944 150.02064 167.73513</span>
+<span class="co">#&gt; 8  2006 Black or African American 154.73518 146.33568 163.52624</span>
+<span class="co">#&gt; 9  2007 Black or African American 152.62056 144.37622 161.03935</span>
+<span class="co">#&gt; 10 2008 Black or African American 149.77311 141.70215 157.95968</span>
+<span class="co">#&gt; 11 2009 Black or African American 143.57548 135.83268 151.64576</span>
+<span class="co">#&gt; 12 2010 Black or African American 138.89103 131.98652 146.06689</span>
+<span class="co">#&gt; 13 2011 Black or African American 131.01169 123.97772 138.05325</span>
+<span class="co">#&gt; 14 2012 Black or African American 125.46654 118.15800 132.54584</span>
+<span class="co">#&gt; 15 2013 Black or African American 125.11527 118.26142 131.73641</span>
+<span class="co">#&gt; 16 2014 Black or African American 126.24511 120.02506 133.05571</span>
+<span class="co">#&gt; 17 2015 Black or African American 122.46925 116.03108 128.70314</span>
+<span class="co">#&gt; 18 2016 Black or African American 121.86017 115.45556 128.75496</span>
+<span class="co">#&gt; 19 2017 Black or African American 122.36429 115.73665 129.49943</span>
+<span class="co">#&gt; 20 1999                  Hispanic 101.53401  94.78429 108.00777</span>
+<span class="co">#&gt; 21 2000                  Hispanic 104.12644  98.14130 110.67825</span>
+<span class="co">#&gt; 22 2001                  Hispanic 102.51482  96.98401 108.18937</span>
+<span class="co">#&gt; 23 2002                  Hispanic 101.46026  96.32235 107.24877</span>
+<span class="co">#&gt; 24 2003                  Hispanic 100.49400  95.17999 105.66433</span>
+<span class="co">#&gt; 25 2004                  Hispanic 100.86395  96.07851 106.57438</span>
+<span class="co">#&gt; 26 2005                  Hispanic  98.57103  93.91013 103.23694</span>
+<span class="co">#&gt; 27 2006                  Hispanic  96.87815  92.21519 102.07269</span>
+<span class="co">#&gt; 28 2007                  Hispanic  94.18909  89.90937  98.89390</span>
+<span class="co">#&gt; 29 2008                  Hispanic  90.49879  85.47552  94.94830</span>
+<span class="co">#&gt; 30 2009                  Hispanic  88.70993  84.27980  92.86947</span>
+<span class="co">#&gt; 31 2010                  Hispanic  87.91644  83.67085  91.84159</span>
+<span class="co">#&gt; 32 2011                  Hispanic  87.33348  83.09833  91.42645</span>
+<span class="co">#&gt; 33 2012                  Hispanic  87.87272  83.73342  92.03119</span>
+<span class="co">#&gt; 34 2013                  Hispanic  87.30706  83.66046  91.21094</span>
+<span class="co">#&gt; 35 2014                  Hispanic  85.84189  82.05655  89.54929</span>
+<span class="co">#&gt; 36 2015                  Hispanic  85.83022  82.11391  89.58177</span>
+<span class="co">#&gt; 37 2016                  Hispanic  84.79289  80.84719  88.74490</span>
+<span class="co">#&gt; 38 2017                  Hispanic  85.89517  81.82401  90.05726</span>
+<span class="co">#&gt; 39 1999                     White 135.16203 130.18088 140.06740</span>
+<span class="co">#&gt; 40 2000                     White 136.50468 131.70298 141.59965</span>
+<span class="co">#&gt; 41 2001                     White 134.14095 129.62203 138.95257</span>
+<span class="co">#&gt; 42 2002                     White 130.17990 125.97038 134.31126</span>
+<span class="co">#&gt; 43 2003                     White 127.41164 123.17908 131.84235</span>
+<span class="co">#&gt; 44 2004                     White 120.03485 115.90386 124.17778</span>
+<span class="co">#&gt; 45 2005                     White 115.06502 111.06505 119.02083</span>
+<span class="co">#&gt; 46 2006                     White 109.69405 105.90416 113.68644</span>
+<span class="co">#&gt; 47 2007                     White 108.20948 104.66659 112.09869</span>
+<span class="co">#&gt; 48 2008                     White 103.39353  99.75091 107.18740</span>
+<span class="co">#&gt; 49 2009                     White  98.86180  95.36861 102.41334</span>
+<span class="co">#&gt; 50 2010                     White  96.13789  92.89184  99.39938</span>
+<span class="co">#&gt; 51 2011                     White  93.65297  90.52846  96.79312</span>
+<span class="co">#&gt; 52 2012                     White  91.05922  87.90101  94.23520</span>
+<span class="co">#&gt; 53 2013                     White  90.09742  87.09160  93.24469</span>
+<span class="co">#&gt; 54 2014                     White  91.41577  88.27352  94.64249</span>
+<span class="co">#&gt; 55 2015                     White  93.06601  89.97668  96.37288</span>
+<span class="co">#&gt; 56 2016                     White  88.99003  86.04799  91.98494</span>
+<span class="co">#&gt; 57 2017                     White  92.25455  89.05752  95.52087</span></code></pre></div>
 <p>This information is also stored in a data frame, <code>fit$summary</code>:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">fit</span><span class="op">$</span><span class="va">summary</span><span class="op">)</span>
 <span class="co">#&gt;   time        mean     lwr_2.5    upr_97.5                      Race Year Count</span>
-<span class="co">#&gt; 1 1999 0.001700384 0.001586231 0.001821404 Black or African American 1999   471</span>
-<span class="co">#&gt; 2 2000 0.001662223 0.001564727 0.001756854 Black or African American 2000   455</span>
-<span class="co">#&gt; 3 2001 0.001681624 0.001584629 0.001780465 Black or African American 2001   505</span>
-<span class="co">#&gt; 4 2002 0.001691585 0.001602032 0.001794779 Black or African American 2002   539</span>
-<span class="co">#&gt; 5 2003 0.001670467 0.001582348 0.001760880 Black or African American 2003   546</span>
-<span class="co">#&gt; 6 2004 0.001669242 0.001581621 0.001768547 Black or African American 2004   602</span>
+<span class="co">#&gt; 1 1999 0.001700125 0.001579897 0.001818112 Black or African American 1999   471</span>
+<span class="co">#&gt; 2 2000 0.001662871 0.001563046 0.001766415 Black or African American 2000   455</span>
+<span class="co">#&gt; 3 2001 0.001682198 0.001584924 0.001777628 Black or African American 2001   505</span>
+<span class="co">#&gt; 4 2002 0.001690638 0.001596853 0.001787087 Black or African American 2002   539</span>
+<span class="co">#&gt; 5 2003 0.001669955 0.001572564 0.001766942 Black or African American 2003   546</span>
+<span class="co">#&gt; 6 2004 0.001666496 0.001573272 0.001774608 Black or African American 2004   602</span>
 <span class="co">#&gt;   Population       Crude</span>
 <span class="co">#&gt; 1     270430 0.001741671</span>
 <span class="co">#&gt; 2     283280 0.001606185</span>
@@ -459,28 +459,28 @@
 <span class="co">#&gt; Reference group: White</span>
 <span class="co">#&gt; Time periods observed: 19</span>
 <span class="co">#&gt; Rate scale: per 100,000</span>
-<span class="co">#&gt; Cumulative excess cases (EC): 3,208 [2990, 3420]</span>
+<span class="co">#&gt; Cumulative excess cases (EC): 3,209 [2971, 3441]</span>
 <span class="co">#&gt; Cumulative EC as a fraction of group risk (PAR): 0.27 [0.25, 0.28]</span>
 <span class="co">#&gt;  time Rate RD  PAR  RR  EC</span>
 <span class="co">#&gt;  1999  170 35 0.20 1.3  94</span>
 <span class="co">#&gt;  2000  166 30 0.18 1.2  84</span>
-<span class="co">#&gt;  2001  168 34 0.20 1.3 101</span>
+<span class="co">#&gt;  2001  168 34 0.20 1.3 102</span>
 <span class="co">#&gt;  2002  169 39 0.23 1.3 122</span>
-<span class="co">#&gt;  2003  167 40 0.24 1.3 131</span>
-<span class="co">#&gt;  2004  167 47 0.28 1.4 163</span>
-<span class="co">#&gt;  2005  159 44 0.28 1.4 162</span>
+<span class="co">#&gt;  2003  167 40 0.24 1.3 130</span>
+<span class="co">#&gt;  2004  167 47 0.28 1.4 162</span>
+<span class="co">#&gt;  2005  159 44 0.28 1.4 160</span>
 <span class="co">#&gt;  2006  155 45 0.29 1.4 180</span>
-<span class="co">#&gt;  2007  153 45 0.29 1.4 187</span>
-<span class="co">#&gt;  2008  150 46 0.31 1.4 205</span>
-<span class="co">#&gt;  2009  143 45 0.31 1.5 208</span>
+<span class="co">#&gt;  2007  153 44 0.29 1.4 186</span>
+<span class="co">#&gt;  2008  150 46 0.31 1.4 204</span>
+<span class="co">#&gt;  2009  144 45 0.31 1.5 208</span>
 <span class="co">#&gt;  2010  139 43 0.31 1.4 209</span>
-<span class="co">#&gt;  2011  131 37 0.28 1.4 191</span>
-<span class="co">#&gt;  2012  125 34 0.27 1.4 184</span>
-<span class="co">#&gt;  2013  125 35 0.28 1.4 195</span>
-<span class="co">#&gt;  2014  126 35 0.28 1.4 204</span>
-<span class="co">#&gt;  2015  123 29 0.24 1.3 180</span>
+<span class="co">#&gt;  2011  131 37 0.28 1.4 192</span>
+<span class="co">#&gt;  2012  125 34 0.27 1.4 185</span>
+<span class="co">#&gt;  2013  125 35 0.28 1.4 197</span>
+<span class="co">#&gt;  2014  126 35 0.28 1.4 205</span>
+<span class="co">#&gt;  2015  122 29 0.24 1.3 180</span>
 <span class="co">#&gt;  2016  122 33 0.27 1.4 209</span>
-<span class="co">#&gt;  2017  123 30 0.25 1.3 199</span></code></pre></div>
+<span class="co">#&gt;  2017  122 30 0.25 1.3 198</span></code></pre></div>
 <p>All of the <strong>surveil</strong> plotting and printing methods provide an option to scale rates by a custom value. By setting <code>scale = 100e3</code> (100,000), the RD is printed as cases per 100,000. Note that none of the other inequality measures (PAR, RR, EC) are ever impacted by this choice.</p>
 <p>The plot method for <code>surveil_diff</code> produces one time series <code>ggplot</code> each for RD, PAR, and EC. The means of the probability distributions for each measure are plotted as lines, while the shading indicates a 95% credible interval:</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
@@ -507,25 +507,25 @@
 <span class="co">#&gt; Time periods observed: 19</span>
 <span class="co">#&gt; Theil's T (times 100) with 95% credible intervals</span>
 <span class="co">#&gt;  time Theil .lower .upper</span>
-<span class="co">#&gt;  1999 0.941  0.623  1.308</span>
-<span class="co">#&gt;  2000 0.793  0.536  1.050</span>
-<span class="co">#&gt;  2001 0.903  0.635  1.210</span>
-<span class="co">#&gt;  2002 0.981  0.712  1.273</span>
-<span class="co">#&gt;  2003 0.996  0.714  1.314</span>
-<span class="co">#&gt;  2004 1.073  0.763  1.426</span>
-<span class="co">#&gt;  2005 1.011  0.698  1.363</span>
-<span class="co">#&gt;  2006 1.052  0.730  1.396</span>
-<span class="co">#&gt;  2007 1.106  0.804  1.475</span>
-<span class="co">#&gt;  2008 1.255  0.917  1.676</span>
-<span class="co">#&gt;  2009 1.204  0.860  1.609</span>
-<span class="co">#&gt;  2010 1.137  0.807  1.512</span>
-<span class="co">#&gt;  2011 0.910  0.611  1.244</span>
-<span class="co">#&gt;  2012 0.768  0.494  1.083</span>
-<span class="co">#&gt;  2013 0.802  0.519  1.149</span>
-<span class="co">#&gt;  2014 0.858  0.583  1.168</span>
-<span class="co">#&gt;  2015 0.681  0.437  0.962</span>
-<span class="co">#&gt;  2016 0.800  0.528  1.118</span>
-<span class="co">#&gt;  2017 0.717  0.426  1.039</span></code></pre></div>
+<span class="co">#&gt;  1999 0.938  0.615  1.279</span>
+<span class="co">#&gt;  2000 0.799  0.540  1.090</span>
+<span class="co">#&gt;  2001 0.902  0.625  1.206</span>
+<span class="co">#&gt;  2002 0.980  0.703  1.295</span>
+<span class="co">#&gt;  2003 0.994  0.707  1.327</span>
+<span class="co">#&gt;  2004 1.067  0.756  1.454</span>
+<span class="co">#&gt;  2005 0.996  0.701  1.335</span>
+<span class="co">#&gt;  2006 1.049  0.735  1.414</span>
+<span class="co">#&gt;  2007 1.101  0.775  1.469</span>
+<span class="co">#&gt;  2008 1.250  0.884  1.674</span>
+<span class="co">#&gt;  2009 1.209  0.833  1.622</span>
+<span class="co">#&gt;  2010 1.137  0.814  1.495</span>
+<span class="co">#&gt;  2011 0.917  0.611  1.286</span>
+<span class="co">#&gt;  2012 0.778  0.485  1.128</span>
+<span class="co">#&gt;  2013 0.815  0.542  1.131</span>
+<span class="co">#&gt;  2014 0.858  0.590  1.184</span>
+<span class="co">#&gt;  2015 0.680  0.439  0.951</span>
+<span class="co">#&gt;  2016 0.802  0.523  1.163</span>
+<span class="co">#&gt;  2017 0.711  0.457  1.049</span></code></pre></div>
 <p>The probability distribution for Theil’s T can be summarized visualy using the <code>"lines"</code> style plot or by plotting estimates with shaded 95% credible intervals:</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">Ts</span><span class="op">)</span></code></pre></div>
@@ -552,11 +552,11 @@
 <div id="ref-conceiccao_2001">
 <p>Conceição, Pedro, James K Galbraith, and Peter Bradford. 2001. “The Theil Index in Sequences of Nested and Hierarchic Grouping Structures: Implications for the Measurement of Inequality Through Time, with Data Aggregated at Different Levels of Industrial Classification.” <em>Eastern Economic Journal</em> 27 (4): 491–514.</p>
 </div>
+<div id="ref-donegan_2022">
+<p>Donegan, Connor, Amy E. Hughes, and Simon J. Craddock Lee. 2022. “Colorectal Cancer Incidence, Inequality, and Prevention Priorities in Urban Texas: Surveillance Study with the ‘Surveil’ Software Pakcage.” <em>JMIR Public Health &amp; Surveillance</em> 8 (8): e34589. <a href="https://doi.org/10.2196/34589" class="external-link">https://doi.org/10.2196/34589</a>.</p>
+</div>
 <div id="ref-gelman_2014">
 <p>Gelman, Andrew, John B Carlin, Hal S Stern, David B Dunson, Aki Vehtari, and Donald B Rubin. 2014. <em>Bayesian Data Analysis</em>. Third. CRC Press.</p>
-</div>
-<div id="ref-jaynes_2003">
-<p>Jaynes, Edwin T. 2003. <em>Probability Theory: The Logic of Science</em>. Cambridge University Press.</p>
 </div>
 <div id="ref-mackay_2003">
 <p>MacKay, David M. 2003. <em>Information Theory, Inference, and Learning Algorithms</em>. Cambridge University Press.</p>

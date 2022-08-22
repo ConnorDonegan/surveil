@@ -177,12 +177,6 @@
            <span class="op">)</span>
 <span class="co">#&gt; Distribution: normal</span>
 <span class="co">#&gt; Distribution: normal</span>
-<span class="co">#&gt; Warning: Bulk Effective Samples Size (ESS) is too low, indicating posterior means and medians may be unreliable.</span>
-<span class="co">#&gt; Running the chains for more iterations may help. See</span>
-<span class="co">#&gt; https://mc-stan.org/misc/warnings.html#bulk-ess</span>
-<span class="co">#&gt; Warning: Tail Effective Samples Size (ESS) is too low, indicating posterior variances and tail quantiles may be unreliable.</span>
-<span class="co">#&gt; Running the chains for more iterations may help. See</span>
-<span class="co">#&gt; https://mc-stan.org/misc/warnings.html#tail-ess</span>
 <span class="co">#&gt; [1] "Setting normal prior(s) for eta_1: "</span>
 <span class="co">#&gt;  location scale</span>
 <span class="co">#&gt;        -6     5</span>
@@ -192,8 +186,8 @@
 <span class="co">#&gt; </span>
 <span class="co">#&gt; SAMPLING FOR MODEL 'RW' NOW (CHAIN 1).</span>
 <span class="co">#&gt; Chain 1: </span>
-<span class="co">#&gt; Chain 1: Gradient evaluation took 3.6e-05 seconds</span>
-<span class="co">#&gt; Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.36 seconds.</span>
+<span class="co">#&gt; Chain 1: Gradient evaluation took 3.4e-05 seconds</span>
+<span class="co">#&gt; Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.34 seconds.</span>
 <span class="co">#&gt; Chain 1: Adjust your expectations accordingly!</span>
 <span class="co">#&gt; Chain 1: </span>
 <span class="co">#&gt; Chain 1: </span>
@@ -201,15 +195,15 @@
 <span class="co">#&gt; Chain 1: Iteration:  751 / 1500 [ 50%]  (Sampling)</span>
 <span class="co">#&gt; Chain 1: Iteration: 1500 / 1500 [100%]  (Sampling)</span>
 <span class="co">#&gt; Chain 1: </span>
-<span class="co">#&gt; Chain 1:  Elapsed Time: 0.47327 seconds (Warm-up)</span>
-<span class="co">#&gt; Chain 1:                0.439378 seconds (Sampling)</span>
-<span class="co">#&gt; Chain 1:                0.912648 seconds (Total)</span>
+<span class="co">#&gt; Chain 1:  Elapsed Time: 0.62128 seconds (Warm-up)</span>
+<span class="co">#&gt; Chain 1:                0.361548 seconds (Sampling)</span>
+<span class="co">#&gt; Chain 1:                0.982828 seconds (Total)</span>
 <span class="co">#&gt; Chain 1: </span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; SAMPLING FOR MODEL 'RW' NOW (CHAIN 2).</span>
 <span class="co">#&gt; Chain 2: </span>
-<span class="co">#&gt; Chain 2: Gradient evaluation took 1.9e-05 seconds</span>
-<span class="co">#&gt; Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.19 seconds.</span>
+<span class="co">#&gt; Chain 2: Gradient evaluation took 2e-05 seconds</span>
+<span class="co">#&gt; Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.2 seconds.</span>
 <span class="co">#&gt; Chain 2: Adjust your expectations accordingly!</span>
 <span class="co">#&gt; Chain 2: </span>
 <span class="co">#&gt; Chain 2: </span>
@@ -217,9 +211,9 @@
 <span class="co">#&gt; Chain 2: Iteration:  751 / 1500 [ 50%]  (Sampling)</span>
 <span class="co">#&gt; Chain 2: Iteration: 1500 / 1500 [100%]  (Sampling)</span>
 <span class="co">#&gt; Chain 2: </span>
-<span class="co">#&gt; Chain 2:  Elapsed Time: 0.790192 seconds (Warm-up)</span>
-<span class="co">#&gt; Chain 2:                0.402672 seconds (Sampling)</span>
-<span class="co">#&gt; Chain 2:                1.19286 seconds (Total)</span>
+<span class="co">#&gt; Chain 2:  Elapsed Time: 0.701205 seconds (Warm-up)</span>
+<span class="co">#&gt; Chain 2:                0.392967 seconds (Sampling)</span>
+<span class="co">#&gt; Chain 2:                1.09417 seconds (Total)</span>
 <span class="co">#&gt; Chain 2:</span></code></pre></div>
 <p>The default plot method will return all of the age-specific cancer risk trends on the same plot; with many age groups and dissimilar risk levels, it is easier to understand the results if, instead, we use a grid of multiple small plots (<code>facet = TRUE</code>) and allow the scale of the y-axes to adjust for each age group (<code>facet_scales = "free"</code>):</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
@@ -265,22 +259,22 @@
 <span class="co">#&gt; Time periods: 19</span>
 <span class="co">#&gt;  time_label stand_rate  .lower  .upper</span>
 <span class="co">#&gt;        1999    0.00601 0.00600 0.00603</span>
-<span class="co">#&gt;        2000    0.00610 0.00608 0.00611</span>
-<span class="co">#&gt;        2001    0.00615 0.00613 0.00617</span>
+<span class="co">#&gt;        2000    0.00609 0.00608 0.00611</span>
+<span class="co">#&gt;        2001    0.00615 0.00613 0.00616</span>
 <span class="co">#&gt;        2002    0.00614 0.00612 0.00615</span>
-<span class="co">#&gt;        2003    0.00602 0.00601 0.00604</span>
+<span class="co">#&gt;        2003    0.00602 0.00600 0.00604</span>
 <span class="co">#&gt;        2004    0.00602 0.00600 0.00603</span>
 <span class="co">#&gt;        2005    0.00602 0.00601 0.00604</span>
 <span class="co">#&gt;        2006    0.00608 0.00607 0.00610</span>
 <span class="co">#&gt;        2007    0.00616 0.00614 0.00617</span>
-<span class="co">#&gt;        2008    0.00614 0.00613 0.00615</span>
-<span class="co">#&gt;        2009    0.00613 0.00612 0.00614</span>
+<span class="co">#&gt;        2008    0.00614 0.00612 0.00615</span>
+<span class="co">#&gt;        2009    0.00613 0.00611 0.00614</span>
 <span class="co">#&gt;        2010    0.00595 0.00594 0.00597</span>
 <span class="co">#&gt;        2011    0.00596 0.00595 0.00598</span>
 <span class="co">#&gt;        2012    0.00586 0.00584 0.00587</span>
 <span class="co">#&gt;        2013    0.00585 0.00583 0.00586</span>
 <span class="co">#&gt;        2014    0.00587 0.00586 0.00588</span>
-<span class="co">#&gt;        2015    0.00588 0.00586 0.00589</span>
+<span class="co">#&gt;        2015    0.00588 0.00587 0.00589</span>
 <span class="co">#&gt;        2016    0.00581 0.00580 0.00583</span>
 <span class="co">#&gt;        2017    0.00571 0.00570 0.00573</span></code></pre></div>
 <p>To learn about the contents of <code>fit_sr</code>, see <code><a href="../reference/standardize.html">?standardize</a></code> or explores its contents as you would a list (<code>names(fit_sr)</code>, <code>fit_sr$standard_summary</code>, <code>head(fit_sr$standard_samples</code>), etc.).</p>
@@ -291,7 +285,7 @@
 <div class="section level3">
 <h3 id="measures-of-pairwise-inequality">Measures of pairwise inequality<a class="anchor" aria-label="anchor" href="#measures-of-pairwise-inequality"></a>
 </h3>
-<p>The <code>group_diff</code> function can be used to obtain measures of inequality between two age-stratified groups. The measures of excess cases (EC) and proprotion attributable risk (PAR) are adjusted to account for age-specific rates with varying sizes of populations at risk.</p>
+<p>The <code>group_diff</code> function can be used to obtain measures of inequality between two age-stratified groups. The measures of excess cases (EC) and proportion attributable risk (PAR) are adjusted to account for age-specific rates with varying sizes of populations at risk.</p>
 <p>In the following table, <span class="math inline">\(D\)</span> and <span class="math inline">\(A\)</span> refer to the age-standardized rates for the disadvantaged and advantaged populations, respectively. Age groups are indexed by <span class="math inline">\(i\)</span>, such that <span class="math inline">\(D_i\)</span> is the incidence rate in the <span class="math inline">\(i^{th}\)</span> age group for the disadvantaged population.</p>
 <table class="table">
 <colgroup>
@@ -321,7 +315,7 @@
 </tr>
 </tbody>
 </table>
-<p>The EC measure sums the excess cases across all age groups, and the PAR devides the EC measure by the total risk across all age groups in the disadvantaged population. For age stratified populations, the PAR may be preferred over the RR as a measure of relative inequality because the PAR reflects the actual population sizes.</p>
+<p>The EC measure sums the excess cases across all age groups, and the PAR divides the EC measure by the total risk across all age groups in the disadvantaged population. For age stratified populations, the PAR may be preferred over the RR as a measure of relative inequality because the PAR reflects the actual population sizes.</p>
 <p>Pairwise measures of inequality have an important purpose (tracking health inequalities between historically or currently advantaged and disadvantaged groups), but we should keep in mind the limitations inherent in tracking the progress of any group by comparing that group to a moving target (particularly one that may move in an unfavorable direction). There are rarely only two groups of interest; to measure health inequality across multiple groups, consider Theil’s index (see <code><a href="../reference/theil.html">?theil</a></code> and <code>vignette("demonstration")</code>).</p>
 </div>
 <div class="section level3">
@@ -377,28 +371,28 @@
 <span class="co">#&gt; Target group: B</span>
 <span class="co">#&gt; Reference group: A</span>
 <span class="co">#&gt; Time periods observed: 19</span>
-<span class="co">#&gt; Cumulative excess cases (EC): 1,791,032 [1783237, 1798872]</span>
+<span class="co">#&gt; Cumulative excess cases (EC): 1,793,133 [1784855, 1801193]</span>
 <span class="co">#&gt; Cumulative EC as a fraction of group risk (PAR): 0.18 [0.18, 0.18]</span>
 <span class="co">#&gt;  time   Rate     RD  PAR  RR     EC</span>
-<span class="co">#&gt;  1999 0.0073 0.0013 0.18 1.2  73137</span>
-<span class="co">#&gt;  2000 0.0074 0.0013 0.18 1.2  76187</span>
-<span class="co">#&gt;  2001 0.0075 0.0013 0.18 1.2  79718</span>
-<span class="co">#&gt;  2002 0.0075 0.0013 0.18 1.2  82905</span>
-<span class="co">#&gt;  2003 0.0073 0.0013 0.18 1.2  85241</span>
-<span class="co">#&gt;  2004 0.0073 0.0013 0.18 1.2  87575</span>
-<span class="co">#&gt;  2005 0.0073 0.0013 0.18 1.2  90301</span>
-<span class="co">#&gt;  2006 0.0074 0.0013 0.18 1.2  93548</span>
-<span class="co">#&gt;  2007 0.0075 0.0013 0.18 1.2  98004</span>
-<span class="co">#&gt;  2008 0.0075 0.0013 0.18 1.2  99611</span>
-<span class="co">#&gt;  2009 0.0074 0.0013 0.18 1.2 101678</span>
-<span class="co">#&gt;  2010 0.0072 0.0013 0.18 1.2 100932</span>
-<span class="co">#&gt;  2011 0.0072 0.0013 0.18 1.2 103318</span>
-<span class="co">#&gt;  2012 0.0071 0.0013 0.18 1.2 101839</span>
-<span class="co">#&gt;  2013 0.0071 0.0013 0.18 1.2 102559</span>
-<span class="co">#&gt;  2014 0.0071 0.0013 0.18 1.2 103231</span>
-<span class="co">#&gt;  2015 0.0071 0.0013 0.18 1.2 104509</span>
-<span class="co">#&gt;  2016 0.0071 0.0012 0.18 1.2 103723</span>
-<span class="co">#&gt;  2017 0.0069 0.0012 0.18 1.2 103014</span></code></pre></div>
+<span class="co">#&gt;  1999 0.0073 0.0013 0.18 1.2  73200</span>
+<span class="co">#&gt;  2000 0.0074 0.0013 0.18 1.2  76294</span>
+<span class="co">#&gt;  2001 0.0075 0.0013 0.18 1.2  80281</span>
+<span class="co">#&gt;  2002 0.0074 0.0013 0.18 1.2  82766</span>
+<span class="co">#&gt;  2003 0.0073 0.0013 0.18 1.2  85220</span>
+<span class="co">#&gt;  2004 0.0073 0.0013 0.18 1.2  87726</span>
+<span class="co">#&gt;  2005 0.0073 0.0013 0.18 1.2  90084</span>
+<span class="co">#&gt;  2006 0.0074 0.0013 0.18 1.2  93847</span>
+<span class="co">#&gt;  2007 0.0075 0.0013 0.18 1.2  98023</span>
+<span class="co">#&gt;  2008 0.0075 0.0013 0.18 1.2  99259</span>
+<span class="co">#&gt;  2009 0.0074 0.0013 0.18 1.2 101738</span>
+<span class="co">#&gt;  2010 0.0072 0.0013 0.18 1.2 101136</span>
+<span class="co">#&gt;  2011 0.0072 0.0013 0.18 1.2 103477</span>
+<span class="co">#&gt;  2012 0.0071 0.0013 0.18 1.2 102072</span>
+<span class="co">#&gt;  2013 0.0071 0.0013 0.18 1.2 102556</span>
+<span class="co">#&gt;  2014 0.0071 0.0013 0.18 1.2 103731</span>
+<span class="co">#&gt;  2015 0.0071 0.0013 0.18 1.2 104737</span>
+<span class="co">#&gt;  2016 0.0071 0.0012 0.18 1.2 104028</span>
+<span class="co">#&gt;  2017 0.0069 0.0012 0.18 1.2 102957</span></code></pre></div>
 </div>
 </div>
 <div class="section level2 unnumbered">
@@ -407,6 +401,9 @@
 <div id="refs" class="references">
 <div id="ref-broemeling_2020">
 <p>Broemeling, Lyle D. 2020. <em>Bayesian Methods in Epidemiolgy</em>. CRC Press.</p>
+</div>
+<div id="ref-donegan_2022">
+<p>Donegan, Connor, Amy E. Hughes, and Simon J. Craddock Lee. 2022. “Colorectal Cancer Incidence, Inequality, and Prevention Priorities in Urban Texas: Surveillance Study with the ‘Surveil’ Software Pakcage.” <em>JMIR Public Health &amp; Surveillance</em> 8 (8): e34589. <a href="https://doi.org/10.2196/34589" class="external-link">https://doi.org/10.2196/34589</a>.</p>
 </div>
 </div>
 </div>

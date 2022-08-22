@@ -11,6 +11,8 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 bibliography: bib.bib
 link-citations: yes
+nocite: |
+  @donegan_2022
 ---
 
 ```{r, include = FALSE}
@@ -138,7 +140,7 @@ To learn about the contents of `fit_sr`, see `?standardize` or explores its cont
 
 ### Measures of pairwise inequality
 
-The `group_diff` function can be used to obtain measures of inequality between two age-stratified groups. The measures of excess cases (EC) and proprotion attributable risk (PAR) are adjusted to account for age-specific rates with varying sizes of populations at risk.
+The `group_diff` function can be used to obtain measures of inequality between two age-stratified groups. The measures of excess cases (EC) and proportion attributable risk (PAR) are adjusted to account for age-specific rates with varying sizes of populations at risk.
 
 In the following table, $D$ and $A$ refer to the age-standardized rates for the disadvantaged and advantaged populations, respectively. Age groups are indexed by $i$, such that $D_i$ is the incidence rate in the $i^{th}$ age group for the disadvantaged population.
 
@@ -150,7 +152,7 @@ In the following table, $D$ and $A$ refer to the age-standardized rates for the 
 | Proportion Attributable Risk (PAR) | $\frac{\sum_i (D_i - A_i) * P_{d,i}}{ \sum_i D_i * P_{d,i} }$ | 
 
 
-The EC measure sums the excess cases across all age groups, and the PAR devides the EC measure by the total risk across all age groups in the disadvantaged population. For age stratified populations, the PAR may be preferred over the RR as a measure of relative inequality because the PAR reflects the actual population sizes.
+The EC measure sums the excess cases across all age groups, and the PAR divides the EC measure by the total risk across all age groups in the disadvantaged population. For age stratified populations, the PAR may be preferred over the RR as a measure of relative inequality because the PAR reflects the actual population sizes.
 
 Pairwise measures of inequality have an important purpose (tracking health inequalities between historically or currently advantaged and disadvantaged groups), but we should keep in mind the limitations inherent in tracking the progress of any group by comparing that group to a moving target (particularly one that may move in an unfavorable direction). There are rarely only two groups of interest; to measure health inequality across multiple groups, consider Theil's index (see `?theil` and `vignette("demonstration")`).
 

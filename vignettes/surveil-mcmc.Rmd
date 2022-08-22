@@ -9,6 +9,8 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 bibliography: bib.bib
 link-citations: yes
+nocite: |
+  @donegan_2022
 ---
 
 ```{r, include = FALSE}
@@ -29,7 +31,7 @@ This vignette shows **surveil** users how to access and review Markov chain Mont
 
 Markov chain Monte Carlo (MCMC) algorithms, such as the Hamiltonian Monte Carlo algorithm that Stan (and therefore **surveil**) uses, aim to draw samples from the probability distribution specified by the user. The algorithm tries to explore the probability distribution extensively, and when successful, the resulting samples provide an approximate image of the target probability distribution.
 
-Books that discuss MCMC include @mackay_2003 and @gelman_2014; see also @stan-dev_2022 and @vehtari_2021. @mcelreath_2016 is helpful for learning Bayesian analysis using MCMC samples.
+Books that discuss MCMC include @mackay_2003 and @gelman_2014; see also @stan-dev_2022 and @vehtari_2021. @mcelreath_2016 is helpful for learning Bayesian analysis using MCMC samples. 
 
 The following topics will be introduced here:
 
