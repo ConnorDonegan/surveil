@@ -2,9 +2,9 @@
 data {
   int<lower=1> TT;   // length of time series
   int<lower=1> K;   // J outcomes
-  int y[K, TT]; // outcome data
-  vector[TT] log_E[K];
-  int population[K, TT];
+  array[K, TT] int y; // outcome data
+  array[K] vector[TT] log_E;
+  array[K, TT] int population;
   int is_poisson;
   int is_binomial;
   vector[K] prior_eta_1_location;
@@ -14,12 +14,12 @@ data {
 }
 
 parameters {
-  vector<upper=0>[TT] eta[K];      // annual risk per group
+  array[K] vector<upper=0>[TT] eta;      // annual risk per group
   vector<lower=0>[K] sigma; // scale per group
 }
 
 transformed parameters {
-  vector[is_poisson ? TT : 0] mu[is_poisson ? K : 0];
+  array[is_poisson ? K : 0] vector[is_poisson ? TT : 0] mu;
   if (is_poisson) for (j in 1:K) mu[j] = log_E[j] + eta[j];
 }
 
@@ -34,8 +34,8 @@ model {
 }
 
 generated quantities {
-  vector[TT] rate[K];
-  vector[TT] log_lik[K];
+  array[K] vector[TT] rate;
+  array[K] vector[TT] log_lik;
   for (j in 1:K) {
     if (is_poisson) {
     rate[j] = exp( eta[j] );
