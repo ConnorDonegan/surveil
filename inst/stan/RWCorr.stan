@@ -2,9 +2,9 @@
 data {
   int<lower=1> TT;   // length of time series
   int<lower=1> K;   // J outcomes
-  int y[TT, K];     // outcome datda
-  int population[TT, K];  
-  vector[K] log_E[TT];  // log population at risk
+  array[TT, K] int y;     // outcome datda
+  array[TT, K] int population;  
+  array[TT] vector[K] log_E;  // log population at risk
   int is_poisson;
   int is_binomial;
   vector[K] prior_eta_1_location;
@@ -16,14 +16,14 @@ data {
 
 parameters {
   vector[K] eta_1;
-  vector[K] z[TT];             // d.eta  
+  array[TT] vector[K] z;             // d.eta  
   vector<lower=0>[K] sigma; // scale per group
   cholesky_factor_corr[K] L_Omega;   // correlation between groups
 }
 
 transformed parameters {
-  vector[K] eta[TT];           // annual risk per group  
-  vector[is_poisson ? K : 0] mu_y[is_poisson ? TT : 0];  
+  array[TT] vector[K] eta;           // annual risk per group  
+  array[is_poisson ? TT : 0] vector[is_poisson ? K : 0] mu_y;  
   matrix[K, K] L;
   L = diag_pre_multiply(sigma, L_Omega);
   eta[1] = eta_1;
@@ -51,8 +51,8 @@ model {
 
 generated quantities {
   matrix[K, K] Omega = tcrossprod(L_Omega); 
-  vector[TT] rate[K];
-  vector[TT] log_lik[K];
+  array[K] vector[TT] rate;
+  array[K] vector[TT] log_lik;
   if (is_poisson) {
     for (t in 1:TT) {
       for (j in 1:K) {
