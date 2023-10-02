@@ -78,11 +78,15 @@ Theil's entropy-based index of inequality
 \details{
 Theil's index is a good index of inequality in disease and mortality burdens when multiple groups are being considered. It provides a summary measure of inequality across a set of demographic groups that may be tracked over time (and/or space). Also, it is interesting because it is additive, and thus admits of simple decompositions.
 
-The index measures discrepancies between a population's share of the disease burden, \code{omega}, and their share of the population, \code{eta}. A situation of zero inequality would imply that each population's share of cases is equal to its population share, or, \code{omega=eta}. Each population's contribution to total inequality is calculated as:\preformatted{             T_i = omega_i * [log(omega_i/eta_i)],
-}
+The index measures discrepancies between a population's share of the disease burden, \code{omega}, and their share of the population, \code{eta}. A situation of zero inequality would imply that each population's share of cases is equal to its population share, or, \code{omega=eta}. Each population's contribution to total inequality is calculated as:
 
-the log-ratio of case-share to population-share, weighted by their share of cases. Theil's index for all areas is the sum of each area's T_i:\preformatted{             T = sum_(i=1)^n T_i.
-}
+\if{html}{\out{<div class="sourceCode">}}\preformatted{             T_i = omega_i * [log(omega_i/eta_i)],
+}\if{html}{\out{</div>}}
+
+the log-ratio of case-share to population-share, weighted by their share of cases. Theil's index for all areas is the sum of each area's T_i:
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{             T = sum_(i=1)^n T_i.
+}\if{html}{\out{</div>}}
 
 Theil's T is thus a weighted mean of log-ratios of case shares to population shares, where each log-ratio (which we may describe as a raw inequality score) is weighted by its share of total cases. The index has a minimum of zero and a maximum of \code{log(N)}, where \code{N} is the number of units (e.g., number of states).
 

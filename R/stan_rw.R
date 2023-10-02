@@ -198,26 +198,26 @@ stan_rw <- function(data,
     } else {
         cases <- data %>%
             as.data.frame %>%
-            dplyr::select({{ group }}, .data$Count) %>%
+            dplyr::select({{ group }}, "Count") %>%
             dplyr::group_by({{ group }}) %>%
             dplyr::mutate(id = 1:dplyr::n()) %>%
             tidyr::pivot_wider(
-                .data$id,
+                id_cols = "id",
                 names_from = {{ group }},
-                values_from = .data$Count
+                values_from = "Count"
             ) %>%
-            dplyr::select(-c(.data$id))
+            dplyr::select(-c("id"))
         at_risk <- data %>%
             as.data.frame %>%
-            dplyr::select({{ group }}, .data$Population) %>%
+            dplyr::select({{ group }}, "Population") %>%
             dplyr::group_by({{ group }}) %>%
             dplyr::mutate(id = 1:dplyr::n()) %>%            
             tidyr::pivot_wider(
-                .data$id,
+                id_cols = "id",
                 names_from = {{ group }},
-                values_from = .data$Population
+                values_from = "Population"
             ) %>%
-            dplyr::select(-c(.data$id))
+            dplyr::select(-c("id"))
         group.labels <- colnames(cases)
         group.ids <- 1:length(group.labels)
         group.df <- data.frame(group.index = group.ids,
@@ -273,7 +273,7 @@ stan_rw <- function(data,
     } else {  
         standata$y <- t(standata$y) #/# transpose
         standata$log_E <- t(standata$log_E)  #/# transpose
-        standata$population <- t(standata$population)
+        standata$population <- t(standata$population) #/# transpose
         samples <- rstan::sampling(stanmodels$RW,
                                    data = standata,
                                    pars = c("rate", "sigma", "log_lik"),

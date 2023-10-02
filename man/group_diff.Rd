@@ -39,7 +39,9 @@ Calculate pairwise measures of health inequality from a fitted \code{surveil} ti
 \details{
 \subsection{Comparing incidence rates}{
 
-For the following calculations, the terms \code{reference} and \code{target} refer to incidence rates for the respective groups; \code{p} is the size of the target population. (Target is the group that is the 'target' of our inferences, so that it is the numerator in rate ratios, etc.) The following measures are calculated by \code{group_diff}:\preformatted{# rate difference
+For the following calculations, the terms \code{reference} and \code{target} refer to incidence rates for the respective groups; \code{p} is the size of the target population. (Target is the group that is the 'target' of our inferences, so that it is the numerator in rate ratios, etc.) The following measures are calculated by \code{group_diff}:
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{# rate difference
 RD = target - reference
 # population attributable fraction
 PAR = RD/target = (RR - 1)/RR
@@ -47,7 +49,7 @@ PAR = RD/target = (RR - 1)/RR
 RR = target/reference
 # excess cases
 EC = RD * p
-}
+}\if{html}{\out{</div>}}
 
 As the math communicates, the PAR is the rate difference expressed as a fraction of total risk for the target population. This could also be read as the fraction of risk in the target population that would have been removed had the target rate equaled the reference rate (Menvielle et al. 2017).
 }

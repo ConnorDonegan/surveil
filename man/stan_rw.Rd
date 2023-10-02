@@ -91,28 +91,34 @@ Model time-varying incidence rates given a time series of case (or death) counts
 \details{
 By default, the models have Poisson likelihoods for the case counts, with log link function. Alternatively, a Binomial model with logit link function can be specified using the \code{family} argument (\code{family = binomial()}).
 
-For time t = 1,...n, the models assign Poisson probability distribution to the case counts, given log-risk \code{eta} and population at tirks P; the log-risk is modeled using the first-difference (or random-walk) prior:\preformatted{ y_t ~ Poisson(p_t * exp(eta_t))
+For time t = 1,...n, the models assign Poisson probability distribution to the case counts, given log-risk \code{eta} and population at tirks P; the log-risk is modeled using the first-difference (or random-walk) prior:
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{ y_t ~ Poisson(p_t * exp(eta_t))
  eta_t ~ Normal(eta_\{t-1\}, sigma)
  eta_1 ~ Normal(-6, 5) (-Inf, 0)
  sigma ~ Normal(0, 1) (0, Inf)
-}
+}\if{html}{\out{</div>}}
 
 This style of model has been discussed in Bayesian (bio)statistics for quite some time. See Clayton (1996).
 
 The above model can be used for multiple distinct groups; in that case, each group will have its own independent time series model.
 
-It is also possible to add a correlation structure to that set of models. Let \code{Y_t} be a k-length vector of observations for each of k groups at time t (the capital letter now indicates a vector), then:\preformatted{ Y_t ~ Poisson(P_t * exp(Eta_t))
+It is also possible to add a correlation structure to that set of models. Let \code{Y_t} be a k-length vector of observations for each of k groups at time t (the capital letter now indicates a vector), then:
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{ Y_t ~ Poisson(P_t * exp(Eta_t))
  Eta_t ~ MVNormal(Eta_\{t-1\}, Sigma)
  Eta_1 ~ Normal(-6, 5)  (-Inf, 0)
  Sigma = diag(sigma) * Omega * diag(sigma)
  Omega ~ LKJ(2)
  sigma ~ Normal(0, 1) (0, Inf)
-}
+}\if{html}{\out{</div>}}
 
 where \code{Omega} is a correlation matrix and \code{diag(sigma)} is a diagonal matrix with scale parameters on the diagonal. This was adopted from Brandt and Williams (2007); for the LKJ prior, see the Stan Users Guide and Reference Manual.
 
-If the binomial model is used instead of the Poisson, then the first line of the model specifications will be:\preformatted{ y_t ~ binomial(P_t, inverse_logit(eta_t))
-}
+If the binomial model is used instead of the Poisson, then the first line of the model specifications will be:
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{ y_t ~ binomial(P_t, inverse_logit(eta_t))
+}\if{html}{\out{</div>}}
 
 All else is remains the same. The logit function is \code{log(r/(1-r))}, where \code{r} is a rate between zero and one; the inverse-logit function is \code{exp(x)/(1 + exp(x))}.
 }

@@ -332,7 +332,7 @@ plot.surveil_diff <- function(x,
         }
         s_df <- s_df[,cols]        
         s_df <- tidyr::pivot_longer(s_df,
-                                    -c(.data$time, .data$.draw),
+                                    cols = -c("time", ".draw"),
                                     names_to = "measure",
                                     values_to = "value"
                                     )
@@ -349,7 +349,6 @@ plot.surveil_diff <- function(x,
         gg <- ggplot(s_df) +
             geom_line(
                 aes(.data$label, .data$value,
-   #             aes(.data$time, .data$value,
                     group = factor(.data$.draw)),
                 lwd = lwd,
                 col = col,

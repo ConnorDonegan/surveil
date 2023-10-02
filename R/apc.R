@@ -76,7 +76,7 @@ apc.surveil <- function(x) {
         apc_samples$.draw <- 1:nrow(apc_samples)
         apc_samples$group <- group_label[g]
         apc_samples <- tidyr::pivot_longer(apc_samples,
-                                  -c(.data$.draw, .data$group),
+                                  cols = -c(".draw", "group"),
                                   names_to = "time",
                                   values_to = "value")
         apc_samples$time <- as.numeric(apc_samples$time)
@@ -87,7 +87,7 @@ apc.surveil <- function(x) {
         cpc_samples$.draw <- 1:nrow(cpc_samples)
         cpc_samples$group <- group_label[g]
         cpc_samples <- tidyr::pivot_longer(cpc_samples,
-                                  -c(.data$.draw, .data$group),
+                                  cols = -c(".draw", "group"),
                                   names_to = "time",
                                   values_to = "value")
         cpc_samples$time <- as.numeric(cpc_samples$time)        
@@ -115,9 +115,9 @@ apc.surveil <- function(x) {
 apc.stand_surveil <- function(x) {
     time_label <- x$time$time.df$time.label
     s.wide <- tidyr::pivot_wider(x$standard_samples,
-                                 id_cols = .data$.draw,
-                                 names_from = .data$time_index,
-                                 values_from = .data$stand_rate
+                                 id_cols = ".draw",
+                                 names_from = "time_index",
+                                 values_from = "stand_rate"
                                  )
     s.wide$.draw <- NULL                   
     s.wide <- as.matrix(s.wide)
@@ -143,7 +143,7 @@ apc.stand_surveil <- function(x) {
     names(res.apc) <- time_label
     res.apc$.draw <- 1:nrow(res.apc)
     res.apc <- tidyr::pivot_longer(res.apc,
-                                   -c(.data$.draw),
+                                   cols = -c(".draw"),
                                    names_to = "time",
                                    values_to = "value")
     res.apc$time <- as.numeric(res.apc$time)
@@ -151,7 +151,7 @@ apc.stand_surveil <- function(x) {
     names(res.cum) <- time_label
     res.cum$.draw <- 1:nrow(res.cum)
     res.cum <- tidyr::pivot_longer(res.cum,
-                                   -c(.data$.draw),
+                                   cols = -c(".draw"),
                                    names_to = "time",
                                    values_to = "value")
     res.cum$time <- as.numeric(res.cum$time)    
@@ -198,14 +198,14 @@ print.apc <- function(x, digits = 1, max = 20, ...) {
         print.data.frame(x$apc, digits = digits, max = max * ncol(x$apc), row.names = FALSE, ...)
     } else {
         x$apc <- tidyr::pivot_wider(x$apc,
-                                    id_cols = .data$time,
-                                    names_from = .data$group,
-                                    values_from = .data$apc
+                                    id_cols = "time",
+                                    names_from = "group",
+                                    values_from = "apc"
                                     )
         x$cpc <- tidyr::pivot_wider(x$cpc,
-                                    id_cols = .data$time,
-                                    names_from = .data$group,
-                                    values_from = .data$cpc
+                                    id_cols = "time",
+                                    names_from = "group",
+                                    values_from = "cpc"
                                     )
         message("Cumulative percent change:")
         print.data.frame(x$cpc[nrow(x$cpc), -which(names(x$cpc) == "time")], digits = digits, row.names = FALSE, ...)        

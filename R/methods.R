@@ -209,7 +209,7 @@ plot_lines <- function(x,
         Sj <- Sj %>%
             as.data.frame() %>% 
             tidyr::pivot_longer(
-                       tidyr::everything(),        
+                       cols = tidyr::everything(),        
                        names_to = "time.index",
                        values_to = "rate"
                    ) %>%

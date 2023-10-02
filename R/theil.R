@@ -114,7 +114,7 @@ theil.surveil <- function(x) {
     suppressMessages(
         theil.samples <- x$samples %>%
             tidybayes::gather_draws(rate[group.index, time.index]) %>%
-            dplyr::select(.data$group.index, .data$time.index, .data$.draw, .data$.value) %>%
+            dplyr::select("group.index", "time.index", ".draw", ".value") %>%
             dplyr::inner_join(pop.df, by = c("time.index", "group.index")) %>%
             dplyr::mutate(Count = .data$.value * .data$Population) %>%
             dplyr::ungroup() %>%
@@ -357,7 +357,7 @@ plot.theil_list <- function(x,
         s_df <- x$samples
         s_df <- dplyr::filter(s_df, .data$.draw %in% sample(max(.data$.draw), size = M))
         s_df <- tidyr::pivot_longer(s_df,
-                                    -c(.data$time, .data$.draw),
+                                    cols = -c("time", ".draw"),
                                     names_to = "component",
                                     values_to = "value"
                                     )
