@@ -449,7 +449,7 @@ standardize <- function(x, label, standard_pop) {
     suppressMessages(
     stand_samples <- x$samples %>%
         tidybayes::gather_draws(rate[group_index, time_index]) %>%
-        dplyr::select(.data$group_index, .data$time_index, .data$.draw, .data$.value) %>%
+        dplyr::select("group_index", "time_index", ".draw", ".value") %>%
         dplyr::left_join(stand_df, by = c("group_index")) %>%
         dplyr::group_by(.data$.draw, .data$time_index) %>%
         dplyr::summarise(stand_rate = standardize_rate(.data$.value, .data$standard_pop)) %>%
