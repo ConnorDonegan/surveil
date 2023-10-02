@@ -23,7 +23,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">surveil</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.2</span>
       </span>
     </div>
 
@@ -62,64 +62,95 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="co"># S3 method for apc</span>
-<span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">x</span>, digits <span class="op">=</span> <span class="fl">1</span>, max <span class="op">=</span> <span class="fl">20</span>, <span class="va">...</span><span class="op">)</span>
-
-<span class="co"># S3 method for apc</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span>
-  <span class="va">x</span>,
-  cumulative <span class="op">=</span> <span class="cn">FALSE</span>,
-  style <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"mean_qi"</span>, <span class="st">"lines"</span><span class="op">)</span>,
-  M <span class="op">=</span> <span class="fl">250</span>,
-  col <span class="op">=</span> <span class="st">"black"</span>,
-  fill <span class="op">=</span> <span class="st">"black"</span>,
-  <span class="va">alpha</span>,
-  <span class="va">lwd</span>,
-  base_size <span class="op">=</span> <span class="fl">14</span>,
-  <span class="va">...</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co"># S3 method for apc</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">x</span>, digits <span class="op">=</span> <span class="fl">1</span>, max <span class="op">=</span> <span class="fl">20</span>, <span class="va">...</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for apc</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span></span>
+<span>  <span class="va">x</span>,</span>
+<span>  cumulative <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  style <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"mean_qi"</span>, <span class="st">"lines"</span><span class="op">)</span>,</span>
+<span>  M <span class="op">=</span> <span class="fl">250</span>,</span>
+<span>  col <span class="op">=</span> <span class="st">"black"</span>,</span>
+<span>  fill <span class="op">=</span> <span class="st">"black"</span>,</span>
+<span>  <span class="va">alpha</span>,</span>
+<span>  <span class="va">lwd</span>,</span>
+<span>  base_size <span class="op">=</span> <span class="fl">14</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>x</dt>
 <dd><p>An <code>apc</code> object returned by <code><a href="apc.html">apc</a></code></p></dd>
+
+
 <dt>digits</dt>
 <dd><p>Print this many digits (passed to <code><a href="https://rdrr.io/r/base/print.dataframe.html" class="external-link">print.data.frame</a></code>)</p></dd>
+
+
 <dt>max</dt>
 <dd><p>Maximum number of time periods (rows) to print</p></dd>
+
+
 <dt>...</dt>
 <dd><p>additional arguments; for the print argument, these will be passed to <code><a href="https://rdrr.io/r/base/print.dataframe.html" class="external-link">print.data.frame</a></code>. For the plot method, these will be passed to <code><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></code>.</p></dd>
+
+
 <dt>cumulative</dt>
 <dd><p>Plot cumulative percent change? Defaults to <code>cumulative = FALSE</code></p></dd>
+
+
 <dt>style</dt>
 <dd><p>If <code>style = "mean_qi"</code>, then the posterior mean and 95 percent credible interval will be plotted; if <code>style = "lines"</code>, then <code>M</code> samples from the joint probability distribution will be plotted.</p></dd>
+
+
 <dt>M</dt>
 <dd><p>If <code>style = "lines"</code>, then <code>M</code> is the number of samples from the posterior distribution that will be plotted; the default is <code>M = 250</code>.</p></dd>
+
+
 <dt>col</dt>
 <dd><p>Line color</p></dd>
+
+
 <dt>fill</dt>
 <dd><p>Fill color for the 95 percent credible interval</p></dd>
+
+
 <dt>alpha</dt>
 <dd><p>For <code>style = "mean_qi"</code>, this controls the transparency for the credible interval (passed to <code><a href="https://ggplot2.tidyverse.org/reference/geom_ribbon.html" class="external-link">geom_ribbon</a></code>) and defaults to <code>alpha = 0.5</code>; for <code>style = "lines"</code>, this controls the transparency of the lines and defaults to <code>alpha = 0.7</code>.</p></dd>
+
+
 <dt>lwd</dt>
 <dd><p>Line width</p></dd>
+
+
 <dt>base_size</dt>
 <dd><p>Size of plot attributes, passed to `<code><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_classic</a></code></p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <div class="section">
+    
+
+<div class="section">
 <h3 id="print">print<a class="anchor" aria-label="anchor" href="#print"></a></h3>
 
 
 <p>The print method does not have a return value, but prints a summary of results to the R console.</p>
-</div><div class="section">
+</div>
+
+
+
+<div class="section">
 <h3 id="plot">Plot<a class="anchor" aria-label="anchor" href="#plot"></a></h3>
 
 
 <p>The plot method returns a <code>ggplot</code>.</p>
 </div>
+
+
     </div>
     <div id="see-also">
     <h2>See also</h2>
@@ -138,7 +169,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

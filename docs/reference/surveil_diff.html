@@ -24,7 +24,7 @@ print surveil_diff objects for analyses of inequality"><meta property="og:image"
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">surveil</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.2</span>
       </span>
     </div>
 
@@ -64,69 +64,102 @@ print surveil_diff objects for analyses of inequality"><meta property="og:image"
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="co"># S3 method for surveil_diff</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span>
-  <span class="va">x</span>,
-  style <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"mean_qi"</span>, <span class="st">"lines"</span><span class="op">)</span>,
-  M <span class="op">=</span> <span class="fl">250</span>,
-  col <span class="op">=</span> <span class="st">"black"</span>,
-  fill <span class="op">=</span> <span class="st">"gray80"</span>,
-  <span class="va">lwd</span>,
-  <span class="va">alpha</span>,
-  plot <span class="op">=</span> <span class="cn">TRUE</span>,
-  scale <span class="op">=</span> <span class="fl">1e+05</span>,
-  PAR <span class="op">=</span> <span class="cn">TRUE</span>,
-  ncol <span class="op">=</span> <span class="fl">3</span>,
-  base_size <span class="op">=</span> <span class="fl">14</span>,
-  <span class="va">...</span>
-<span class="op">)</span>
-
-<span class="co"># S3 method for surveil_diff</span>
-<span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">x</span>, scale <span class="op">=</span> <span class="fl">1</span>, <span class="va">...</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co"># S3 method for surveil_diff</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span></span>
+<span>  <span class="va">x</span>,</span>
+<span>  style <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"mean_qi"</span>, <span class="st">"lines"</span><span class="op">)</span>,</span>
+<span>  M <span class="op">=</span> <span class="fl">250</span>,</span>
+<span>  col <span class="op">=</span> <span class="st">"black"</span>,</span>
+<span>  fill <span class="op">=</span> <span class="st">"gray80"</span>,</span>
+<span>  <span class="va">lwd</span>,</span>
+<span>  <span class="va">alpha</span>,</span>
+<span>  plot <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  scale <span class="op">=</span> <span class="fl">1e+05</span>,</span>
+<span>  PAR <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  ncol <span class="op">=</span> <span class="fl">3</span>,</span>
+<span>  base_size <span class="op">=</span> <span class="fl">14</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for surveil_diff</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">x</span>, scale <span class="op">=</span> <span class="fl">1</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>x</dt>
 <dd><p>Object of class <code>surveil_diff</code>, as returned by calling <code>group_diff</code> on a fitted <code>surveil</code> model</p></dd>
+
+
 <dt>style</dt>
 <dd><p>If <code>style = "mean_qi"</code>, then the posterior mean and 95 percent credible interval will be plotted; if <code>style = "lines"</code>, then <code>M</code> samples from the joint probability distribution of the annual rates will be plotted.</p></dd>
+
+
 <dt>M</dt>
 <dd><p>If <code>style = "lines"</code>, then <code>M</code> is the number of samples from the posterior distribution that will be plotted; the default is <code>M = 250</code>.</p></dd>
+
+
 <dt>col</dt>
 <dd><p>Line color</p></dd>
+
+
 <dt>fill</dt>
 <dd><p>Fill color for credible intervals, passed to <code>geom_ribbon</code></p></dd>
+
+
 <dt>lwd</dt>
 <dd><p>Linewidth</p></dd>
+
+
 <dt>alpha</dt>
 <dd><p>transparency; for <code>style = "mean_qi", controls the credible interval shading; for </code>style = "lines"`, this is applied to the lines</p></dd>
+
+
 <dt>plot</dt>
 <dd><p>If <code>plot = FALSE</code>, a list of <code>ggplot</code>s will be returned</p></dd>
+
+
 <dt>scale</dt>
 <dd><p>Print rates and rate differences as per <code>scale</code> at risk, e.g., per 10,000 at risk.</p></dd>
+
+
 <dt>PAR</dt>
 <dd><p>Return population attributable risk? IF <code>FALSE</code>, then the rate ratio will be used instead of PAR.</p></dd>
+
+
 <dt>ncol</dt>
 <dd><p>Number of columns for the plotting device. If <code>ncol = 1</code>, the three plots will be aligned vertically in one column; if <code>ncol = 3</code> they will b aligned horizontally in one row.</p></dd>
+
+
 <dt>base_size</dt>
 <dd><p>Passed to <code>theme_classic</code> to control size of plot elements (e.g., text)</p></dd>
+
+
 <dt>...</dt>
 <dd><p>additional print arguments</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <div class="section">
+    
+
+<div class="section">
 <h3 id="plot-surveil-diff">plot.surveil_diff<a class="anchor" aria-label="anchor" href="#plot-surveil-diff"></a></h3>
 
 
 <p>By default or whenever <code>plot = TRUE</code>, the plot method draws a series of plots to the current plotting device using <code><a href="https://rdrr.io/pkg/gridExtra/man/arrangeGrob.html" class="external-link">grid.arrange</a></code>. If <code>plot = FALSE</code>, then a list of <code>ggplot</code>s is returned.</p>
-</div><div class="section">
+</div>
+
+
+
+<div class="section">
 <h3 id="print-surveil-diff">print.surveil_diff<a class="anchor" aria-label="anchor" href="#print-surveil-diff"></a></h3>
 
 
 <p>The print method returns nothing and prints a summary of results to the console.</p>
 </div>
+
+
     </div>
 
   </div>
@@ -141,7 +174,7 @@ print surveil_diff objects for analyses of inequality"><meta property="og:image"
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

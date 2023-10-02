@@ -23,7 +23,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">surveil</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.2</span>
       </span>
     </div>
 
@@ -62,102 +62,147 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="co"># S3 method for theil</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span>
-  <span class="va">x</span>,
-  style <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"mean_qi"</span>, <span class="st">"lines"</span><span class="op">)</span>,
-  M <span class="op">=</span> <span class="fl">250</span>,
-  col <span class="op">=</span> <span class="st">"black"</span>,
-  fill <span class="op">=</span> <span class="st">"black"</span>,
-  <span class="va">alpha</span>,
-  <span class="va">lwd</span>,
-  base_size <span class="op">=</span> <span class="fl">14</span>,
-  scale <span class="op">=</span> <span class="fl">100</span>,
-  labels <span class="op">=</span> <span class="va">x</span><span class="op">$</span><span class="va">summary</span><span class="op">$</span><span class="va">time</span>,
-  <span class="va">...</span>
-<span class="op">)</span>
-
-<span class="co"># S3 method for theil_list</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span>
-  <span class="va">x</span>,
-  style <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"mean_qi"</span>, <span class="st">"lines"</span><span class="op">)</span>,
-  M <span class="op">=</span> <span class="fl">250</span>,
-  col <span class="op">=</span> <span class="st">"black"</span>,
-  fill <span class="op">=</span> <span class="st">"black"</span>,
-  <span class="va">alpha</span>,
-  <span class="va">lwd</span>,
-  between_title <span class="op">=</span> <span class="st">"Between"</span>,
-  within_title <span class="op">=</span> <span class="st">"Within"</span>,
-  total_title <span class="op">=</span> <span class="st">"Total"</span>,
-  scale <span class="op">=</span> <span class="fl">100</span>,
-  plot <span class="op">=</span> <span class="cn">TRUE</span>,
-  ncol <span class="op">=</span> <span class="fl">3</span>,
-  base_size <span class="op">=</span> <span class="fl">14</span>,
-  <span class="va">...</span>
-<span class="op">)</span>
-
-<span class="co"># S3 method for theil</span>
-<span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">x</span>, scale <span class="op">=</span> <span class="fl">100</span>, digits <span class="op">=</span> <span class="fl">3</span>, <span class="va">...</span><span class="op">)</span>
-
-<span class="co"># S3 method for theil_list</span>
-<span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">x</span>, scale <span class="op">=</span> <span class="fl">100</span>, digits <span class="op">=</span> <span class="fl">3</span>, <span class="va">...</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co"># S3 method for theil</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span></span>
+<span>  <span class="va">x</span>,</span>
+<span>  style <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"mean_qi"</span>, <span class="st">"lines"</span><span class="op">)</span>,</span>
+<span>  M <span class="op">=</span> <span class="fl">250</span>,</span>
+<span>  col <span class="op">=</span> <span class="st">"black"</span>,</span>
+<span>  fill <span class="op">=</span> <span class="st">"black"</span>,</span>
+<span>  <span class="va">alpha</span>,</span>
+<span>  <span class="va">lwd</span>,</span>
+<span>  base_size <span class="op">=</span> <span class="fl">14</span>,</span>
+<span>  scale <span class="op">=</span> <span class="fl">100</span>,</span>
+<span>  labels <span class="op">=</span> <span class="va">x</span><span class="op">$</span><span class="va">summary</span><span class="op">$</span><span class="va">time</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for theil_list</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span></span>
+<span>  <span class="va">x</span>,</span>
+<span>  style <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"mean_qi"</span>, <span class="st">"lines"</span><span class="op">)</span>,</span>
+<span>  M <span class="op">=</span> <span class="fl">250</span>,</span>
+<span>  col <span class="op">=</span> <span class="st">"black"</span>,</span>
+<span>  fill <span class="op">=</span> <span class="st">"black"</span>,</span>
+<span>  <span class="va">alpha</span>,</span>
+<span>  <span class="va">lwd</span>,</span>
+<span>  between_title <span class="op">=</span> <span class="st">"Between"</span>,</span>
+<span>  within_title <span class="op">=</span> <span class="st">"Within"</span>,</span>
+<span>  total_title <span class="op">=</span> <span class="st">"Total"</span>,</span>
+<span>  scale <span class="op">=</span> <span class="fl">100</span>,</span>
+<span>  plot <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  ncol <span class="op">=</span> <span class="fl">3</span>,</span>
+<span>  base_size <span class="op">=</span> <span class="fl">14</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for theil</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">x</span>, scale <span class="op">=</span> <span class="fl">100</span>, digits <span class="op">=</span> <span class="fl">3</span>, <span class="va">...</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for theil_list</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">x</span>, scale <span class="op">=</span> <span class="fl">100</span>, digits <span class="op">=</span> <span class="fl">3</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>x</dt>
 <dd><p>An object of class <code>thiel' or </code>theil_list<code>, as returned by calling </code>theil<code>on a list of fitted</code>surveil` models</p></dd>
+
+
 <dt>style</dt>
 <dd><p>If <code>style = "mean_qi"</code>, then the posterior mean and 95 percent credible interval will be plotted; if <code>style = "lines"</code>, then <code>M</code> samples from the joint probability distribution will be plotted.</p></dd>
+
+
 <dt>M</dt>
 <dd><p>If <code>style = "lines"</code>, then <code>M</code> is the number of samples from the posterior distribution that will be plotted; the default is <code>M = 250</code>.</p></dd>
+
+
 <dt>col</dt>
 <dd><p>Line color</p></dd>
+
+
 <dt>fill</dt>
 <dd><p>Fill color</p></dd>
+
+
 <dt>alpha</dt>
 <dd><p>For <code>style = "mean_qi"</code>, this controls the transparency for the credible interval (passed to <code><a href="https://ggplot2.tidyverse.org/reference/geom_ribbon.html" class="external-link">geom_ribbon</a></code>) and defaults to <code>alpha = 0.5</code>; for <code>style = "lines"</code>, this controls the transparency of the lines and defaults to <code>alpha = 0.7</code>.</p></dd>
+
+
 <dt>lwd</dt>
 <dd><p>Line width; for <code>style = "mean_qi"</code>, the default is <code>lwd = 1</code>; for <code>style = "lines"</code>, the default is <code>lwd = 0.05</code>.</p></dd>
+
+
 <dt>base_size</dt>
 <dd><p>Passed to <code>theme_classic</code> to control size of plot elements (e.g., text)</p></dd>
+
+
 <dt>scale</dt>
 <dd><p>Scale Theil's index by <code>scale</code></p></dd>
+
+
 <dt>labels</dt>
 <dd><p>x-axis labels (time periods)</p></dd>
+
+
 <dt>...</dt>
 <dd><p>additional arguments</p></dd>
+
+
 <dt>between_title</dt>
 <dd><p>Plot title for the between geography component of Theil's T; defaults to "Between".</p></dd>
+
+
 <dt>within_title</dt>
 <dd><p>Plot title for the within geography component of Theil's T; defaults to "Within".</p></dd>
+
+
 <dt>total_title</dt>
 <dd><p>Plot title for Theil's index; defaults to "Total".</p></dd>
+
+
 <dt>plot</dt>
 <dd><p>If <code>FALSE</code>, return a list of <code>ggplot</code>s. Not used when <code>style = "lines"</code>.</p></dd>
+
+
 <dt>ncol</dt>
 <dd><p>Number of columns for the plotting device. If <code>ncol = 1</code>, the three plots will be aligned vertically in one column; if <code>ncol = 3</code> they will b aligned horizontally in one row.</p></dd>
+
+
 <dt>digits</dt>
 <dd><p>number of digits to print (passed to <code><a href="https://rdrr.io/r/base/print.dataframe.html" class="external-link">print.data.frame</a></code>)</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <div class="section">
+    
+
+<div class="section">
 <h3 id="plot-theil">plot.theil<a class="anchor" aria-label="anchor" href="#plot-theil"></a></h3>
 
 
 <p>The plot method returns an object of class <code>ggplot</code>.</p>
-</div><div class="section">
+</div>
+
+
+
+<div class="section">
 <h3 id="plot-theil-list">plot.theil_list<a class="anchor" aria-label="anchor" href="#plot-theil-list"></a></h3>
 
 
 <p>If <code>style = "lines"</code>, the plot method for <code>theil_list</code> objects returns a <code>ggplot</code> with facets for each component of inequality (between-areas, within-areas, and total). For <code>style = "mean_qi"</code>, the plot method returns either a list of plots (all of class <code>ggplot</code>) or, when <code>plot = TRUE</code>, it will draw them to current plotting device using <code><a href="https://rdrr.io/pkg/gridExtra/man/arrangeGrob.html" class="external-link">grid.arrange</a></code>.</p>
-</div><div class="section">
+</div>
+
+
+
+<div class="section">
 <h3 id="print-theil">print.theil<a class="anchor" aria-label="anchor" href="#print-theil"></a></h3>
 
 
 <p>The print returns nothing and method prints a summary of results to the R console.</p>
 </div>
+
+
     </div>
     <div id="see-also">
     <h2>See also</h2>
@@ -176,7 +221,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

@@ -23,7 +23,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">surveil</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.2</span>
       </span>
     </div>
 
@@ -62,15 +62,15 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">theil</span><span class="op">(</span><span class="va">x</span><span class="op">)</span>
-
-<span class="fu">theil2</span><span class="op">(</span><span class="va">Count</span>, <span class="va">Population</span>, <span class="va">rates</span>, total <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-
-<span class="co"># S3 method for surveil</span>
-<span class="fu">theil</span><span class="op">(</span><span class="va">x</span><span class="op">)</span>
-
-<span class="co"># S3 method for list</span>
-<span class="fu">theil</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">theil</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">theil2</span><span class="op">(</span><span class="va">Count</span>, <span class="va">Population</span>, <span class="va">rates</span>, total <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for surveil</span></span>
+<span><span class="fu">theil</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for list</span></span>
+<span><span class="fu">theil</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="source">
@@ -84,23 +84,38 @@
     <h2>Arguments</h2>
     <dl><dt>x</dt>
 <dd><p>A fitted <code>surveil</code> model, from <code><a href="stan_rw.html">stan_rw</a></code>; or, a list of fitted <code>surveil</code> models, where each model represents a different geographic area (e.g., states).</p></dd>
+
+
 <dt>Count</dt>
 <dd><p>Case counts, integers</p></dd>
+
+
 <dt>Population</dt>
 <dd><p>Population at risk, integers</p></dd>
+
+
 <dt>rates</dt>
 <dd><p>If <code>Count</code> is not provided, then <code>rates</code> must be provided (<code>Count = rates * Population</code>).</p></dd>
+
+
 <dt>total</dt>
 <dd><p>If <code>total = TRUE</code>, Theil's index will be returned. Each unit contributes to Theil's index; if <code>total = FALSE</code>, all of the elements that sum to Theil's index will be returned.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <div class="section">
+    
+
+<div class="section">
 <h3 id="theil-">theil2<a class="anchor" aria-label="anchor" href="#theil-"></a></h3>
 
 
 <p>If <code>total = TRUE</code> (the default), <code>theil2</code> returns Theil's index as a numeric value. Else, <code>theil2</code> returns a vector of values that sum to Theil's index.</p>
-</div><div class="section">
+</div>
+
+
+
+<div class="section">
 <h3 id="theil-surveil">theil.surveil<a class="anchor" aria-label="anchor" href="#theil-surveil"></a></h3>
 
 
@@ -111,7 +126,11 @@
 <dd><p>A <code>data.frame</code> with MCMC samples for Theil's T</p></dd>
 
 
-</dl></div><div class="section">
+</dl></div>
+
+
+
+<div class="section">
 <h3 id="theil-list">theil.list<a class="anchor" aria-label="anchor" href="#theil-list"></a></h3>
 
 
@@ -147,16 +166,16 @@
 .
 
 </dl></div>
+
+
     </div>
     <div id="details">
     <h2>Details</h2>
     <p>Theil's index is a good index of inequality in disease and mortality burdens when multiple groups are being considered. It provides a summary measure of inequality across a set of demographic groups that may be tracked over time (and/or space). Also, it is interesting because it is additive, and thus admits of simple decompositions.</p>
-<p>The index measures discrepancies between a population's share of the disease burden, <code>omega</code>, and their share of the population, <code>eta</code>. A situation of zero inequality would imply that each population's share of cases is equal to its population share, or, <code>omega=eta</code>. Each population's contribution to total inequality is calculated as:</p><div class="sourceCode"><pre><code>             T_i = omega_i * [log(omega_i/eta_i)],
-</code></pre></div>
-
-<p>the log-ratio of case-share to population-share, weighted by their share of cases. Theil's index for all areas is the sum of each area's T_i:</p><div class="sourceCode"><pre><code>             T = sum_(i=1)^n T_i.
-</code></pre></div>
-
+<p>The index measures discrepancies between a population's share of the disease burden, <code>omega</code>, and their share of the population, <code>eta</code>. A situation of zero inequality would imply that each population's share of cases is equal to its population share, or, <code>omega=eta</code>. Each population's contribution to total inequality is calculated as:</p>
+<p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a>             T_i =<span class="st"> </span>omega_i <span class="op">*</span><span class="st"> </span>[<span class="kw">log</span>(omega_i<span class="op">/</span>eta_i)],</span></code></pre><p></p></div>
+<p>the log-ratio of case-share to population-share, weighted by their share of cases. Theil's index for all areas is the sum of each area's T_i:</p>
+<p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a>             T =<span class="st"> </span><span class="kw">sum_</span>(<span class="dt">i=</span><span class="dv">1</span>)<span class="op">^</span>n T_i.</span></code></pre><p></p></div>
 <p>Theil's T is thus a weighted mean of log-ratios of case shares to population shares, where each log-ratio (which we may describe as a raw inequality score) is weighted by its share of total cases. The index has a minimum of zero and a maximum of <code>log(N)</code>, where <code>N</code> is the number of units (e.g., number of states).</p>
 <p>Theil's index, which is based on Shannon's information theory, can be extended to measure inequality across multiple groups nested within non-overlapping geographies (e.g., states).</p>
     </div>
@@ -167,21 +186,20 @@
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code>
-<span class="co"># \donttest{</span>
- <span class="va">houston</span> <span class="op">&lt;-</span> <span class="va">msa</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep</a></span><span class="op">(</span><span class="st">"Houston"</span>, <span class="va">msa</span><span class="op">$</span><span class="va">MSA</span><span class="op">)</span>, <span class="op">]</span>
- <span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="stan_rw.html">stan_rw</a></span><span class="op">(</span><span class="va">houston</span>, time <span class="op">=</span> <span class="va">Year</span>, group <span class="op">=</span> <span class="va">Race</span>,
-               chains <span class="op">=</span> <span class="fl">2</span>, iter <span class="op">=</span> <span class="fl">900</span><span class="op">)</span> <span class="co"># for speed only</span>
- <span class="va">theil_dfw</span> <span class="op">&lt;-</span> <span class="fu">theil</span><span class="op">(</span><span class="va">fit</span><span class="op">)</span>
- <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">theil_dfw</span><span class="op">)</span>
-<span class="co"># }</span>
-
-<span class="va">Count</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">12</span>, <span class="fl">3</span>, <span class="fl">111</span><span class="op">)</span>
-<span class="va">Pop</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1000</span>, <span class="fl">1200</span>, <span class="fl">4000</span>, <span class="fl">9000</span><span class="op">)</span>
-<span class="fu">theil2</span><span class="op">(</span><span class="va">Count</span>, <span class="va">Pop</span><span class="op">)</span>
-<span class="fu">theil2</span><span class="op">(</span><span class="va">Count</span>, <span class="va">Pop</span>, total <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
-
-</code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span></span>
+<span><span class="co"># \donttest{</span></span>
+<span> <span class="va">houston</span> <span class="op">&lt;-</span> <span class="va">msa</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep</a></span><span class="op">(</span><span class="st">"Houston"</span>, <span class="va">msa</span><span class="op">$</span><span class="va">MSA</span><span class="op">)</span>, <span class="op">]</span></span>
+<span> <span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="stan_rw.html">stan_rw</a></span><span class="op">(</span><span class="va">houston</span>, time <span class="op">=</span> <span class="va">Year</span>, group <span class="op">=</span> <span class="va">Race</span>,</span>
+<span>               chains <span class="op">=</span> <span class="fl">2</span>, iter <span class="op">=</span> <span class="fl">900</span><span class="op">)</span> <span class="co"># for speed only</span></span>
+<span> <span class="va">theil_dfw</span> <span class="op">&lt;-</span> <span class="fu">theil</span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span>
+<span> <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">theil_dfw</span><span class="op">)</span></span>
+<span><span class="co"># }</span></span>
+<span></span>
+<span><span class="va">Count</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">12</span>, <span class="fl">3</span>, <span class="fl">111</span><span class="op">)</span></span>
+<span><span class="va">Pop</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1000</span>, <span class="fl">1200</span>, <span class="fl">4000</span>, <span class="fl">9000</span><span class="op">)</span></span>
+<span><span class="fu">theil2</span><span class="op">(</span><span class="va">Count</span>, <span class="va">Pop</span><span class="op">)</span></span>
+<span><span class="fu">theil2</span><span class="op">(</span><span class="va">Count</span>, <span class="va">Pop</span>, total <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span></span></code></pre></div>
     </div>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -195,7 +213,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

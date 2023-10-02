@@ -23,7 +23,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">surveil</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.2</span>
       </span>
     </div>
 
@@ -62,80 +62,109 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="co"># S3 method for surveil</span>
-<span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">x</span>, scale <span class="op">=</span> <span class="fl">1</span>, <span class="va">...</span><span class="op">)</span>
-
-<span class="co"># S3 method for surveil</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span>
-  <span class="va">x</span>,
-  scale <span class="op">=</span> <span class="fl">1</span>,
-  style <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"mean_qi"</span>, <span class="st">"lines"</span><span class="op">)</span>,
-  facet <span class="op">=</span> <span class="cn">FALSE</span>,
-  facet_scales <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"fixed"</span>, <span class="st">"free"</span><span class="op">)</span>,
-  ncol <span class="op">=</span> <span class="cn">NULL</span>,
-  base_size <span class="op">=</span> <span class="fl">14</span>,
-  palette <span class="op">=</span> <span class="st">"Dark2"</span>,
-  M <span class="op">=</span> <span class="fl">250</span>,
-  <span class="va">alpha</span>,
-  <span class="va">lwd</span>,
-  fill <span class="op">=</span> <span class="st">"gray80"</span>,
-  size <span class="op">=</span> <span class="fl">1.5</span>,
-  <span class="va">...</span>
-<span class="op">)</span>
-
-<span class="co"># S3 method for list</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span>
-  <span class="va">x</span>,
-  scale <span class="op">=</span> <span class="fl">1</span>,
-  style <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"mean_qi"</span>, <span class="st">"lines"</span><span class="op">)</span>,
-  facet <span class="op">=</span> <span class="cn">FALSE</span>,
-  <span class="va">ncol</span>,
-  facet_scales <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"fixed"</span>, <span class="st">"free"</span><span class="op">)</span>,
-  M <span class="op">=</span> <span class="fl">250</span>,
-  base_size <span class="op">=</span> <span class="fl">14</span>,
-  palette <span class="op">=</span> <span class="st">"Dark2"</span>,
-  fill <span class="op">=</span> <span class="st">"gray80"</span>,
-  size <span class="op">=</span> <span class="fl">1.5</span>,
-  <span class="va">alpha</span>,
-  <span class="va">lwd</span>,
-  <span class="va">...</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co"># S3 method for surveil</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">x</span>, scale <span class="op">=</span> <span class="fl">1</span>, <span class="va">...</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for surveil</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span></span>
+<span>  <span class="va">x</span>,</span>
+<span>  scale <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  style <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"mean_qi"</span>, <span class="st">"lines"</span><span class="op">)</span>,</span>
+<span>  facet <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  facet_scales <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"fixed"</span>, <span class="st">"free"</span><span class="op">)</span>,</span>
+<span>  ncol <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  base_size <span class="op">=</span> <span class="fl">14</span>,</span>
+<span>  palette <span class="op">=</span> <span class="st">"Dark2"</span>,</span>
+<span>  M <span class="op">=</span> <span class="fl">250</span>,</span>
+<span>  <span class="va">alpha</span>,</span>
+<span>  <span class="va">lwd</span>,</span>
+<span>  fill <span class="op">=</span> <span class="st">"gray80"</span>,</span>
+<span>  size <span class="op">=</span> <span class="fl">1.5</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for list</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span></span>
+<span>  <span class="va">x</span>,</span>
+<span>  scale <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  style <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"mean_qi"</span>, <span class="st">"lines"</span><span class="op">)</span>,</span>
+<span>  facet <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  <span class="va">ncol</span>,</span>
+<span>  facet_scales <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"fixed"</span>, <span class="st">"free"</span><span class="op">)</span>,</span>
+<span>  M <span class="op">=</span> <span class="fl">250</span>,</span>
+<span>  base_size <span class="op">=</span> <span class="fl">14</span>,</span>
+<span>  palette <span class="op">=</span> <span class="st">"Dark2"</span>,</span>
+<span>  fill <span class="op">=</span> <span class="st">"gray80"</span>,</span>
+<span>  size <span class="op">=</span> <span class="fl">1.5</span>,</span>
+<span>  <span class="va">alpha</span>,</span>
+<span>  <span class="va">lwd</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>x</dt>
 <dd><p>A fitted <code>surveil</code> model, or a list of <code>stand_surveil</code> objects (as produced by <code><a href="standardize.html">standardize</a></code>).</p></dd>
+
+
 <dt>scale</dt>
 <dd><p>Scale the rates by this amount; e.g., <code>scale = 100e3</code> will print rates per 100,000 at risk.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>For the plot method, additional arguments will be passed to `<code><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></code>; for the print method, additional arguments will be passed to <code><a href="https://rdrr.io/r/base/print.dataframe.html" class="external-link">print.data.frame</a></code>.</p></dd>
+
+
 <dt>style</dt>
 <dd><p>If <code>style = "mean_qi"</code>, then the posterior mean and 95 percent credible interval will be plotted; if <code>style = "lines"</code>, then <code>M</code> samples from the joint probability distribution of the annual rates will be plotted.</p></dd>
+
+
 <dt>facet</dt>
 <dd><p>If <code>facet = TRUE</code>, <code><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></code> will be used instead of differentiating by line color.</p></dd>
+
+
 <dt>facet_scales</dt>
 <dd><p>When <code>facet = TRUE</code>, this argument controls behavior of the scales for each sub-plot. See the <code>scales</code> argument to <code><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></code>.</p></dd>
+
+
 <dt>ncol</dt>
 <dd><p>Number of columns for the plotting device; optional and only used if <code>facet = TRUE</code>. If <code>ncol = 1</code>, the three plots will be aligned vertically in one column; if <code>ncol = 3</code> they will b aligned horizontally in one row. Defaults to <code>ncol = NULL</code> to allow <code><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></code> to automatically determine the number of columns.</p></dd>
+
+
 <dt>base_size</dt>
 <dd><p>Passed to <code><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_classic()</a></code> to control size of plot components (text).</p></dd>
+
+
 <dt>palette</dt>
 <dd><p>For multiple groups, choose the color palette. For a list of options, see <code><a href="https://ggplot2.tidyverse.org/reference/scale_brewer.html" class="external-link">scale_color_brewer</a></code>. The default is <code>palette = "Dark2"</code>. Not used if <code>facet = TRUE</code>.</p></dd>
+
+
 <dt>M</dt>
 <dd><p>If <code>style = "lines"</code>, then <code>M</code> is the number of samples from the posterior distribution that will be plotted; the default is <code>M = 250</code>.</p></dd>
+
+
 <dt>alpha</dt>
 <dd><p>Numeric value from zero to one. When <code>style = "lines"</code>,  this controls transparency of lines; passed to <code><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></code>. For `style = "mean_qi", this controls the transparency of the shaded credible interval; passed to <code><a href="https://ggplot2.tidyverse.org/reference/geom_ribbon.html" class="external-link">geom_ribbon</a></code>.</p></dd>
+
+
 <dt>lwd</dt>
 <dd><p>Numeric value indicating linewidth. Passed to <code><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></code></p></dd>
+
+
 <dt>fill</dt>
 <dd><p>Color for the shaded credible intervals; only used when <code>style = "mean_qi"</code>.</p></dd>
+
+
 <dt>size</dt>
 <dd><p>Positive numeric value. For <code>style = "mean_qi"</code>, this controls the size of the points representing crude rates. To exclude these points from the plot altogether, use <code>size = 0</code>.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>The plot method returns a <code>ggplot</code> object; the print method returns nothing but prints a summary of results to the R console. If <code>x</code> is a list of <code>stand_surveil</code> objects, the plotted lines will be labeled using the names returned by <code>names(x)</code>; if elements of the list are not named, plotted lines will simply be numbered.</p>
+    
+
+<p>The plot method returns a <code>ggplot</code> object; the print method returns nothing but prints a summary of results to the R console. If <code>x</code> is a list of <code>stand_surveil</code> objects, the plotted lines will be labeled using the names returned by <code>names(x)</code>; if elements of the list are not named, plotted lines will simply be numbered.</p>
     </div>
     <div id="see-also">
     <h2>See also</h2>
@@ -148,25 +177,24 @@
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code>
-<span class="co"># \donttest{</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">msa</span><span class="op">)</span>
-<span class="va">houston</span> <span class="op">&lt;-</span> <span class="va">msa</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep</a></span><span class="op">(</span><span class="st">"Houston"</span>, <span class="va">msa</span><span class="op">$</span><span class="va">MSA</span><span class="op">)</span>, <span class="op">]</span>
-<span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="stan_rw.html">stan_rw</a></span><span class="op">(</span><span class="va">houston</span>, time <span class="op">=</span> <span class="va">Year</span>, group <span class="op">=</span> <span class="va">Race</span>,
-              chains <span class="op">=</span> <span class="fl">2</span>, iter <span class="op">=</span> <span class="fl">900</span><span class="op">)</span> <span class="co"># for speed only</span>
-
-<span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span>
-
-<span class="co">## plot probability distribution for disease risk</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit</span>, style <span class="op">=</span> <span class="st">"lines"</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit</span>, facet <span class="op">=</span> <span class="cn">TRUE</span>, scale <span class="op">=</span> <span class="fl">100e3</span><span class="op">)</span>
-
- <span class="co">## as a ggplot, you can customize the output</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span>
-<span class="co"># }</span>
-
-</code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span></span>
+<span><span class="co"># \donttest{</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">msa</span><span class="op">)</span></span>
+<span><span class="va">houston</span> <span class="op">&lt;-</span> <span class="va">msa</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep</a></span><span class="op">(</span><span class="st">"Houston"</span>, <span class="va">msa</span><span class="op">$</span><span class="va">MSA</span><span class="op">)</span>, <span class="op">]</span></span>
+<span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="stan_rw.html">stan_rw</a></span><span class="op">(</span><span class="va">houston</span>, time <span class="op">=</span> <span class="va">Year</span>, group <span class="op">=</span> <span class="va">Race</span>,</span>
+<span>              chains <span class="op">=</span> <span class="fl">2</span>, iter <span class="op">=</span> <span class="fl">900</span><span class="op">)</span> <span class="co"># for speed only</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">## plot probability distribution for disease risk</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit</span>, style <span class="op">=</span> <span class="st">"lines"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit</span>, facet <span class="op">=</span> <span class="cn">TRUE</span>, scale <span class="op">=</span> <span class="fl">100e3</span><span class="op">)</span></span>
+<span></span>
+<span> <span class="co">## as a ggplot, you can customize the output</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co"># }</span></span>
+<span></span></code></pre></div>
     </div>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -180,7 +208,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

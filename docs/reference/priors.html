@@ -23,7 +23,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">surveil</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.2</span>
       </span>
     </div>
 
@@ -62,9 +62,9 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">normal</span><span class="op">(</span>location <span class="op">=</span> <span class="fl">0</span>, <span class="va">scale</span>, k <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>
-
-<span class="fu">lkj</span><span class="op">(</span><span class="va">eta</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">normal</span><span class="op">(</span>location <span class="op">=</span> <span class="fl">0</span>, <span class="va">scale</span>, k <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">lkj</span><span class="op">(</span><span class="va">eta</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="source">
@@ -75,16 +75,25 @@
     <h2>Arguments</h2>
     <dl><dt>location</dt>
 <dd><p>Location parameter (numeric)</p></dd>
+
+
 <dt>scale</dt>
 <dd><p>Scale parameter (positive numeric)</p></dd>
+
+
 <dt>k</dt>
 <dd><p>Optional; number of groups for which priors are needed. This is a shortcut to avoid using the <code>rep</code> function to repeat the same prior for each group, as in: <code>normal(location = rep(0, times = 3), scale = rep(1, times = 3)</code>. To provide distinct priors for each group, simply specify them individually, as in <code>normal(location = c(-5, -6, -8), scale = c(2, 2, 2))</code>.</p></dd>
+
+
 <dt>eta</dt>
 <dd><p>The shape parameter for the LKJ prior</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>An object of class <code>prior</code> which will be used internally by <strong>surveil</strong> to set parameters of prior distributions.</p>
+    
+
+<p>An object of class <code>prior</code> which will be used internally by <strong>surveil</strong> to set parameters of prior distributions.</p>
     </div>
     <div id="details">
     <h2>Details</h2>
@@ -107,22 +116,21 @@
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code>
-<span class="co"># note there are three groups in the data, each requires a prior</span>
-<span class="va">prior</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>
-<span class="va">prior</span><span class="op">$</span><span class="va">eta_1</span> <span class="op">&lt;-</span> <span class="fu">normal</span><span class="op">(</span>location <span class="op">=</span> <span class="op">-</span><span class="fl">6</span>, scale <span class="op">=</span> <span class="fl">4</span>, k <span class="op">=</span> <span class="fl">3</span><span class="op">)</span>
-<span class="co">## by default, location = 0</span>
-<span class="va">prior</span><span class="op">$</span><span class="va">sigma</span> <span class="op">&lt;-</span> <span class="fu">normal</span><span class="op">(</span>scale <span class="op">=</span> <span class="fl">1</span>, k <span class="op">=</span> <span class="fl">3</span><span class="op">)</span>
-<span class="va">prior</span><span class="op">$</span><span class="va">omega</span> <span class="op">&lt;-</span> <span class="fu">lkj</span><span class="op">(</span><span class="fl">2</span><span class="op">)</span>
-
-<span class="co"># \donttest{</span>
-<span class="va">dfw</span> <span class="op">&lt;-</span> <span class="va">msa</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep</a></span><span class="op">(</span><span class="st">"Dallas"</span>, <span class="va">msa</span><span class="op">$</span><span class="va">MSA</span><span class="op">)</span>, <span class="op">]</span>
-<span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="stan_rw.html">stan_rw</a></span><span class="op">(</span><span class="va">dfw</span>, time <span class="op">=</span> <span class="va">Year</span>, group <span class="op">=</span> <span class="va">Race</span>, prior <span class="op">=</span> <span class="va">prior</span>,
-               chains <span class="op">=</span> <span class="fl">2</span>, iter <span class="op">=</span> <span class="fl">900</span><span class="op">)</span> <span class="co"># for speed only</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span>
-<span class="co"># }</span>
-
-</code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span></span>
+<span><span class="co"># note there are three groups in the data, each requires a prior</span></span>
+<span><span class="va">prior</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">prior</span><span class="op">$</span><span class="va">eta_1</span> <span class="op">&lt;-</span> <span class="fu">normal</span><span class="op">(</span>location <span class="op">=</span> <span class="op">-</span><span class="fl">6</span>, scale <span class="op">=</span> <span class="fl">4</span>, k <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
+<span><span class="co">## by default, location = 0</span></span>
+<span><span class="va">prior</span><span class="op">$</span><span class="va">sigma</span> <span class="op">&lt;-</span> <span class="fu">normal</span><span class="op">(</span>scale <span class="op">=</span> <span class="fl">1</span>, k <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
+<span><span class="va">prior</span><span class="op">$</span><span class="va">omega</span> <span class="op">&lt;-</span> <span class="fu">lkj</span><span class="op">(</span><span class="fl">2</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># \donttest{</span></span>
+<span><span class="va">dfw</span> <span class="op">&lt;-</span> <span class="va">msa</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep</a></span><span class="op">(</span><span class="st">"Dallas"</span>, <span class="va">msa</span><span class="op">$</span><span class="va">MSA</span><span class="op">)</span>, <span class="op">]</span></span>
+<span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="stan_rw.html">stan_rw</a></span><span class="op">(</span><span class="va">dfw</span>, time <span class="op">=</span> <span class="va">Year</span>, group <span class="op">=</span> <span class="va">Race</span>, prior <span class="op">=</span> <span class="va">prior</span>,</span>
+<span>               chains <span class="op">=</span> <span class="fl">2</span>, iter <span class="op">=</span> <span class="fl">900</span><span class="op">)</span> <span class="co"># for speed only</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span>
+<span><span class="co"># }</span></span>
+<span></span></code></pre></div>
     </div>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -136,7 +144,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

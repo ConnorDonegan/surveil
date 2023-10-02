@@ -23,7 +23,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">surveil</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.2</span>
       </span>
     </div>
 
@@ -62,21 +62,28 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">standardize</span><span class="op">(</span><span class="va">x</span>, <span class="va">label</span>, <span class="va">standard_pop</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">standardize</span><span class="op">(</span><span class="va">x</span>, <span class="va">label</span>, <span class="va">standard_pop</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>x</dt>
 <dd><p>A fitted <code>surveil</code> model</p></dd>
+
+
 <dt>label</dt>
 <dd><p>Labels (character strings) for the age groups that correspond to the values of <code>stand_pop</code>. The labels must match the grouping variable used to fit the model (i.e., <code>all(label %in% names(x$data$cases))</code> must be true).</p></dd>
+
+
 <dt>standard_pop</dt>
 <dd><p>Standard population values corresponding to the age groups specified by <code>label</code></p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A list, also of class "stand_surveil", containing the entire contents of the user-provided <code>surveil</code> model plus the following:</p><dl><dt>standard_summary</dt>
+    
+
+<p>A list, also of class "stand_surveil", containing the entire contents of the user-provided <code>surveil</code> model plus the following:</p><dl><dt>standard_summary</dt>
 <dd><p>summary data frame of standardized rates (means and 95 percent credible intervals)</p></dd>
 
 
@@ -100,26 +107,25 @@
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">cancer</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">standard</span><span class="op">)</span>
-
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">standard</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">cancer</span><span class="op">)</span>
-
-<span class="co"># \donttest{</span>
-<span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="stan_rw.html">stan_rw</a></span><span class="op">(</span><span class="va">cancer</span>,
-              time <span class="op">=</span> <span class="va">Year</span>,
-              group <span class="op">=</span> <span class="va">Age</span>,
-              chains <span class="op">=</span> <span class="fl">2</span>, iter <span class="op">=</span> <span class="fl">900</span> <span class="co"># for speed only</span>
-              <span class="op">)</span>
-
-<span class="va">stands</span> <span class="op">&lt;-</span> <span class="fu">standardize</span><span class="op">(</span><span class="va">fit</span>,
-                      label <span class="op">=</span> <span class="va">standard</span><span class="op">$</span><span class="va">age</span>,
-                      standard_pop <span class="op">=</span> <span class="va">standard</span><span class="op">$</span><span class="va">standard_pop</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">stands</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">stands</span>, style <span class="op">=</span> <span class="st">"lines"</span><span class="op">)</span>
-<span class="co"># }</span>
-</code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">cancer</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">standard</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">standard</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">cancer</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># \donttest{</span></span>
+<span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="stan_rw.html">stan_rw</a></span><span class="op">(</span><span class="va">cancer</span>,</span>
+<span>              time <span class="op">=</span> <span class="va">Year</span>,</span>
+<span>              group <span class="op">=</span> <span class="va">Age</span>,</span>
+<span>              chains <span class="op">=</span> <span class="fl">2</span>, iter <span class="op">=</span> <span class="fl">900</span> <span class="co"># for speed only</span></span>
+<span>              <span class="op">)</span></span>
+<span></span>
+<span><span class="va">stands</span> <span class="op">&lt;-</span> <span class="fu">standardize</span><span class="op">(</span><span class="va">fit</span>,</span>
+<span>                      label <span class="op">=</span> <span class="va">standard</span><span class="op">$</span><span class="va">age</span>,</span>
+<span>                      standard_pop <span class="op">=</span> <span class="va">standard</span><span class="op">$</span><span class="va">standard_pop</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">stands</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">stands</span>, style <span class="op">=</span> <span class="st">"lines"</span><span class="op">)</span></span>
+<span><span class="co"># }</span></span></code></pre></div>
     </div>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -133,7 +139,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

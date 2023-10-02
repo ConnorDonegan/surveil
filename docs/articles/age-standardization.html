@@ -46,7 +46,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">surveil</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.2</span>
       </span>
     </div>
 
@@ -79,7 +79,7 @@
 
       
 
-      </header><div class="row">
+      </header><script src="age-standardization_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Age-standardized rates</h1>
@@ -95,67 +95,67 @@
     
     
 <p>Age-standardization is used to improve comparison of disease incidence or mortality rates across populations. The term ‘population’ is used to reference any distinct grouping of people, whether it be geographic (e.g., two or more regions), temporal (e.g., two or more years), or social (e.g., two or more genders). Because disease and mortality risk vary strongly by age, we want to control for varying age distributions across groups. Examination of each age-specific rate can be indispensable for an analysis, though age-standardized rates provide a single summary index of risk.</p>
-<p>This vignette describes the method of direct age-standardization <span class="citation">(Broemeling <a href="#ref-broemeling_2020">2020</a>)</span> and then demonstrates implementation with <strong>surveil</strong>. The final section extends the methodology to the analysis of health inequality between two groups, where each group is age-stratified (e.g., two racial-ethnic groups in the same region).</p>
+<p>This vignette describes the method of direct age-standardization <span class="citation">(Broemeling <a href="#ref-broemeling_2020" role="doc-biblioref">2020</a>)</span> and then demonstrates implementation with <strong>surveil</strong>. The final section extends the methodology to the analysis of health inequality between two groups, where each group is age-stratified (e.g., two racial-ethnic groups in the same region).</p>
 <div class="section level2">
 <h2 id="data">Data<a class="anchor" aria-label="anchor" href="#data"></a>
 </h2>
 <p>The demonstration will use age-specific cancer incidence for the entire population of the United States of America, 1999-2017.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://connordonegan.github.io/surveil/" class="external-link">surveil</a></span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">cancer</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">cancer</span><span class="op">)</span>
-<span class="co">#&gt;   Year   Age Count Population</span>
-<span class="co">#&gt; 1 1999    &lt;1   866    3708753</span>
-<span class="co">#&gt; 2 1999   1-4  2959   14991152</span>
-<span class="co">#&gt; 3 1999   5-9  2226   20146188</span>
-<span class="co">#&gt; 4 1999 10-14  2447   19742631</span>
-<span class="co">#&gt; 5 1999 15-19  3875   19585857</span>
-<span class="co">#&gt; 6 1999 20-24  5969   18148795</span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://connordonegan.github.io/surveil/" class="external-link">surveil</a></span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">cancer</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">cancer</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   Year   Age Count Population</span></span>
+<span><span class="co">#&gt; 1 1999    &lt;1   866    3708753</span></span>
+<span><span class="co">#&gt; 2 1999   1-4  2959   14991152</span></span>
+<span><span class="co">#&gt; 3 1999   5-9  2226   20146188</span></span>
+<span><span class="co">#&gt; 4 1999 10-14  2447   19742631</span></span>
+<span><span class="co">#&gt; 5 1999 15-19  3875   19585857</span></span>
+<span><span class="co">#&gt; 6 1999 20-24  5969   18148795</span></span></code></pre></div>
 <p>We will also use the age distribution of the United States in the year 2000 (2000 U.S. standard million population, see <code><a href="../reference/standard.html">?standard</a></code>):</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">standard</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">standard</span><span class="op">)</span>
-<span class="co">#&gt;    age.id   age standard_pop</span>
-<span class="co">#&gt; 1       1    &lt;1        13818</span>
-<span class="co">#&gt; 2       2   1-4        55317</span>
-<span class="co">#&gt; 3       3   5-9        72533</span>
-<span class="co">#&gt; 4       4 10-14        73032</span>
-<span class="co">#&gt; 5       5 15-19        72169</span>
-<span class="co">#&gt; 6       6 20-24        66478</span>
-<span class="co">#&gt; 7       7 25-29        64529</span>
-<span class="co">#&gt; 8       8 30-34        71044</span>
-<span class="co">#&gt; 9       9 35-39        80762</span>
-<span class="co">#&gt; 10     10 40-44        81851</span>
-<span class="co">#&gt; 11     11 45-49        72118</span>
-<span class="co">#&gt; 12     12 50-54        62716</span>
-<span class="co">#&gt; 13     13 55-59        48454</span>
-<span class="co">#&gt; 14     14 60-64        38793</span>
-<span class="co">#&gt; 15     15 65-69        34264</span>
-<span class="co">#&gt; 16     16 70-74        31773</span>
-<span class="co">#&gt; 17     17 75-79        26999</span>
-<span class="co">#&gt; 18     18 80-84        17842</span>
-<span class="co">#&gt; 19     19   85+        15508</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">standard</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">standard</span><span class="op">)</span></span>
+<span><span class="co">#&gt;    age.id   age standard_pop</span></span>
+<span><span class="co">#&gt; 1       1    &lt;1        13818</span></span>
+<span><span class="co">#&gt; 2       2   1-4        55317</span></span>
+<span><span class="co">#&gt; 3       3   5-9        72533</span></span>
+<span><span class="co">#&gt; 4       4 10-14        73032</span></span>
+<span><span class="co">#&gt; 5       5 15-19        72169</span></span>
+<span><span class="co">#&gt; 6       6 20-24        66478</span></span>
+<span><span class="co">#&gt; 7       7 25-29        64529</span></span>
+<span><span class="co">#&gt; 8       8 30-34        71044</span></span>
+<span><span class="co">#&gt; 9       9 35-39        80762</span></span>
+<span><span class="co">#&gt; 10     10 40-44        81851</span></span>
+<span><span class="co">#&gt; 11     11 45-49        72118</span></span>
+<span><span class="co">#&gt; 12     12 50-54        62716</span></span>
+<span><span class="co">#&gt; 13     13 55-59        48454</span></span>
+<span><span class="co">#&gt; 14     14 60-64        38793</span></span>
+<span><span class="co">#&gt; 15     15 65-69        34264</span></span>
+<span><span class="co">#&gt; 16     16 70-74        31773</span></span>
+<span><span class="co">#&gt; 17     17 75-79        26999</span></span>
+<span><span class="co">#&gt; 18     18 80-84        17842</span></span>
+<span><span class="co">#&gt; 19     19   85+        15508</span></span></code></pre></div>
 <p>Notice that the five-year age groups in the <code>cancer</code> data match the age groups provided by <code>standard</code>.</p>
 <p>In some cases, one is only interested in a subset of age groups. For the following examples, we will limit the analysis to persons 40-64 years old:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">cancer</span> <span class="op">&lt;-</span> <span class="va">cancer</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep</a></span><span class="op">(</span><span class="st">"40-44|45-49|50-54|55-59|60-64"</span>, <span class="va">cancer</span><span class="op">$</span><span class="va">Age</span><span class="op">)</span>,<span class="op">]</span>
-<span class="va">standard</span> <span class="op">&lt;-</span> <span class="va">standard</span><span class="op">[</span><span class="fl">10</span><span class="op">:</span><span class="fl">14</span>,<span class="op">]</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">cancer</span><span class="op">)</span>
-<span class="co">#&gt;    Year   Age  Count Population</span>
-<span class="co">#&gt; 10 1999 40-44  49256   21729686</span>
-<span class="co">#&gt; 11 1999 45-49  71420   19235534</span>
-<span class="co">#&gt; 12 1999 50-54  99571   16557188</span>
-<span class="co">#&gt; 13 1999 55-59 121501   12787366</span>
-<span class="co">#&gt; 14 1999 60-64 143968   10435791</span>
-<span class="co">#&gt; 29 2000 40-44  50907   22047047</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">cancer</span> <span class="op">&lt;-</span> <span class="va">cancer</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep</a></span><span class="op">(</span><span class="st">"40-44|45-49|50-54|55-59|60-64"</span>, <span class="va">cancer</span><span class="op">$</span><span class="va">Age</span><span class="op">)</span>,<span class="op">]</span></span>
+<span><span class="va">standard</span> <span class="op">&lt;-</span> <span class="va">standard</span><span class="op">[</span><span class="fl">10</span><span class="op">:</span><span class="fl">14</span>,<span class="op">]</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">cancer</span><span class="op">)</span></span>
+<span><span class="co">#&gt;    Year   Age  Count Population</span></span>
+<span><span class="co">#&gt; 10 1999 40-44  49256   21729686</span></span>
+<span><span class="co">#&gt; 11 1999 45-49  71420   19235534</span></span>
+<span><span class="co">#&gt; 12 1999 50-54  99571   16557188</span></span>
+<span><span class="co">#&gt; 13 1999 55-59 121501   12787366</span></span>
+<span><span class="co">#&gt; 14 1999 60-64 143968   10435791</span></span>
+<span><span class="co">#&gt; 29 2000 40-44  50907   22047047</span></span></code></pre></div>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">standard</span><span class="op">)</span>
-<span class="co">#&gt;    age.id   age standard_pop</span>
-<span class="co">#&gt; 10     10 40-44        81851</span>
-<span class="co">#&gt; 11     11 45-49        72118</span>
-<span class="co">#&gt; 12     12 50-54        62716</span>
-<span class="co">#&gt; 13     13 55-59        48454</span>
-<span class="co">#&gt; 14     14 60-64        38793</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">standard</span><span class="op">)</span></span>
+<span><span class="co">#&gt;    age.id   age standard_pop</span></span>
+<span><span class="co">#&gt; 10     10 40-44        81851</span></span>
+<span><span class="co">#&gt; 11     11 45-49        72118</span></span>
+<span><span class="co">#&gt; 12     12 50-54        62716</span></span>
+<span><span class="co">#&gt; 13     13 55-59        48454</span></span>
+<span><span class="co">#&gt; 14     14 60-64        38793</span></span></code></pre></div>
 <p>If, instead of making this selection, we were to use the entire age distribution in our analysis, all of the following discussion and code could proceed unchanged.</p>
 </div>
 <div class="section level2">
@@ -169,70 +169,76 @@
 </h2>
 <p>To model age-specific rates, provide the <code>stan_rw</code> function with the cancer data and tell it which column contains the time period indicator (<code>Year</code>) and which column contains the grouping variable (<code>Age</code>):</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/stan_rw.html">stan_rw</a></span><span class="op">(</span><span class="va">cancer</span>,
-               time <span class="op">=</span> <span class="va">Year</span>,
-           group <span class="op">=</span> <span class="va">Age</span>,
-           iter <span class="op">=</span> <span class="fl">1500</span>,
-           chains <span class="op">=</span> <span class="fl">2</span>  <span class="co">#, for speed only; use default chains=4         </span>
-           <span class="op">)</span>
-<span class="co">#&gt; Distribution: normal</span>
-<span class="co">#&gt; Distribution: normal</span>
-<span class="co">#&gt; [1] "Setting normal prior(s) for eta_1: "</span>
-<span class="co">#&gt;  location scale</span>
-<span class="co">#&gt;        -6     5</span>
-<span class="co">#&gt; [1] "\nSetting half-normal prior for sigma: "</span>
-<span class="co">#&gt;  location scale</span>
-<span class="co">#&gt;         0     1</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; SAMPLING FOR MODEL 'RW' NOW (CHAIN 1).</span>
-<span class="co">#&gt; Chain 1: </span>
-<span class="co">#&gt; Chain 1: Gradient evaluation took 3.4e-05 seconds</span>
-<span class="co">#&gt; Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.34 seconds.</span>
-<span class="co">#&gt; Chain 1: Adjust your expectations accordingly!</span>
-<span class="co">#&gt; Chain 1: </span>
-<span class="co">#&gt; Chain 1: </span>
-<span class="co">#&gt; Chain 1: Iteration:    1 / 1500 [  0%]  (Warmup)</span>
-<span class="co">#&gt; Chain 1: Iteration:  751 / 1500 [ 50%]  (Sampling)</span>
-<span class="co">#&gt; Chain 1: Iteration: 1500 / 1500 [100%]  (Sampling)</span>
-<span class="co">#&gt; Chain 1: </span>
-<span class="co">#&gt; Chain 1:  Elapsed Time: 0.62128 seconds (Warm-up)</span>
-<span class="co">#&gt; Chain 1:                0.361548 seconds (Sampling)</span>
-<span class="co">#&gt; Chain 1:                0.982828 seconds (Total)</span>
-<span class="co">#&gt; Chain 1: </span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; SAMPLING FOR MODEL 'RW' NOW (CHAIN 2).</span>
-<span class="co">#&gt; Chain 2: </span>
-<span class="co">#&gt; Chain 2: Gradient evaluation took 2e-05 seconds</span>
-<span class="co">#&gt; Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.2 seconds.</span>
-<span class="co">#&gt; Chain 2: Adjust your expectations accordingly!</span>
-<span class="co">#&gt; Chain 2: </span>
-<span class="co">#&gt; Chain 2: </span>
-<span class="co">#&gt; Chain 2: Iteration:    1 / 1500 [  0%]  (Warmup)</span>
-<span class="co">#&gt; Chain 2: Iteration:  751 / 1500 [ 50%]  (Sampling)</span>
-<span class="co">#&gt; Chain 2: Iteration: 1500 / 1500 [100%]  (Sampling)</span>
-<span class="co">#&gt; Chain 2: </span>
-<span class="co">#&gt; Chain 2:  Elapsed Time: 0.701205 seconds (Warm-up)</span>
-<span class="co">#&gt; Chain 2:                0.392967 seconds (Sampling)</span>
-<span class="co">#&gt; Chain 2:                1.09417 seconds (Total)</span>
-<span class="co">#&gt; Chain 2:</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/stan_rw.html">stan_rw</a></span><span class="op">(</span><span class="va">cancer</span>,</span>
+<span>               time <span class="op">=</span> <span class="va">Year</span>,</span>
+<span>           group <span class="op">=</span> <span class="va">Age</span>,</span>
+<span>           iter <span class="op">=</span> <span class="fl">1500</span>,</span>
+<span>           chains <span class="op">=</span> <span class="fl">2</span>  <span class="co">#, for speed only; use default chains=4         </span></span>
+<span>           <span class="op">)</span></span>
+<span><span class="co">#&gt; Distribution: normal</span></span>
+<span><span class="co">#&gt; Distribution: normal</span></span>
+<span><span class="co">#&gt; Warning: Bulk Effective Samples Size (ESS) is too low, indicating posterior means and medians may be unreliable.</span></span>
+<span><span class="co">#&gt; Running the chains for more iterations may help. See</span></span>
+<span><span class="co">#&gt; https://mc-stan.org/misc/warnings.html#bulk-ess</span></span>
+<span><span class="co">#&gt; Warning: Tail Effective Samples Size (ESS) is too low, indicating posterior variances and tail quantiles may be unreliable.</span></span>
+<span><span class="co">#&gt; Running the chains for more iterations may help. See</span></span>
+<span><span class="co">#&gt; https://mc-stan.org/misc/warnings.html#tail-ess</span></span>
+<span><span class="co">#&gt; [1] "Setting normal prior(s) for eta_1: "</span></span>
+<span><span class="co">#&gt;  location scale</span></span>
+<span><span class="co">#&gt;        -6     5</span></span>
+<span><span class="co">#&gt; [1] "\nSetting half-normal prior for sigma: "</span></span>
+<span><span class="co">#&gt;  location scale</span></span>
+<span><span class="co">#&gt;         0     1</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; SAMPLING FOR MODEL 'RW' NOW (CHAIN 1).</span></span>
+<span><span class="co">#&gt; Chain 1: </span></span>
+<span><span class="co">#&gt; Chain 1: Gradient evaluation took 3.1e-05 seconds</span></span>
+<span><span class="co">#&gt; Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.31 seconds.</span></span>
+<span><span class="co">#&gt; Chain 1: Adjust your expectations accordingly!</span></span>
+<span><span class="co">#&gt; Chain 1: </span></span>
+<span><span class="co">#&gt; Chain 1: </span></span>
+<span><span class="co">#&gt; Chain 1: Iteration:    1 / 1500 [  0%]  (Warmup)</span></span>
+<span><span class="co">#&gt; Chain 1: Iteration:  751 / 1500 [ 50%]  (Sampling)</span></span>
+<span><span class="co">#&gt; Chain 1: Iteration: 1500 / 1500 [100%]  (Sampling)</span></span>
+<span><span class="co">#&gt; Chain 1: </span></span>
+<span><span class="co">#&gt; Chain 1:  Elapsed Time: 0.717 seconds (Warm-up)</span></span>
+<span><span class="co">#&gt; Chain 1:                0.482 seconds (Sampling)</span></span>
+<span><span class="co">#&gt; Chain 1:                1.199 seconds (Total)</span></span>
+<span><span class="co">#&gt; Chain 1: </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; SAMPLING FOR MODEL 'RW' NOW (CHAIN 2).</span></span>
+<span><span class="co">#&gt; Chain 2: </span></span>
+<span><span class="co">#&gt; Chain 2: Gradient evaluation took 2.2e-05 seconds</span></span>
+<span><span class="co">#&gt; Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.22 seconds.</span></span>
+<span><span class="co">#&gt; Chain 2: Adjust your expectations accordingly!</span></span>
+<span><span class="co">#&gt; Chain 2: </span></span>
+<span><span class="co">#&gt; Chain 2: </span></span>
+<span><span class="co">#&gt; Chain 2: Iteration:    1 / 1500 [  0%]  (Warmup)</span></span>
+<span><span class="co">#&gt; Chain 2: Iteration:  751 / 1500 [ 50%]  (Sampling)</span></span>
+<span><span class="co">#&gt; Chain 2: Iteration: 1500 / 1500 [100%]  (Sampling)</span></span>
+<span><span class="co">#&gt; Chain 2: </span></span>
+<span><span class="co">#&gt; Chain 2:  Elapsed Time: 0.828 seconds (Warm-up)</span></span>
+<span><span class="co">#&gt; Chain 2:                0.555 seconds (Sampling)</span></span>
+<span><span class="co">#&gt; Chain 2:                1.383 seconds (Total)</span></span>
+<span><span class="co">#&gt; Chain 2:</span></span></code></pre></div>
 <p>The default plot method will return all of the age-specific cancer risk trends on the same plot; with many age groups and dissimilar risk levels, it is easier to understand the results if, instead, we use a grid of multiple small plots (<code>facet = TRUE</code>) and allow the scale of the y-axes to adjust for each age group (<code>facet_scales = "free"</code>):</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit</span>, 
-     facet <span class="op">=</span> <span class="cn">TRUE</span>,          <span class="co"># plot small multiples</span>
-     facet_scales <span class="op">=</span> <span class="st">"free"</span>, <span class="co"># y-axes vary across plots</span>
-     base_size <span class="op">=</span> <span class="fl">10</span>,      <span class="co"># control text size </span>
-     size <span class="op">=</span> <span class="fl">0</span>,            <span class="co"># removes crude rates from the plots</span>
-     scale <span class="op">=</span> <span class="fl">100e3</span>        <span class="co"># plot rates per 100,000</span>
-     <span class="op">)</span>
-<span class="co">#&gt; Plotted rates are per 100,000</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit</span>, </span>
+<span>     facet <span class="op">=</span> <span class="cn">TRUE</span>,          <span class="co"># plot small multiples</span></span>
+<span>     facet_scales <span class="op">=</span> <span class="st">"free"</span>, <span class="co"># y-axes vary across plots</span></span>
+<span>     base_size <span class="op">=</span> <span class="fl">10</span>,      <span class="co"># control text size </span></span>
+<span>     size <span class="op">=</span> <span class="fl">0</span>,            <span class="co"># removes crude rates from the plots</span></span>
+<span>     scale <span class="op">=</span> <span class="fl">100e3</span>        <span class="co"># plot rates per 100,000</span></span>
+<span>     <span class="op">)</span></span>
+<span><span class="co">#&gt; Plotted rates are per 100,000</span></span></code></pre></div>
 <p><img src="age-standardization_files/figure-html/unnamed-chunk-7-1.png" width="624" style="display: block; margin: auto;"></p>
 <p>The lines indicate estimates of risk <span class="math inline">\(\theta_i\)</span> (the means of the posterior probability distributions for <span class="math inline">\(\theta_i\)</span>) and the shaded intervals correspond to 95% credible intervals for <span class="math inline">\(\theta_i\)</span>.</p>
 <p>In addition to examining trends in age-specific risk (as above), we can also convert each age-specific trend to its annual percent change or cumulative percent change.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">fit_apc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/apc.html">apc</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit_apc</span>, 
-     base_size <span class="op">=</span> <span class="fl">10</span>,
-     cum <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">fit_apc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/apc.html">apc</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit_apc</span>, </span>
+<span>     base_size <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>     cum <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p><img src="age-standardization_files/figure-html/unnamed-chunk-8-1.png" width="624" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level2">
@@ -240,43 +246,43 @@
 </h2>
 <p>The <code>standardize</code> function takes a fitted model, plus the standard population, and returns standardized rates (SRs):</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">fit_sr</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/standardize.html">standardize</a></span><span class="op">(</span><span class="va">fit</span>,
-                        label <span class="op">=</span> <span class="va">standard</span><span class="op">$</span><span class="va">age</span>,
-                        standard_pop <span class="op">=</span> <span class="va">standard</span><span class="op">$</span><span class="va">standard_pop</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">fit_sr</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/standardize.html">standardize</a></span><span class="op">(</span><span class="va">fit</span>,</span>
+<span>                        label <span class="op">=</span> <span class="va">standard</span><span class="op">$</span><span class="va">age</span>,</span>
+<span>                        standard_pop <span class="op">=</span> <span class="va">standard</span><span class="op">$</span><span class="va">standard_pop</span><span class="op">)</span></span></code></pre></div>
 <p>As usual, <strong>surveil</strong> provides a plotting method for the <code>fit_sr</code> object:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># load ggplot2 to enable additional plot customization</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit_sr</span>, scale <span class="op">=</span> <span class="fl">100e3</span>, base_size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"US age-standardized cancer incidence per 100,000"</span>,
-  subtitle <span class="op">=</span> <span class="st">"Ages 40-64"</span><span class="op">)</span>
-<span class="co">#&gt; Plotted rates are per 100,000</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># load ggplot2 to enable additional plot customization</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit_sr</span>, scale <span class="op">=</span> <span class="fl">100e3</span>, base_size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"US age-standardized cancer incidence per 100,000"</span>,</span>
+<span>  subtitle <span class="op">=</span> <span class="st">"Ages 40-64"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Plotted rates are per 100,000</span></span></code></pre></div>
 <p><img src="age-standardization_files/figure-html/unnamed-chunk-10-1.png" width="480" style="display: block; margin: auto;"></p>
 <p>as well as a printing method:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">fit_sr</span><span class="op">)</span>
-<span class="co">#&gt; Summary of age-standardized surveil model results</span>
-<span class="co">#&gt; Time periods: 19</span>
-<span class="co">#&gt;  time_label stand_rate  .lower  .upper</span>
-<span class="co">#&gt;        1999    0.00601 0.00600 0.00603</span>
-<span class="co">#&gt;        2000    0.00609 0.00608 0.00611</span>
-<span class="co">#&gt;        2001    0.00615 0.00613 0.00616</span>
-<span class="co">#&gt;        2002    0.00614 0.00612 0.00615</span>
-<span class="co">#&gt;        2003    0.00602 0.00600 0.00604</span>
-<span class="co">#&gt;        2004    0.00602 0.00600 0.00603</span>
-<span class="co">#&gt;        2005    0.00602 0.00601 0.00604</span>
-<span class="co">#&gt;        2006    0.00608 0.00607 0.00610</span>
-<span class="co">#&gt;        2007    0.00616 0.00614 0.00617</span>
-<span class="co">#&gt;        2008    0.00614 0.00612 0.00615</span>
-<span class="co">#&gt;        2009    0.00613 0.00611 0.00614</span>
-<span class="co">#&gt;        2010    0.00595 0.00594 0.00597</span>
-<span class="co">#&gt;        2011    0.00596 0.00595 0.00598</span>
-<span class="co">#&gt;        2012    0.00586 0.00584 0.00587</span>
-<span class="co">#&gt;        2013    0.00585 0.00583 0.00586</span>
-<span class="co">#&gt;        2014    0.00587 0.00586 0.00588</span>
-<span class="co">#&gt;        2015    0.00588 0.00587 0.00589</span>
-<span class="co">#&gt;        2016    0.00581 0.00580 0.00583</span>
-<span class="co">#&gt;        2017    0.00571 0.00570 0.00573</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">fit_sr</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Summary of age-standardized surveil model results</span></span>
+<span><span class="co">#&gt; Time periods: 19</span></span>
+<span><span class="co">#&gt;  time_label stand_rate  .lower  .upper</span></span>
+<span><span class="co">#&gt;        1999    0.00601 0.00600 0.00603</span></span>
+<span><span class="co">#&gt;        2000    0.00609 0.00608 0.00611</span></span>
+<span><span class="co">#&gt;        2001    0.00615 0.00613 0.00616</span></span>
+<span><span class="co">#&gt;        2002    0.00614 0.00612 0.00615</span></span>
+<span><span class="co">#&gt;        2003    0.00602 0.00601 0.00603</span></span>
+<span><span class="co">#&gt;        2004    0.00602 0.00600 0.00603</span></span>
+<span><span class="co">#&gt;        2005    0.00602 0.00601 0.00604</span></span>
+<span><span class="co">#&gt;        2006    0.00608 0.00607 0.00610</span></span>
+<span><span class="co">#&gt;        2007    0.00616 0.00614 0.00617</span></span>
+<span><span class="co">#&gt;        2008    0.00614 0.00612 0.00615</span></span>
+<span><span class="co">#&gt;        2009    0.00613 0.00611 0.00614</span></span>
+<span><span class="co">#&gt;        2010    0.00595 0.00594 0.00597</span></span>
+<span><span class="co">#&gt;        2011    0.00596 0.00595 0.00598</span></span>
+<span><span class="co">#&gt;        2012    0.00586 0.00584 0.00587</span></span>
+<span><span class="co">#&gt;        2013    0.00585 0.00583 0.00586</span></span>
+<span><span class="co">#&gt;        2014    0.00587 0.00586 0.00588</span></span>
+<span><span class="co">#&gt;        2015    0.00588 0.00587 0.00589</span></span>
+<span><span class="co">#&gt;        2016    0.00581 0.00580 0.00583</span></span>
+<span><span class="co">#&gt;        2017    0.00571 0.00570 0.00573</span></span></code></pre></div>
 <p>To learn about the contents of <code>fit_sr</code>, see <code><a href="../reference/standardize.html">?standardize</a></code> or explores its contents as you would a list (<code>names(fit_sr)</code>, <code>fit_sr$standard_summary</code>, <code>head(fit_sr$standard_samples</code>), etc.).</p>
 </div>
 <div class="section level2">
@@ -324,81 +330,81 @@
 <p>To demonstrate, we will use the same cancer data and create a fake comparison population. This will allow us to avoid introducing a new data set and it will give us control over the results.</p>
 <p>Pretend that instead of having cancer incidence data for the entire USA, we have cancer data for two sub-populations, group A and group B. The original <code>cancer</code> data will serve for A (<code>cancer_a</code>), and we will create <code>cancer_b</code> so that its cancer incidence rate is, in relative terms, steadily above that of <code>cancer_a</code>. Group B will have smaller population than group A, and we will also add some extra ‘noise’ to the data.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">cancer_a</span> <span class="op">&lt;-</span> <span class="va">cancer</span> 
-<span class="va">cancer_b</span> <span class="op">&lt;-</span> <span class="va">cancer</span>
-<span class="co">## set the case count equal to 0.75 times that of group A</span>
-<span class="va">cancer_b</span><span class="op">$</span><span class="va">Count</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">cancer_a</span><span class="op">$</span><span class="va">Count</span> <span class="op">*</span> <span class="fl">0.75</span><span class="op">)</span> <span class="op">+</span>  
-  <span class="fu"><a href="https://rdrr.io/r/stats/Poisson.html" class="external-link">rpois</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">cancer</span><span class="op">)</span>, lambda <span class="op">=</span> <span class="va">cancer_a</span><span class="op">$</span><span class="va">Count</span> <span class="op">*</span> <span class="fl">0.1</span><span class="op">)</span> <span class="co"># adds a little noise to the data</span>
-<span class="co">## set the population at risk to 0.6 times that of group A</span>
-<span class="va">cancer_b</span><span class="op">$</span><span class="va">Population</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">cancer_a</span><span class="op">$</span><span class="va">Population</span> <span class="op">*</span> <span class="fl">0.6</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu"><a href="https://rdrr.io/r/stats/Poisson.html" class="external-link">rpois</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">cancer</span><span class="op">)</span>, lambda <span class="op">=</span> <span class="va">cancer_a</span><span class="op">$</span><span class="va">Population</span> <span class="op">*</span> <span class="fl">0.1</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">cancer_a</span> <span class="op">&lt;-</span> <span class="va">cancer</span> </span>
+<span><span class="va">cancer_b</span> <span class="op">&lt;-</span> <span class="va">cancer</span></span>
+<span><span class="co">## set the case count equal to 0.75 times that of group A</span></span>
+<span><span class="va">cancer_b</span><span class="op">$</span><span class="va">Count</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">cancer_a</span><span class="op">$</span><span class="va">Count</span> <span class="op">*</span> <span class="fl">0.75</span><span class="op">)</span> <span class="op">+</span>  </span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/Poisson.html" class="external-link">rpois</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">cancer</span><span class="op">)</span>, lambda <span class="op">=</span> <span class="va">cancer_a</span><span class="op">$</span><span class="va">Count</span> <span class="op">*</span> <span class="fl">0.1</span><span class="op">)</span> <span class="co"># adds a little noise to the data</span></span>
+<span><span class="co">## set the population at risk to 0.6 times that of group A</span></span>
+<span><span class="va">cancer_b</span><span class="op">$</span><span class="va">Population</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">cancer_a</span><span class="op">$</span><span class="va">Population</span> <span class="op">*</span> <span class="fl">0.6</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/Poisson.html" class="external-link">rpois</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">cancer</span><span class="op">)</span>, lambda <span class="op">=</span> <span class="va">cancer_a</span><span class="op">$</span><span class="va">Population</span> <span class="op">*</span> <span class="fl">0.1</span><span class="op">)</span></span></code></pre></div>
 <p>Now we can model age-specific risk for Group B (<code>cancer_b</code>):</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">fit_b</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/stan_rw.html">stan_rw</a></span><span class="op">(</span><span class="va">cancer_b</span>, time <span class="op">=</span> <span class="va">Year</span>, group <span class="op">=</span> <span class="va">Age</span>, 
-                 refresh <span class="op">=</span> <span class="fl">0</span>, <span class="co"># silences some printing</span>
-         iter <span class="op">=</span> <span class="fl">1500</span>,
-             chains <span class="op">=</span> <span class="fl">2</span>  <span class="co"># for speed only; use default chains=4</span>
-             <span class="co"># cores = 4 # for multi-core processing</span>
-         <span class="op">)</span>
-<span class="co">#&gt; Distribution: normal</span>
-<span class="co">#&gt; Distribution: normal</span>
-<span class="co">#&gt; Warning: Bulk Effective Samples Size (ESS) is too low, indicating posterior means and medians may be unreliable.</span>
-<span class="co">#&gt; Running the chains for more iterations may help. See</span>
-<span class="co">#&gt; https://mc-stan.org/misc/warnings.html#bulk-ess</span>
-<span class="co">#&gt; [1] "Setting normal prior(s) for eta_1: "</span>
-<span class="co">#&gt;  location scale</span>
-<span class="co">#&gt;        -6     5</span>
-<span class="co">#&gt; [1] "\nSetting half-normal prior for sigma: "</span>
-<span class="co">#&gt;  location scale</span>
-<span class="co">#&gt;         0     1</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">fit_b</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/stan_rw.html">stan_rw</a></span><span class="op">(</span><span class="va">cancer_b</span>, time <span class="op">=</span> <span class="va">Year</span>, group <span class="op">=</span> <span class="va">Age</span>, </span>
+<span>                 refresh <span class="op">=</span> <span class="fl">0</span>, <span class="co"># silences some printing</span></span>
+<span>         iter <span class="op">=</span> <span class="fl">1500</span>,</span>
+<span>             chains <span class="op">=</span> <span class="fl">2</span>  <span class="co"># for speed only; use default chains=4</span></span>
+<span>             <span class="co"># cores = 4 # for multi-core processing</span></span>
+<span>         <span class="op">)</span></span>
+<span><span class="co">#&gt; Distribution: normal</span></span>
+<span><span class="co">#&gt; Distribution: normal</span></span>
+<span><span class="co">#&gt; Warning: Bulk Effective Samples Size (ESS) is too low, indicating posterior means and medians may be unreliable.</span></span>
+<span><span class="co">#&gt; Running the chains for more iterations may help. See</span></span>
+<span><span class="co">#&gt; https://mc-stan.org/misc/warnings.html#bulk-ess</span></span>
+<span><span class="co">#&gt; [1] "Setting normal prior(s) for eta_1: "</span></span>
+<span><span class="co">#&gt;  location scale</span></span>
+<span><span class="co">#&gt;        -6     5</span></span>
+<span><span class="co">#&gt; [1] "\nSetting half-normal prior for sigma: "</span></span>
+<span><span class="co">#&gt;  location scale</span></span>
+<span><span class="co">#&gt;         0     1</span></span></code></pre></div>
 <p>And then age-standardize the results:</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">fit_sr_b</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/standardize.html">standardize</a></span><span class="op">(</span><span class="va">fit_b</span>,
-                        label <span class="op">=</span> <span class="va">standard</span><span class="op">$</span><span class="va">age</span>,
-                        standard_pop <span class="op">=</span> <span class="va">standard</span><span class="op">$</span><span class="va">standard_pop</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">fit_sr_b</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/standardize.html">standardize</a></span><span class="op">(</span><span class="va">fit_b</span>,</span>
+<span>                        label <span class="op">=</span> <span class="va">standard</span><span class="op">$</span><span class="va">age</span>,</span>
+<span>                        standard_pop <span class="op">=</span> <span class="va">standard</span><span class="op">$</span><span class="va">standard_pop</span><span class="op">)</span></span></code></pre></div>
 <p>Finally, to obtain measures of the difference in risk between these two groups we place the two age-standardized models into a list (preferably a named list), and then pass the list to the <code>group_diff</code> function (see <code><a href="../reference/group_diff.html">?group_diff</a></code> for more details):</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">fit_sr_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>B <span class="op">=</span> <span class="va">fit_sr_b</span>, A <span class="op">=</span> <span class="va">fit_sr</span><span class="op">)</span>
-<span class="va">ineq</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/group_diff.html">group_diff</a></span><span class="op">(</span><span class="va">fit_sr_list</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">fit_sr_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>B <span class="op">=</span> <span class="va">fit_sr_b</span>, A <span class="op">=</span> <span class="va">fit_sr</span><span class="op">)</span></span>
+<span><span class="va">ineq</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/group_diff.html">group_diff</a></span><span class="op">(</span><span class="va">fit_sr_list</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">ineq</span>, base_size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span>
-<span class="co">#&gt; Rate differences (RD) are per 100,000 at risk</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">ineq</span>, base_size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Rate differences (RD) are per 100,000 at risk</span></span></code></pre></div>
 <p><img src="age-standardization_files/figure-html/unnamed-chunk-16-1.png" width="672" style="display: block; margin: auto;"></p>
 <p>We see that relative inequality (AR) is about constant (as expected), the rate difference falls (because the total level of cancer risk has fallen over time), and excess cases increase over time (because the total population at risk is both growing and aging).</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">ineq</span><span class="op">)</span>
-<span class="co">#&gt; Summary of Pairwise Inequality</span>
-<span class="co">#&gt; Target group: B</span>
-<span class="co">#&gt; Reference group: A</span>
-<span class="co">#&gt; Time periods observed: 19</span>
-<span class="co">#&gt; Cumulative excess cases (EC): 1,793,133 [1784855, 1801193]</span>
-<span class="co">#&gt; Cumulative EC as a fraction of group risk (PAR): 0.18 [0.18, 0.18]</span>
-<span class="co">#&gt;  time   Rate     RD  PAR  RR     EC</span>
-<span class="co">#&gt;  1999 0.0073 0.0013 0.18 1.2  73200</span>
-<span class="co">#&gt;  2000 0.0074 0.0013 0.18 1.2  76294</span>
-<span class="co">#&gt;  2001 0.0075 0.0013 0.18 1.2  80281</span>
-<span class="co">#&gt;  2002 0.0074 0.0013 0.18 1.2  82766</span>
-<span class="co">#&gt;  2003 0.0073 0.0013 0.18 1.2  85220</span>
-<span class="co">#&gt;  2004 0.0073 0.0013 0.18 1.2  87726</span>
-<span class="co">#&gt;  2005 0.0073 0.0013 0.18 1.2  90084</span>
-<span class="co">#&gt;  2006 0.0074 0.0013 0.18 1.2  93847</span>
-<span class="co">#&gt;  2007 0.0075 0.0013 0.18 1.2  98023</span>
-<span class="co">#&gt;  2008 0.0075 0.0013 0.18 1.2  99259</span>
-<span class="co">#&gt;  2009 0.0074 0.0013 0.18 1.2 101738</span>
-<span class="co">#&gt;  2010 0.0072 0.0013 0.18 1.2 101136</span>
-<span class="co">#&gt;  2011 0.0072 0.0013 0.18 1.2 103477</span>
-<span class="co">#&gt;  2012 0.0071 0.0013 0.18 1.2 102072</span>
-<span class="co">#&gt;  2013 0.0071 0.0013 0.18 1.2 102556</span>
-<span class="co">#&gt;  2014 0.0071 0.0013 0.18 1.2 103731</span>
-<span class="co">#&gt;  2015 0.0071 0.0013 0.18 1.2 104737</span>
-<span class="co">#&gt;  2016 0.0071 0.0012 0.18 1.2 104028</span>
-<span class="co">#&gt;  2017 0.0069 0.0012 0.18 1.2 102957</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">ineq</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Summary of Pairwise Inequality</span></span>
+<span><span class="co">#&gt; Target group: B</span></span>
+<span><span class="co">#&gt; Reference group: A</span></span>
+<span><span class="co">#&gt; Time periods observed: 19</span></span>
+<span><span class="co">#&gt; Cumulative excess cases (EC): 1,792,199 [1784733, 1800219]</span></span>
+<span><span class="co">#&gt; Cumulative EC as a fraction of group risk (PAR): 0.18 [0.18, 0.18]</span></span>
+<span><span class="co">#&gt;  time   Rate     RD  PAR  RR     EC</span></span>
+<span><span class="co">#&gt;  1999 0.0073 0.0013 0.18 1.2  72901</span></span>
+<span><span class="co">#&gt;  2000 0.0074 0.0013 0.18 1.2  76041</span></span>
+<span><span class="co">#&gt;  2001 0.0075 0.0013 0.18 1.2  79823</span></span>
+<span><span class="co">#&gt;  2002 0.0075 0.0013 0.18 1.2  83036</span></span>
+<span><span class="co">#&gt;  2003 0.0073 0.0013 0.18 1.2  85010</span></span>
+<span><span class="co">#&gt;  2004 0.0073 0.0013 0.18 1.2  87606</span></span>
+<span><span class="co">#&gt;  2005 0.0073 0.0013 0.18 1.2  90230</span></span>
+<span><span class="co">#&gt;  2006 0.0074 0.0013 0.18 1.2  93718</span></span>
+<span><span class="co">#&gt;  2007 0.0075 0.0013 0.18 1.2  97653</span></span>
+<span><span class="co">#&gt;  2008 0.0075 0.0013 0.18 1.2  99473</span></span>
+<span><span class="co">#&gt;  2009 0.0074 0.0013 0.18 1.2 101852</span></span>
+<span><span class="co">#&gt;  2010 0.0072 0.0013 0.18 1.2 101275</span></span>
+<span><span class="co">#&gt;  2011 0.0072 0.0013 0.18 1.2 103520</span></span>
+<span><span class="co">#&gt;  2012 0.0071 0.0013 0.18 1.2 101632</span></span>
+<span><span class="co">#&gt;  2013 0.0071 0.0013 0.18 1.2 102447</span></span>
+<span><span class="co">#&gt;  2014 0.0071 0.0013 0.18 1.2 103594</span></span>
+<span><span class="co">#&gt;  2015 0.0071 0.0013 0.18 1.2 104861</span></span>
+<span><span class="co">#&gt;  2016 0.0071 0.0012 0.18 1.2 104217</span></span>
+<span><span class="co">#&gt;  2017 0.0069 0.0012 0.18 1.2 103310</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2 unnumbered">
-<h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+<h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
-<div id="refs" class="references">
+<div id="refs" class="references hanging-indent">
 <div id="ref-broemeling_2020">
 <p>Broemeling, Lyle D. 2020. <em>Bayesian Methods in Epidemiolgy</em>. CRC Press.</p>
 </div>
@@ -426,7 +432,7 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer>
