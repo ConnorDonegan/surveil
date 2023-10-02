@@ -1,6 +1,6 @@
 # surveil 0.2.2
 
-This release was built using `rstan` 2.26.23, which incorporates Stan's new syntax for declaring arrays. Some models seems to run a little bit faster, but otherwise there are no changes that users should notice.
+This release was built using `rstan` 2.26.23, which incorporates Stan's new syntax for declaring arrays. Some models seems to run a little bit faster, but otherwise there are no changes that users should notice. This update should also address all warnings from tidyr regarding the use of deprecated tidyselect syntax.
 
 # surveil 0.2.1
 
