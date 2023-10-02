@@ -1,3 +1,7 @@
+# surveil 0.2.2
+
+This release was built using `rstan` 2.26.23`, which incorporates Stan's new syntax for declaring arrays. The models seems to run a little bit faster, but otherwise there are no changes that users should notice.
+
 # surveil 0.2.1
 
 The vignettes have been updated. The discussion of Markov chain Monte Carlo (MCMC) diagnostics, which was previously in the main package demo vignette, is now a stand-alone vignette with a bit of introductory discussion on MCMC analysis.
