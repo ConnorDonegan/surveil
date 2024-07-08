@@ -1,3 +1,11 @@
+# surveil 0.3.0
+
+ - Example code in the documentation has been improved
+ - The package vignettes have been re-written
+ - The `standardize` function is now slightly easier to use: the standard population sizes provided by `data(standard)` can be passed to the `standardize` function without removing any unused age groups. Previously, it was necessary to subset the `standard` data before using `standardize`.
+
+Another short illustration of cancer data analysis with `surveil ` is provided here: <https://connordonegan.github.io/surveil-paper/>
+ 
 # surveil 0.2.2
 
 This release was built using `rstan` 2.26.23, which incorporates Stan's new syntax for declaring arrays. Some models seems to run a little bit faster, but otherwise there are no changes that users should notice. This update should also address all warnings from tidyr regarding the use of deprecated tidyselect syntax.

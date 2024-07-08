@@ -23,7 +23,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">surveil</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.0</span>
       </span>
     </div>
 
@@ -72,11 +72,11 @@
 
 
 <dt>label</dt>
-<dd><p>Labels (character strings) for the age groups that correspond to the values of <code>stand_pop</code>. The labels must match the grouping variable used to fit the model (i.e., <code>all(label %in% names(x$data$cases))</code> must be true).</p></dd>
+<dd><p>Labels (character strings) for the age groups that correspond to the values of <code>stand_pop</code>. All levels of the grouping variable used to fit the model (i.e., <code>names(x$data$cases)</code>) must be present in <code>label</code>.</p></dd>
 
 
 <dt>standard_pop</dt>
-<dd><p>Standard population values corresponding to the age groups specified by <code>label</code></p></dd>
+<dd><p>Standard population values corresponding to the age groups specified by <code>label</code>.</p></dd>
 
 </dl></div>
     <div id="value">
@@ -113,19 +113,16 @@
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">standard</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">cancer</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># \donttest{</span></span>
-<span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="stan_rw.html">stan_rw</a></span><span class="op">(</span><span class="va">cancer</span>,</span>
-<span>              time <span class="op">=</span> <span class="va">Year</span>,</span>
-<span>              group <span class="op">=</span> <span class="va">Age</span>,</span>
-<span>              chains <span class="op">=</span> <span class="fl">2</span>, iter <span class="op">=</span> <span class="fl">900</span> <span class="co"># for speed only</span></span>
-<span>              <span class="op">)</span></span>
+<span><span class="va">cancer2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">cancer</span>, <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"55-59|60-64|65-69"</span>, <span class="va">Age</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="stan_rw.html">stan_rw</a></span><span class="op">(</span><span class="va">cancer2</span>, time <span class="op">=</span> <span class="va">Year</span>, group <span class="op">=</span> <span class="va">Age</span>,</span>
+<span>              chains <span class="op">=</span> <span class="fl">2</span>, iter <span class="op">=</span> <span class="fl">1e3</span><span class="op">)</span> <span class="co"># for speed only</span></span>
 <span></span>
 <span><span class="va">stands</span> <span class="op">&lt;-</span> <span class="fu">standardize</span><span class="op">(</span><span class="va">fit</span>,</span>
 <span>                      label <span class="op">=</span> <span class="va">standard</span><span class="op">$</span><span class="va">age</span>,</span>
 <span>                      standard_pop <span class="op">=</span> <span class="va">standard</span><span class="op">$</span><span class="va">standard_pop</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">stands</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">stands</span>, style <span class="op">=</span> <span class="st">"lines"</span><span class="op">)</span></span>
-<span><span class="co"># }</span></span></code></pre></div>
+<span></span></code></pre></div>
     </div>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

@@ -93,14 +93,12 @@ Theil's T is thus a weighted mean of log-ratios of case shares to population sha
 Theil's index, which is based on Shannon's information theory, can be extended to measure inequality across multiple groups nested within non-overlapping geographies (e.g., states).
 }
 \examples{
-
-\donttest{
- houston <- msa[grep("Houston", msa$MSA), ]
+ houston <- subset(msa, grepl("Houston", MSA))
  fit <- stan_rw(houston, time = Year, group = Race,
                chains = 2, iter = 900) # for speed only
  theil_dfw <- theil(fit)
  plot(theil_dfw)
-}
+
 
 Count <- c(10, 12, 3, 111)
 Pop <- c(1000, 1200, 4000, 9000)

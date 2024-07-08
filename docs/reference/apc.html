@@ -23,7 +23,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">surveil</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.0</span>
       </span>
     </div>
 
@@ -103,13 +103,12 @@
     <div id="ref-examples">
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">cancer</span><span class="op">)</span></span>
-<span><span class="co"># \donttest{</span></span>
-<span> <span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="stan_rw.html">stan_rw</a></span><span class="op">(</span><span class="va">cancer</span>, time <span class="op">=</span> <span class="va">Year</span>, group <span class="op">=</span> <span class="va">Age</span>,</span>
+<span><span class="va">cancer2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">cancer</span>, <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"55|60|65|70"</span>, <span class="va">Age</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="stan_rw.html">stan_rw</a></span><span class="op">(</span><span class="va">cancer2</span>, time <span class="op">=</span> <span class="va">Year</span>, group <span class="op">=</span> <span class="va">Age</span>,</span>
 <span>                iter <span class="op">=</span> <span class="fl">900</span><span class="op">)</span> <span class="co"># low iter for speed only</span></span>
 <span> <span class="va">x</span> <span class="op">&lt;-</span> <span class="fu">apc</span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span>
 <span> <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
-<span> <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">x</span>, cumulative <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="co"># }</span></span></code></pre></div>
+<span> <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">x</span>, cumulative <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
     </div>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

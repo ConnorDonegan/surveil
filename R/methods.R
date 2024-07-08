@@ -7,23 +7,17 @@
 #' @seealso \code{\link[surveil]{stan_rw}}
 #' @author Connor Donegan (Connor.Donegan@UTSouthwestern.edu)
 #' @examples
-#'
-#' \donttest{
 #' data(msa)
-#' houston <- msa[grep("Houston", msa$MSA), ]
-#' fit <- stan_rw(houston, time = Year, group = Race,
-#'               chains = 2, iter = 900) # for speed only
+#' dat <- aggregate(cbind(Count, Population) ~ Year + Race, data = msa, FUN = sum)
+#' fit <- stan_rw(dat, time = Year, group = Race,
+#'                iter = 1e3, chains = 2) # for speed only, use 4 chains
 #'
 #' print(fit)
-#' 
-#' ## plot probability distribution for disease risk
-#' plot(fit, style = "lines")
 #' plot(fit, facet = TRUE, scale = 100e3)
 #' 
 #'  ## as a ggplot, you can customize the output
 #' library(ggplot2)
 #' plot(fit) + theme_bw()
-#' }
 #' 
 #' @param x A fitted `surveil` model, or a list of `stand_surveil` objects (as produced by \code{\link[surveil]{standardize}}). 
 #' @param base_size Passed to `theme_classic()` to control size of plot components (text).
@@ -393,8 +387,8 @@ plot.list <- function(x,
 #' @description Convert `surveil` model results to age standardized rates using a fixed age distribution
 #'
 #' @param x A fitted `surveil` model
-#' @param label Labels (character strings) for the age groups that correspond to the values of `stand_pop`. The labels must match the grouping variable used to fit the model (i.e., `all(label %in% names(x$data$cases))` must be true).
-#' @param standard_pop Standard population values corresponding to the age groups specified by `label`
+#' @param label Labels (character strings) for the age groups that correspond to the values of `stand_pop`. All levels of the grouping variable used to fit the model (i.e., `names(x$data$cases)`) must be present in `label`.
+#' @param standard_pop Standard population values corresponding to the age groups specified by `label`. 
 #'
 #' @return A list, also of class "stand_surveil", containing the entire contents of the user-provided `surveil` model plus the following:
 #' \describe{
@@ -415,19 +409,16 @@ plot.list <- function(x,
 #' head(standard)
 #' head(cancer)
 #'
-#' \donttest{
-#' fit <- stan_rw(cancer,
-#'               time = Year,
-#'               group = Age,
-#'               chains = 2, iter = 900 # for speed only
-#'               )
+#' cancer2 <- subset(cancer, grepl("55-59|60-64|65-69", Age))
+#' fit <- stan_rw(cancer2, time = Year, group = Age,
+#'               chains = 2, iter = 1e3) # for speed only
 #'
 #' stands <- standardize(fit,
 #'                       label = standard$age,
 #'                       standard_pop = standard$standard_pop)
 #' print(stands)
 #' plot(stands, style = "lines")
-#' }
+#' 
 #' @seealso \code{vignette("age-standardization", package = "surveil")} \code{\link[surveil]{stan_rw}}  \code{\link[surveil]{plot.stand_surveil}} \code{\link[surveil]{print.stand_surveil}} 
 #' @md
 #' @export
@@ -435,7 +426,7 @@ plot.list <- function(x,
 #' @importFrom tidybayes gather_draws
 #' @importFrom ggdist mean_qi
 standardize <- function(x, label, standard_pop) {
-    stopifnot(all(label %in% names(x$data$cases)))
+    stopifnot(all(names(x$data$cases) %in% label))
     rate <- group_index <- time_index <- NULL # global bindings
     ids <- 1:ncol(x$data$cases)
     # proper order
@@ -602,10 +593,8 @@ plot.stand_surveil <- function(x,
 #' @examples
 #' 
 #' data(msa)
-#' austin <- msa[grep("Austin", msa$MSA), ]
-#' austin.w <- austin[grep("White", austin$Race),]
-#' fit <- stan_rw(austin.w, time = Year,
-#'                chains = 2, iter = 1200) # for speed only
+#' austin_w <- subset(msa, grepl("Austin", MSA) & Race == "White")
+#' fit <- stan_rw(austin_w, time = Year)
 #' waic(fit)
 #'  
 #' @source

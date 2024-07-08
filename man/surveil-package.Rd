@@ -21,3 +21,15 @@ Stan Development Team (2020). RStan: the R interface to Stan. R package version 
 
 Theil H. Statistical decomposition analysis. Amsterdam, The Netherlands: North-Holland Publishing Company, 1972. ISBN:0444103783
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://connordonegan.github.io/surveil/}
+  \item \url{https://github.com/ConnorDonegan/surveil/}
+}
+
+}
+\author{
+\strong{Maintainer}: Connor Donegan \email{connor.donegan@gmail.com} (\href{https://orcid.org/0000-0002-9698-5443}{ORCID})
+
+}

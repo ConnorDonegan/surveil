@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Public health surveillance with surveil • surveil</title>
+<title>Using surveil for public health research • surveil</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
 <link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png">
@@ -17,7 +17,7 @@
 <script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
-<script src="../pkgdown.js"></script><meta property="og:title" content="Public health surveillance with surveil">
+<script src="../pkgdown.js"></script><meta property="og:title" content="Using surveil for public health research">
 <meta property="og:description" content="surveil">
 <meta property="og:image" content="https://connordonegan.github.io/surveil/, https://cloud.r-project.org/web/packages/surveil/index.html/logo.png">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
@@ -46,7 +46,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">surveil</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.0</span>
       </span>
     </div>
 
@@ -82,7 +82,7 @@
       </header><script src="surveil-demo_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1 data-toc-skip>Public health surveillance with surveil</h1>
+      <h1 data-toc-skip>Using surveil for public health research</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/ConnorDonegan/surveil/blob/HEAD/vignettes/surveil-demo.Rmd" class="external-link"><code>vignettes/surveil-demo.Rmd</code></a></small>
@@ -92,20 +92,19 @@
 
     
     
-<p>This vignette demonstrates basic usage of <strong>surveil</strong> for public health surveillance. <strong>surveil</strong> leverages the principles of Bayesian inference and Markov chain Monte Carlo (MCMC) <span class="citation">(MacKay <a href="#ref-mackay_2003" role="doc-biblioref">2003</a>; Gelman et al. <a href="#ref-gelman_2014" role="doc-biblioref">2014</a>)</span> to infer population risk of disease or death given time series data consisting of case counts and population at risk. Models were built using the <a href="https://mc-stan.org/" class="external-link">Stan</a> modeling language, but users only need to be familiar with the R language.</p>
+<p>This vignette demonstrates basic usage of <em>surveil</em> for public health research. The package is designed for routine time trend analysis, namely for time trends in disease incidence rates or mortality rates. Models were built using the <a href="https://mc-stan.org/" class="external-link">Stan</a> modeling language for Bayesian inference with Markov chain Monte Carlo (MCMC), but users only need to be familiar with the R language.</p>
 <p>The package also contains special methods for age-standardization, printing and plotting model results, and for measuring and visualizing health inequalities. For age-standardization see <code><a href="../articles/age-standardization.html">vignette("age-standardization")</a></code>. For discussion and demonstration analysis see <span class="citation">Donegan, Hughes, and Lee (<a href="#ref-donegan_2022" role="doc-biblioref">2022</a>)</span>.</p>
 <div class="section level2">
 <h2 id="getting-started">Getting started<a class="anchor" aria-label="anchor" href="#getting-started"></a>
 </h2>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://connordonegan.github.io/surveil/" class="external-link">surveil</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://yihui.org/knitr/" class="external-link">knitr</a></span><span class="op">)</span></span></code></pre></div>
-<p>Surveillance data minimally contain case counts, reliable population at risk estimates, and a discrete time period variable. They also may include one or more grouping variables, such as race-ethnicity.Time periods should consist of equally spaced intervals.</p>
-<p>This vignette analyzes age-specific (ages 50-79) colorectal cancer incidence data by race-ethnicity, year, and Texas MSA, obtained through CDC Wonder. The race-ethnicity grouping includes (non-Hispanic) Black, (non-Hispanic) White, and Hispanic, and the MSAs include those centered on the cities of Austin, Dallas, Houston, and San Antonio.</p>
+<p>To use the models provided by <em>surveil,</em> the surveillance data minimally must contain case counts, population at risk estimates, and a discrete time period variable. The data may also include one or more grouping variables, such as race-ethnicity. Time periods should consist of equally spaced intervals.</p>
+<p>This vignette analyzes colorectal cancer incidence data by race-ethnicity, year, and Texas MSA for ages 50-79 (data obtained from CDC Wonder). The race-ethnicity grouping includes (non-Hispanic) black, (non-Hispanic) white, and Hispanic, and the MSAs include those centered on the cities of Austin, Dallas, Houston, and San Antonio.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">msa</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">msa</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span>booktabs <span class="op">=</span> <span class="cn">TRUE</span>, </span>
 <span>        caption <span class="op">=</span> <span class="st">"Glimpse of colorectal cancer incidence data (CDC Wonder)"</span><span class="op">)</span> </span></code></pre></div>
 <table class="table">
@@ -162,21 +161,18 @@
 </tr>
 </tbody>
 </table>
-<p><strong>surveil</strong>’s model fitting function, <code>stan_rw</code>, requires that the user provide a <code>data.frame</code> with specific column names. There must be one column named <code>Count</code> containing case counts, and another column named <code>Population</code>, containing the sizes of the populations at risk. The user must provide the name of the column containing the time period, and may optionally provide a grouping factor. For the MSA data printed above, the grouping column is Race and the time column is Year.</p>
+<p>The primary function in <em>surveil</em> is <code>stan_rw</code>, which fits random walk models to surveillance data. The function is expects the user to provide a <code>data.frame</code> with specific column names. There must be one column named <code>Count</code> containing case counts, and another column named <code>Population</code>, containing the sizes of the populations at risk. The user must provide the name of the column containing the time period (the default is <code>time = Year</code>, to match CDC Wonder data). Optionally, one can provide a grouping factor. For the MSA data printed above, the grouping column is Race and the time column is Year.</p>
 </div>
 <div class="section level2">
 <h2 id="preparing-the-data">Preparing the data<a class="anchor" aria-label="anchor" href="#preparing-the-data"></a>
 </h2>
 <p>We will demonstrate using aggregated CRC cases across Texas’s top four MSAs. The <code>msa</code> data from CDC Wonder already has the necessary format (column names and contents), but these data are dis-aggregated by MSA. So for this analysis, we first group the data by year and race, and then combine cases across MSAs.</p>
-<p>The following code chunk aggregates the data using the <code>dplyr</code> package:</p>
+<p>The following code chunk aggregates the data by year and race-ethnicity:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">tx.msa</span> <span class="op">&lt;-</span> <span class="va">msa</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">Year</span>, <span class="va">Race</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>Count <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">Count</span><span class="op">)</span>,</span>
-<span>            Population <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">Population</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p>The following code provides a glimpse of the aggregated data (Table 2):</p>
+<code class="sourceCode R"><span><span class="va">msa2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/aggregate.html" class="external-link">aggregate</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="va">Count</span>, <span class="va">Population</span><span class="op">)</span> <span class="op">~</span> <span class="va">Year</span> <span class="op">+</span> <span class="va">Race</span>, data <span class="op">=</span> <span class="va">msa</span>, FUN <span class="op">=</span> <span class="va">sum</span><span class="op">)</span></span></code></pre></div>
+<p>The following code provides a glimpse of the aggregated data:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">tx.msa</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">msa2</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span>booktabs <span class="op">=</span> <span class="cn">TRUE</span>, </span>
 <span>        caption <span class="op">=</span> <span class="st">"Glimpse of aggregated Texas metropolitan CRC cases, by race and year"</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
@@ -195,34 +191,34 @@
 <td align="right">270430</td>
 </tr>
 <tr class="even">
-<td align="right">1999</td>
-<td align="left">Hispanic</td>
-<td align="right">361</td>
-<td align="right">377471</td>
-</tr>
-<tr class="odd">
-<td align="right">1999</td>
-<td align="left">White</td>
-<td align="right">2231</td>
-<td align="right">1654251</td>
-</tr>
-<tr class="even">
 <td align="right">2000</td>
 <td align="left">Black or African American</td>
 <td align="right">455</td>
 <td align="right">283280</td>
 </tr>
 <tr class="odd">
-<td align="right">2000</td>
-<td align="left">Hispanic</td>
-<td align="right">460</td>
-<td align="right">405562</td>
+<td align="right">2001</td>
+<td align="left">Black or African American</td>
+<td align="right">505</td>
+<td align="right">298287</td>
 </tr>
 <tr class="even">
-<td align="right">2000</td>
-<td align="left">White</td>
-<td align="right">2343</td>
-<td align="right">1704425</td>
+<td align="right">2002</td>
+<td align="left">Black or African American</td>
+<td align="right">539</td>
+<td align="right">313133</td>
+</tr>
+<tr class="odd">
+<td align="right">2003</td>
+<td align="left">Black or African American</td>
+<td align="right">546</td>
+<td align="right">329481</td>
+</tr>
+<tr class="even">
+<td align="right">2004</td>
+<td align="left">Black or African American</td>
+<td align="right">602</td>
+<td align="right">346886</td>
 </tr>
 </tbody>
 </table>
@@ -233,32 +229,27 @@
 <div class="section level3">
 <h3 id="the-basics">The basics<a class="anchor" aria-label="anchor" href="#the-basics"></a>
 </h3>
-<p>The base <strong>surveil</strong> model is specified as follows. The Poisson model is used as the likelihood: the probability of observing a given number of cases, <span class="math inline">\(y_t\)</span>, conditional on a given level of risk, <span class="math inline">\(e^{\phi_t}\)</span>, and known population at risk, <span class="math inline">\(p_t\)</span>, is: <span class="math display">\[y_t \sim \text{Pois}(p_t \cdot e^{\phi_t})\]</span> where <span class="math inline">\(t\)</span> indexes the time period.</p>
-<p>Alternatively, the binomial model is available: <span class="math display">\[y_t \sim \text{Binom}(p_t \cdot g^{-1}(\phi_t))\]</span> where <span class="math inline">\(g\)</span> is the logit function and <span class="math inline">\(g^{-1}(x) = \frac{exp(x)}{1 + exp(x)}\)</span> (the inverse-logit function). The Poisson model is often preferred for ‘rare’ events (such as rates below .01), otherwise the binomial model is generally more appropriate. The remainder of this vignette will proceed using the Poisson model only.</p>
-<p>Next, we build a model for the log-rates, <span class="math inline">\({\phi_t}\)</span> (for the binomial model, the rates are logit-transformed, rather than log-transformed). The first-difference prior states that our expectation for the log-rate at any time is its previous value, and we assign a Gaussian probability distribution to deviations from the previous value <span class="citation">(Clayton <a href="#ref-clayton_1996" role="doc-biblioref">1996</a>)</span>. This is also known as the random-walk prior: <span class="math display">\[\phi_t \sim \text{Gau}(\phi_{t-1}, \tau^2)\]</span> This places higher probability on a smooth trend through time, specifically implying that underlying disease risk tends to have less variation than crude incidence.</p>
-<p>The log-risk for time <span class="math inline">\(t=1\)</span> has no previous value to anchor its expectation; thus, we assign a prior probability distribution directly to <span class="math inline">\(\phi_1\)</span>. For this prior, <strong>surveil</strong> uses a Gaussian distribution. The scale parameter, <span class="math inline">\(\tau\)</span>, also requires a prior distribution, and again <strong>surveil</strong> uses a Gaussian model.</p>
+<p>The base <em>surveil</em> model is specified as follows. The Poisson model is used as the likelihood: the probability of observing a given number of cases, <span class="math inline">\(y_t\)</span>, conditional on a given level of risk, <span class="math inline">\(e^{\phi_t}\)</span>, and known population at risk, <span class="math inline">\(p_t\)</span>, is: <span class="math display">\[y_t \sim \text{Pois}(p_t \cdot e^{\phi_t})\]</span> where <span class="math inline">\(t\)</span> indexes the time period.</p>
+<p>Next, we need a model for the log-rates, <span class="math inline">\({\phi_t}\)</span>. The first-difference prior states that our expectation for the log-rate at any time is its previous value, and we assign a normal probability distribution to deviations from the previous value <span class="citation">(Clayton <a href="#ref-clayton_1996" role="doc-biblioref">1996</a>)</span>. This is also known as the random-walk prior: <span class="math display">\[\phi_t \sim \text{Gau}(\phi_{t-1}, \tau^2)\]</span> This places higher probability on a smooth trend through time, specifically implying that underlying disease risk tends to have less variation than crude incidence.</p>
+<p>The log-risk for time <span class="math inline">\(t=1\)</span> has no previous value to anchor its expectation; thus, we assign a prior probability distribution directly to <span class="math inline">\(\phi_1\)</span>. For this prior, <em>surveil</em> uses a normal distribution. The scale parameter, <span class="math inline">\(\tau\)</span>, also requires a prior distribution, and again <em>surveil</em> uses a normal model which is diffuse relative to the log incidence rates.</p>
 </div>
 <div class="section level3">
-<h3 id="multiple-time-series">Multiple time series<a class="anchor" aria-label="anchor" href="#multiple-time-series"></a>
+<h3 id="binomial-model">Binomial model<a class="anchor" aria-label="anchor" href="#binomial-model"></a>
 </h3>
-<p>For multiple time series, <strong>surveil</strong> allows users to add a correlation structure to the model. This allows our inferences about each population to be mutually informed by inferences about all other observed populations. Note that in many cases, the base model specification described above will be entirely sufficient.</p>
-<p>The log-rates for <span class="math inline">\(k\)</span> populations, <span class="math inline">\(\boldsymbol \phi_t\)</span>, are assigned a multivariate Gaussian model <span class="citation">(Brandt and Williams <a href="#ref-brandt_2007" role="doc-biblioref">2007</a>)</span>: <span class="math display">\[\boldsymbol \phi_t \sim \text{Gau}(\boldsymbol \phi_{t-1}, \boldsymbol \Sigma),\]</span> where <span class="math inline">\(\boldsymbol \Sigma\)</span> is a <span class="math inline">\(k \times k\)</span> covariance matrix.</p>
-<p>The covariance matrix can be decomposed into a diagonal matrix containing scale parameters for each variable, <span class="math inline">\(\boldsymbol \Delta = diag(\tau_1,\dots \tau_k)\)</span>, and a symmetric correlation matrix, <span class="math inline">\(\boldsymbol \Omega\)</span> <span class="citation">(Stan Development Team <a href="#ref-stan_2021" role="doc-biblioref">2021</a>)</span>: <span class="math display">\[\boldsymbol \Sigma = \boldsymbol \Delta \boldsymbol \Omega \boldsymbol \Delta\]</span> When the correlation structure is added to the model, then a prior distribution is also required for the correlation matrix. <strong>surveil</strong> uses the LKJ model, which has a single shape parameter, <span class="math inline">\(\eta\)</span> <span class="citation">(Stan Development Team <a href="#ref-stan_2021" role="doc-biblioref">2021</a>)</span>. If <span class="math inline">\(\eta=1\)</span>, the LKJ model will place uniform prior probability on any <span class="math inline">\(k \times k\)</span> correlation matrix; as <span class="math inline">\(\eta\)</span> increases from one, it expresses ever greater skepticism towards large correlations. When <span class="math inline">\(\eta &lt;1\)</span>, the LKJ model becomes ‘concave’—expressing skepticism towards correlations of zero.</p>
+<p>In addition to the Poisson model, the binomial model is also available: <span class="math display">\[y_t \sim \text{Binom}(p_t \cdot g^{-1}(\phi_t))\]</span> where <span class="math inline">\(g\)</span> is the logit function and <span class="math inline">\(g^{-1}(x) = \frac{exp(x)}{1 + exp(x)}\)</span> (the inverse-logit function). If the binomial model is used the rest of the model remains the same as stated above. The Poisson model is typically preferred for rare events (such as rates below .01), otherwise the binomial model is usually more appropriate. The remainder of this vignette will proceed using the Poisson model only.</p>
 </div>
 </div>
 <div class="section level2">
 <h2 id="fitting-the-model">Fitting the model<a class="anchor" aria-label="anchor" href="#fitting-the-model"></a>
 </h2>
-<p>The time series model is fit by passing surveillance data to the <code>stan_rw</code> function. Here, <code>Year</code> and <code>Race</code> indicate the appropriate time and grouping columns in the <code>tx.msa</code> data frame.</p>
+<p>The time series model is fit by passing surveillance data to the <code>stan_rw</code> function. Here, <code>Year</code> and <code>Race</code> indicate the appropriate time and grouping columns in the <code>msa2</code> data frame.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/stan_rw.html">stan_rw</a></span><span class="op">(</span><span class="va">tx.msa</span>,</span>
-<span>               time <span class="op">=</span> <span class="va">Year</span>,</span>
-<span>           group <span class="op">=</span> <span class="va">Race</span>,</span>
-<span>           iter <span class="op">=</span> <span class="fl">1500</span>,</span>
-<span>           chains <span class="op">=</span> <span class="fl">2</span>  <span class="co">#, for speed only; use default chains=4</span></span>
-<span>               <span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/stan_rw.html">stan_rw</a></span><span class="op">(</span><span class="va">msa2</span>, time <span class="op">=</span> <span class="va">Year</span>, group <span class="op">=</span> <span class="va">Race</span>, iter <span class="op">=</span> <span class="fl">1e3</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Distribution: normal</span></span>
 <span><span class="co">#&gt; Distribution: normal</span></span>
+<span><span class="co">#&gt; Warning: Bulk Effective Samples Size (ESS) is too low, indicating posterior means and medians may be unreliable.</span></span>
+<span><span class="co">#&gt; Running the chains for more iterations may help. See</span></span>
+<span><span class="co">#&gt; https://mc-stan.org/misc/warnings.html#bulk-ess</span></span>
 <span><span class="co">#&gt; [1] "Setting normal prior(s) for eta_1: "</span></span>
 <span><span class="co">#&gt;  location scale</span></span>
 <span><span class="co">#&gt;        -6     5</span></span>
@@ -268,149 +259,148 @@
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; SAMPLING FOR MODEL 'RW' NOW (CHAIN 1).</span></span>
 <span><span class="co">#&gt; Chain 1: </span></span>
-<span><span class="co">#&gt; Chain 1: Gradient evaluation took 2.5e-05 seconds</span></span>
-<span><span class="co">#&gt; Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.25 seconds.</span></span>
+<span><span class="co">#&gt; Chain 1: Gradient evaluation took 2.6e-05 seconds</span></span>
+<span><span class="co">#&gt; Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.26 seconds.</span></span>
 <span><span class="co">#&gt; Chain 1: Adjust your expectations accordingly!</span></span>
 <span><span class="co">#&gt; Chain 1: </span></span>
 <span><span class="co">#&gt; Chain 1: </span></span>
-<span><span class="co">#&gt; Chain 1: Iteration:    1 / 1500 [  0%]  (Warmup)</span></span>
-<span><span class="co">#&gt; Chain 1: Iteration:  751 / 1500 [ 50%]  (Sampling)</span></span>
-<span><span class="co">#&gt; Chain 1: Iteration: 1500 / 1500 [100%]  (Sampling)</span></span>
+<span><span class="co">#&gt; Chain 1: Iteration:   1 / 1000 [  0%]  (Warmup)</span></span>
+<span><span class="co">#&gt; Chain 1: Iteration: 501 / 1000 [ 50%]  (Sampling)</span></span>
+<span><span class="co">#&gt; Chain 1: Iteration: 1000 / 1000 [100%]  (Sampling)</span></span>
 <span><span class="co">#&gt; Chain 1: </span></span>
-<span><span class="co">#&gt; Chain 1:  Elapsed Time: 0.49 seconds (Warm-up)</span></span>
-<span><span class="co">#&gt; Chain 1:                0.33 seconds (Sampling)</span></span>
-<span><span class="co">#&gt; Chain 1:                0.82 seconds (Total)</span></span>
+<span><span class="co">#&gt; Chain 1:  Elapsed Time: 0.259 seconds (Warm-up)</span></span>
+<span><span class="co">#&gt; Chain 1:                0.168 seconds (Sampling)</span></span>
+<span><span class="co">#&gt; Chain 1:                0.427 seconds (Total)</span></span>
 <span><span class="co">#&gt; Chain 1: </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; SAMPLING FOR MODEL 'RW' NOW (CHAIN 2).</span></span>
 <span><span class="co">#&gt; Chain 2: </span></span>
-<span><span class="co">#&gt; Chain 2: Gradient evaluation took 1.5e-05 seconds</span></span>
-<span><span class="co">#&gt; Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.15 seconds.</span></span>
+<span><span class="co">#&gt; Chain 2: Gradient evaluation took 1.4e-05 seconds</span></span>
+<span><span class="co">#&gt; Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.14 seconds.</span></span>
 <span><span class="co">#&gt; Chain 2: Adjust your expectations accordingly!</span></span>
 <span><span class="co">#&gt; Chain 2: </span></span>
 <span><span class="co">#&gt; Chain 2: </span></span>
-<span><span class="co">#&gt; Chain 2: Iteration:    1 / 1500 [  0%]  (Warmup)</span></span>
-<span><span class="co">#&gt; Chain 2: Iteration:  751 / 1500 [ 50%]  (Sampling)</span></span>
-<span><span class="co">#&gt; Chain 2: Iteration: 1500 / 1500 [100%]  (Sampling)</span></span>
+<span><span class="co">#&gt; Chain 2: Iteration:   1 / 1000 [  0%]  (Warmup)</span></span>
+<span><span class="co">#&gt; Chain 2: Iteration: 501 / 1000 [ 50%]  (Sampling)</span></span>
+<span><span class="co">#&gt; Chain 2: Iteration: 1000 / 1000 [100%]  (Sampling)</span></span>
 <span><span class="co">#&gt; Chain 2: </span></span>
-<span><span class="co">#&gt; Chain 2:  Elapsed Time: 0.538 seconds (Warm-up)</span></span>
-<span><span class="co">#&gt; Chain 2:                0.337 seconds (Sampling)</span></span>
-<span><span class="co">#&gt; Chain 2:                0.875 seconds (Total)</span></span>
-<span><span class="co">#&gt; Chain 2:</span></span></code></pre></div>
-<p>If we wanted to add a correlation structure to the model, we would add <code>cor = TRUE</code> (as opposed to the default, <code>cor = FALSE</code>). To speed things up, we could take advantage of parallel processing using the <code>cores</code> argument (e.g., add <code>cores = 4</code>) to run on 4 cores simultaneously. For age-standardization, see <code><a href="../articles/age-standardization.html">vignette("age-standardization")</a></code>.</p>
-</div>
-<div class="section level2">
-<h2 id="mcmc-diagnostics">MCMC diagnostics<a class="anchor" aria-label="anchor" href="#mcmc-diagnostics"></a>
-</h2>
-<p>In this case, Stan did not issue any warnings; this means that all the R-hat values are near to 1 and the Monte Carlo standard errors are reasonably small. We can verify that chains have converged (and R-hats equal about 1):</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">rstan</span><span class="fu">::</span><span class="fu"><a href="https://mc-stan.org/rstan/reference/stan_plot_diagnostics.html" class="external-link">stan_rhat</a></span><span class="op">(</span><span class="va">fit</span><span class="op">$</span><span class="va">samples</span><span class="op">)</span></span>
-<span><span class="co">#&gt; `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</span></span></code></pre></div>
-<p><img src="surveil-demo_files/figure-html/unnamed-chunk-7-1.png" width="432" style="display: block; margin: auto;"></p>
-<p>Other useful functions for examining MCMC diagnostics are <code>rstan::stan_ess(fit$samples)</code> and <code>rstan::stan_mcse(fit$samples)</code>. For an introduction to MCMC analysis with <strong>surveil</strong>, including MCMC diagnostics, see the vignette <code><a href="../articles/surveil-mcmc.html">vignette("surveil-mcmc")</a></code>.</p>
-</div>
-<div class="section level2">
-<h2 id="visualizing-results">Visualizing results<a class="anchor" aria-label="anchor" href="#visualizing-results"></a>
-</h2>
-<p>If we call <code>plot</code> on a <strong>surveil</strong> model, we get a <code>ggplot</code> object depicting risk estimates with 95% credible intervals:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit</span>, scale <span class="op">=</span> <span class="fl">100e3</span>, base_size <span class="op">=</span> <span class="fl">11</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Plotted rates are per 100,000</span></span></code></pre></div>
-<p><img src="surveil-demo_files/figure-html/unnamed-chunk-8-1.png" width="432" style="display: block; margin: auto;"> Crude incidence rates are also plotted as points.</p>
-<p>The <code>plot</code> method has a number of options to control its appearance. For example, the <code>base_size</code> argument controls the size of labels. The size of the points for the crude rates can be adjusted using <code>size</code>, and <code>size = 0</code> removes them altogether. We can also use <code>ggplot</code> to add custom modifications:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">fig</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit</span>, scale <span class="op">=</span> <span class="fl">100e3</span>, base_size <span class="op">=</span> <span class="fl">11</span>, size <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Plotted rates are per 100,000</span></span>
-<span><span class="va">fig</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"right"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"CRC incidence per 100,000"</span>,</span>
-<span>       subtitle <span class="op">=</span> <span class="st">"Texas MSAs, 50-79 y.o."</span><span class="op">)</span></span></code></pre></div>
-<p><img src="surveil-demo_files/figure-html/unnamed-chunk-9-1.png" width="672" style="display: block; margin: auto;"></p>
-<p>The plot method has a <code>style</code> argument that controls how the probability distribution is represented. The default, <code>style = "mean_qi"</code>, shows the mean of the posterior distribution of the risk at each time period with a shaded 95% credible interval (as above). The alternative, <code>style = "lines"</code>, plots MCMC samples from the joint probability distribution across all time periods:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit</span>, scale <span class="op">=</span> <span class="fl">100e3</span>, base_size <span class="op">=</span> <span class="fl">11</span>, style <span class="op">=</span> <span class="st">"lines"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Plotted rates are per 100,000</span></span></code></pre></div>
-<p><img src="surveil-demo_files/figure-html/unnamed-chunk-10-1.png" width="432" style="display: block; margin: auto;"></p>
-<p>By default, <code>M = 250</code> samples are plotted. The <code>style</code> option is available for all of the <strong>surveil</strong> plot methods.</p>
+<span><span class="co">#&gt; Chain 2:  Elapsed Time: 0.274 seconds (Warm-up)</span></span>
+<span><span class="co">#&gt; Chain 2:                0.167 seconds (Sampling)</span></span>
+<span><span class="co">#&gt; Chain 2:                0.441 seconds (Total)</span></span>
+<span><span class="co">#&gt; Chain 2: </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; SAMPLING FOR MODEL 'RW' NOW (CHAIN 3).</span></span>
+<span><span class="co">#&gt; Chain 3: </span></span>
+<span><span class="co">#&gt; Chain 3: Gradient evaluation took 1.3e-05 seconds</span></span>
+<span><span class="co">#&gt; Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.13 seconds.</span></span>
+<span><span class="co">#&gt; Chain 3: Adjust your expectations accordingly!</span></span>
+<span><span class="co">#&gt; Chain 3: </span></span>
+<span><span class="co">#&gt; Chain 3: </span></span>
+<span><span class="co">#&gt; Chain 3: Iteration:   1 / 1000 [  0%]  (Warmup)</span></span>
+<span><span class="co">#&gt; Chain 3: Iteration: 501 / 1000 [ 50%]  (Sampling)</span></span>
+<span><span class="co">#&gt; Chain 3: Iteration: 1000 / 1000 [100%]  (Sampling)</span></span>
+<span><span class="co">#&gt; Chain 3: </span></span>
+<span><span class="co">#&gt; Chain 3:  Elapsed Time: 0.295 seconds (Warm-up)</span></span>
+<span><span class="co">#&gt; Chain 3:                0.166 seconds (Sampling)</span></span>
+<span><span class="co">#&gt; Chain 3:                0.461 seconds (Total)</span></span>
+<span><span class="co">#&gt; Chain 3: </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; SAMPLING FOR MODEL 'RW' NOW (CHAIN 4).</span></span>
+<span><span class="co">#&gt; Chain 4: </span></span>
+<span><span class="co">#&gt; Chain 4: Gradient evaluation took 1.3e-05 seconds</span></span>
+<span><span class="co">#&gt; Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.13 seconds.</span></span>
+<span><span class="co">#&gt; Chain 4: Adjust your expectations accordingly!</span></span>
+<span><span class="co">#&gt; Chain 4: </span></span>
+<span><span class="co">#&gt; Chain 4: </span></span>
+<span><span class="co">#&gt; Chain 4: Iteration:   1 / 1000 [  0%]  (Warmup)</span></span>
+<span><span class="co">#&gt; Chain 4: Iteration: 501 / 1000 [ 50%]  (Sampling)</span></span>
+<span><span class="co">#&gt; Chain 4: Iteration: 1000 / 1000 [100%]  (Sampling)</span></span>
+<span><span class="co">#&gt; Chain 4: </span></span>
+<span><span class="co">#&gt; Chain 4:  Elapsed Time: 0.231 seconds (Warm-up)</span></span>
+<span><span class="co">#&gt; Chain 4:                0.187 seconds (Sampling)</span></span>
+<span><span class="co">#&gt; Chain 4:                0.418 seconds (Total)</span></span>
+<span><span class="co">#&gt; Chain 4:</span></span></code></pre></div>
+<p>The <code>iter = 1e3</code> line controls how long the MCMC sampling continues for (in this case, 1,000 samples: 500 warmup, then 500 more for inference). The default is 3,000, which is more than sufficient for this example model. By default, there are four independent MCMC chains each with 500 post-warmup samples (for a total of 2,000 MCMC samples used for the estimates).</p>
+<p>To speed things up, we could take advantage of parallel processing using the <code>cores</code> argument (e.g., add <code>cores = 4</code>) to run on 4 cores simultaneously. You can suppress the messages seen above by adding <code>refresh = 0</code>.</p>
 </div>
 <div class="section level2">
 <h2 id="printing-results">Printing results<a class="anchor" aria-label="anchor" href="#printing-results"></a>
 </h2>
-<p>The <code>print</code> method will print the estimates with 95% credible intervals to the console:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<p>The <code>print</code> method will print the estimates with 95% credible intervals to the console; adding <code>scale = 100e3</code> will display rates per 100,000:</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">fit</span>, scale <span class="op">=</span> <span class="fl">100e3</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Summary of surveil model results</span></span>
 <span><span class="co">#&gt; Time periods: 19</span></span>
 <span><span class="co">#&gt; Grouping variable: Race</span></span>
 <span><span class="co">#&gt; Correlation matrix: FALSE</span></span>
 <span><span class="co">#&gt;    time                      Race      mean   lwr_2.5  upr_97.5</span></span>
-<span><span class="co">#&gt; 1  1999 Black or African American 170.09931 158.09130 182.22771</span></span>
-<span><span class="co">#&gt; 2  2000 Black or African American 166.35095 156.32243 176.56795</span></span>
-<span><span class="co">#&gt; 3  2001 Black or African American 168.26786 158.50435 178.34822</span></span>
-<span><span class="co">#&gt; 4  2002 Black or African American 169.23187 159.81591 179.12017</span></span>
-<span><span class="co">#&gt; 5  2003 Black or African American 167.15604 157.58551 177.24145</span></span>
-<span><span class="co">#&gt; 6  2004 Black or African American 166.85675 157.20365 176.91472</span></span>
-<span><span class="co">#&gt; 7  2005 Black or African American 159.05704 150.18341 167.46911</span></span>
-<span><span class="co">#&gt; 8  2006 Black or African American 154.50993 145.79650 163.56521</span></span>
-<span><span class="co">#&gt; 9  2007 Black or African American 152.53522 144.96703 161.08950</span></span>
-<span><span class="co">#&gt; 10 2008 Black or African American 149.51767 141.41321 158.13694</span></span>
-<span><span class="co">#&gt; 11 2009 Black or African American 143.50410 135.82854 151.30291</span></span>
-<span><span class="co">#&gt; 12 2010 Black or African American 138.84876 131.63502 146.62930</span></span>
-<span><span class="co">#&gt; 13 2011 Black or African American 130.98992 124.32892 137.77578</span></span>
-<span><span class="co">#&gt; 14 2012 Black or African American 125.27753 118.23194 131.90269</span></span>
-<span><span class="co">#&gt; 15 2013 Black or African American 124.92074 118.01848 131.82065</span></span>
-<span><span class="co">#&gt; 16 2014 Black or African American 126.27768 119.49126 133.65171</span></span>
-<span><span class="co">#&gt; 17 2015 Black or African American 122.60899 115.72430 129.26868</span></span>
-<span><span class="co">#&gt; 18 2016 Black or African American 122.13840 116.07136 128.64495</span></span>
-<span><span class="co">#&gt; 19 2017 Black or African American 122.67478 115.78615 129.95286</span></span>
-<span><span class="co">#&gt; 20 1999                  Hispanic 101.55146  94.73596 108.69040</span></span>
-<span><span class="co">#&gt; 21 2000                  Hispanic 104.25114  98.20376 111.01166</span></span>
-<span><span class="co">#&gt; 22 2001                  Hispanic 102.57382  97.39754 108.20977</span></span>
-<span><span class="co">#&gt; 23 2002                  Hispanic 101.58040  96.08511 107.41582</span></span>
-<span><span class="co">#&gt; 24 2003                  Hispanic 100.58029  95.14669 106.03364</span></span>
-<span><span class="co">#&gt; 25 2004                  Hispanic 100.93441  96.04959 106.52098</span></span>
-<span><span class="co">#&gt; 26 2005                  Hispanic  98.71661  93.68289 104.08567</span></span>
-<span><span class="co">#&gt; 27 2006                  Hispanic  96.85269  92.13799 101.67850</span></span>
-<span><span class="co">#&gt; 28 2007                  Hispanic  94.21666  89.68871  98.98098</span></span>
-<span><span class="co">#&gt; 29 2008                  Hispanic  90.47452  85.56317  95.29716</span></span>
-<span><span class="co">#&gt; 30 2009                  Hispanic  88.81626  84.05870  93.23111</span></span>
-<span><span class="co">#&gt; 31 2010                  Hispanic  87.97461  83.56999  92.21312</span></span>
-<span><span class="co">#&gt; 32 2011                  Hispanic  87.43417  83.30700  91.26391</span></span>
-<span><span class="co">#&gt; 33 2012                  Hispanic  87.81860  83.82779  92.01642</span></span>
-<span><span class="co">#&gt; 34 2013                  Hispanic  87.29056  83.59506  91.34161</span></span>
-<span><span class="co">#&gt; 35 2014                  Hispanic  85.82461  81.98395  89.55771</span></span>
-<span><span class="co">#&gt; 36 2015                  Hispanic  85.80461  82.00147  89.65006</span></span>
-<span><span class="co">#&gt; 37 2016                  Hispanic  84.83195  80.93074  88.81808</span></span>
-<span><span class="co">#&gt; 38 2017                  Hispanic  85.87671  81.40789  90.45533</span></span>
-<span><span class="co">#&gt; 39 1999                     White 135.12473 130.07338 140.18926</span></span>
-<span><span class="co">#&gt; 40 2000                     White 136.50283 132.07629 141.22950</span></span>
-<span><span class="co">#&gt; 41 2001                     White 134.08232 129.50902 138.68870</span></span>
-<span><span class="co">#&gt; 42 2002                     White 130.16947 125.53565 134.77147</span></span>
-<span><span class="co">#&gt; 43 2003                     White 127.45189 122.83622 132.12302</span></span>
-<span><span class="co">#&gt; 44 2004                     White 120.02083 116.10821 124.02480</span></span>
-<span><span class="co">#&gt; 45 2005                     White 115.06247 111.03770 119.03716</span></span>
-<span><span class="co">#&gt; 46 2006                     White 109.67601 105.85359 113.50730</span></span>
-<span><span class="co">#&gt; 47 2007                     White 108.18861 104.52979 112.04341</span></span>
-<span><span class="co">#&gt; 48 2008                     White 103.45036  99.92368 106.94757</span></span>
-<span><span class="co">#&gt; 49 2009                     White  98.94269  95.50306 102.21684</span></span>
-<span><span class="co">#&gt; 50 2010                     White  96.26580  93.17126  99.54170</span></span>
-<span><span class="co">#&gt; 51 2011                     White  93.65682  90.55517  97.25755</span></span>
-<span><span class="co">#&gt; 52 2012                     White  91.09376  87.98951  94.14161</span></span>
-<span><span class="co">#&gt; 53 2013                     White  90.15532  87.17278  93.20889</span></span>
-<span><span class="co">#&gt; 54 2014                     White  91.40444  88.57078  94.40132</span></span>
-<span><span class="co">#&gt; 55 2015                     White  93.08656  90.04661  96.52268</span></span>
-<span><span class="co">#&gt; 56 2016                     White  89.02923  85.83937  91.97022</span></span>
-<span><span class="co">#&gt; 57 2017                     White  92.30224  89.00720  95.92724</span></span></code></pre></div>
+<span><span class="co">#&gt; 1  1999 Black or African American 170.13800 158.60949 182.58447</span></span>
+<span><span class="co">#&gt; 2  2000 Black or African American 166.33702 155.88914 176.76747</span></span>
+<span><span class="co">#&gt; 3  2001 Black or African American 168.25295 158.81048 177.69848</span></span>
+<span><span class="co">#&gt; 4  2002 Black or African American 169.07328 160.04227 179.24671</span></span>
+<span><span class="co">#&gt; 5  2003 Black or African American 167.02063 158.09334 176.99671</span></span>
+<span><span class="co">#&gt; 6  2004 Black or African American 166.71714 157.53935 177.28653</span></span>
+<span><span class="co">#&gt; 7  2005 Black or African American 158.87722 149.76657 167.98056</span></span>
+<span><span class="co">#&gt; 8  2006 Black or African American 154.47016 146.12883 162.99275</span></span>
+<span><span class="co">#&gt; 9  2007 Black or African American 152.61372 144.80630 160.59970</span></span>
+<span><span class="co">#&gt; 10 2008 Black or African American 149.59718 141.78290 157.51917</span></span>
+<span><span class="co">#&gt; 11 2009 Black or African American 143.50158 136.30690 150.52598</span></span>
+<span><span class="co">#&gt; 12 2010 Black or African American 138.88031 131.71338 146.52430</span></span>
+<span><span class="co">#&gt; 13 2011 Black or African American 131.01824 123.96792 138.16398</span></span>
+<span><span class="co">#&gt; 14 2012 Black or African American 125.37334 117.98708 132.26958</span></span>
+<span><span class="co">#&gt; 15 2013 Black or African American 124.99183 118.22745 131.54901</span></span>
+<span><span class="co">#&gt; 16 2014 Black or African American 126.23039 119.63626 133.15463</span></span>
+<span><span class="co">#&gt; 17 2015 Black or African American 122.45549 116.50360 128.48452</span></span>
+<span><span class="co">#&gt; 18 2016 Black or African American 122.02947 115.61306 128.13912</span></span>
+<span><span class="co">#&gt; 19 2017 Black or African American 122.54465 115.76616 129.59170</span></span>
+<span><span class="co">#&gt; 20 1999                  Hispanic 101.43854  94.30918 108.51967</span></span>
+<span><span class="co">#&gt; 21 2000                  Hispanic 104.09032  97.84728 110.97232</span></span>
+<span><span class="co">#&gt; 22 2001                  Hispanic 102.44697  97.25675 108.21285</span></span>
+<span><span class="co">#&gt; 23 2002                  Hispanic 101.35588  95.97899 106.99612</span></span>
+<span><span class="co">#&gt; 24 2003                  Hispanic 100.37017  95.18978 105.86297</span></span>
+<span><span class="co">#&gt; 25 2004                  Hispanic 100.84657  95.63758 106.77403</span></span>
+<span><span class="co">#&gt; 26 2005                  Hispanic  98.55163  93.78448 103.75793</span></span>
+<span><span class="co">#&gt; 27 2006                  Hispanic  96.85489  92.14926 101.86475</span></span>
+<span><span class="co">#&gt; 28 2007                  Hispanic  94.20270  89.91900  98.96644</span></span>
+<span><span class="co">#&gt; 29 2008                  Hispanic  90.49377  85.70034  94.80012</span></span>
+<span><span class="co">#&gt; 30 2009                  Hispanic  88.81188  84.35870  93.11755</span></span>
+<span><span class="co">#&gt; 31 2010                  Hispanic  87.96244  83.76140  91.89792</span></span>
+<span><span class="co">#&gt; 32 2011                  Hispanic  87.40130  83.13502  91.53846</span></span>
+<span><span class="co">#&gt; 33 2012                  Hispanic  87.81897  83.66547  92.06661</span></span>
+<span><span class="co">#&gt; 34 2013                  Hispanic  87.18111  83.15417  91.30615</span></span>
+<span><span class="co">#&gt; 35 2014                  Hispanic  85.79036  81.97925  89.50634</span></span>
+<span><span class="co">#&gt; 36 2015                  Hispanic  85.81090  81.94665  89.87903</span></span>
+<span><span class="co">#&gt; 37 2016                  Hispanic  84.78349  80.77179  88.50966</span></span>
+<span><span class="co">#&gt; 38 2017                  Hispanic  85.87235  81.68923  90.16129</span></span>
+<span><span class="co">#&gt; 39 1999                     White 135.17235 130.21599 140.27116</span></span>
+<span><span class="co">#&gt; 40 2000                     White 136.52789 131.91507 141.36548</span></span>
+<span><span class="co">#&gt; 41 2001                     White 134.08242 129.30324 138.90142</span></span>
+<span><span class="co">#&gt; 42 2002                     White 130.22904 125.69575 134.90246</span></span>
+<span><span class="co">#&gt; 43 2003                     White 127.44172 123.04023 131.86884</span></span>
+<span><span class="co">#&gt; 44 2004                     White 120.01454 115.94455 124.19078</span></span>
+<span><span class="co">#&gt; 45 2005                     White 115.07193 111.30515 119.12542</span></span>
+<span><span class="co">#&gt; 46 2006                     White 109.74624 105.99032 113.50199</span></span>
+<span><span class="co">#&gt; 47 2007                     White 108.18246 104.43649 111.92963</span></span>
+<span><span class="co">#&gt; 48 2008                     White 103.53357 100.04881 107.05602</span></span>
+<span><span class="co">#&gt; 49 2009                     White  98.96907  95.50757 102.33845</span></span>
+<span><span class="co">#&gt; 50 2010                     White  96.21228  92.83496  99.60326</span></span>
+<span><span class="co">#&gt; 51 2011                     White  93.71118  90.66784  96.79781</span></span>
+<span><span class="co">#&gt; 52 2012                     White  91.11633  87.99983  94.26437</span></span>
+<span><span class="co">#&gt; 53 2013                     White  90.13582  86.98422  93.25377</span></span>
+<span><span class="co">#&gt; 54 2014                     White  91.47546  88.31209  94.69162</span></span>
+<span><span class="co">#&gt; 55 2015                     White  93.11257  89.78737  96.41885</span></span>
+<span><span class="co">#&gt; 56 2016                     White  89.12254  86.06518  92.13068</span></span>
+<span><span class="co">#&gt; 57 2017                     White  92.30691  89.14970  95.59390</span></span></code></pre></div>
 <p>This information is also stored in a data frame, <code>fit$summary</code>:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">fit</span><span class="op">$</span><span class="va">summary</span><span class="op">)</span></span>
 <span><span class="co">#&gt;   time        mean     lwr_2.5    upr_97.5                      Race Year Count</span></span>
-<span><span class="co">#&gt; 1 1999 0.001700993 0.001580913 0.001822277 Black or African American 1999   471</span></span>
-<span><span class="co">#&gt; 2 2000 0.001663510 0.001563224 0.001765680 Black or African American 2000   455</span></span>
-<span><span class="co">#&gt; 3 2001 0.001682679 0.001585044 0.001783482 Black or African American 2001   505</span></span>
-<span><span class="co">#&gt; 4 2002 0.001692319 0.001598159 0.001791202 Black or African American 2002   539</span></span>
-<span><span class="co">#&gt; 5 2003 0.001671560 0.001575855 0.001772415 Black or African American 2003   546</span></span>
-<span><span class="co">#&gt; 6 2004 0.001668568 0.001572036 0.001769147 Black or African American 2004   602</span></span>
+<span><span class="co">#&gt; 1 1999 0.001701380 0.001586095 0.001825845 Black or African American 1999   471</span></span>
+<span><span class="co">#&gt; 2 2000 0.001663370 0.001558891 0.001767675 Black or African American 2000   455</span></span>
+<span><span class="co">#&gt; 3 2001 0.001682529 0.001588105 0.001776985 Black or African American 2001   505</span></span>
+<span><span class="co">#&gt; 4 2002 0.001690733 0.001600423 0.001792467 Black or African American 2002   539</span></span>
+<span><span class="co">#&gt; 5 2003 0.001670206 0.001580933 0.001769967 Black or African American 2003   546</span></span>
+<span><span class="co">#&gt; 6 2004 0.001667171 0.001575394 0.001772865 Black or African American 2004   602</span></span>
 <span><span class="co">#&gt;   Population       Crude</span></span>
 <span><span class="co">#&gt; 1     270430 0.001741671</span></span>
 <span><span class="co">#&gt; 2     283280 0.001606185</span></span>
@@ -418,120 +408,83 @@
 <span><span class="co">#&gt; 4     313133 0.001721313</span></span>
 <span><span class="co">#&gt; 5     329481 0.001657152</span></span>
 <span><span class="co">#&gt; 6     346886 0.001735440</span></span></code></pre></div>
+<p>The <code>fit$summary</code> object can be used to create custom plots and tables.</p>
 </div>
 <div class="section level2">
-<h2 id="measuring-pairwise-inequality">Measuring pairwise inequality<a class="anchor" aria-label="anchor" href="#measuring-pairwise-inequality"></a>
+<h2 id="visualizing-results">Visualizing results<a class="anchor" aria-label="anchor" href="#visualizing-results"></a>
 </h2>
-<p><strong>surveil</strong> provides a number of functions and methods for measuring health inequalities.</p>
-<p>A selection of complementary pairwise inequality measures can be calculated using the <code>group_diff</code> function. The function requires a fitted <strong>surveil</strong> model and character strings corresponding, respectively, to the target population (indicating which group is the target of our inference, typically the overburdened or disadvantaged group), and the reference population. You can also use <code>group_diff</code> to compare two age-stratified populations with age-standardized rates (for details, see <code><a href="../articles/age-standardization.html">vignette("age-standardization")</a></code> and <code><a href="../reference/group_diff.html">?group_diff</a></code>).</p>
-<p>It returns probability distributions and summary statements for the following quantities, where <span class="math inline">\(A\)</span> is the incidence rate for the advantaged group, <span class="math inline">\(D\)</span> is the incidence rate of the disadvantaged group, and <span class="math inline">\(P_d\)</span> is the size of the population at risk for the disadvantaged group.</p>
-<table class="table">
-<thead><tr class="header">
-<th align="left">Concept</th>
-<th align="center">Formula</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td align="left">Rate Ratio (RR)</td>
-<td align="center"><span class="math inline">\(\frac{D}{A}\)</span></td>
-</tr>
-<tr class="even">
-<td align="left">Rate Difference (RD)</td>
-<td align="center"><span class="math inline">\(D - A\)</span></td>
-</tr>
-<tr class="odd">
-<td align="left">Excess Cases (EC)</td>
-<td align="center"><span class="math inline">\((D-A) \times P_d\)</span></td>
-</tr>
-<tr class="even">
-<td align="left">Proportion Attributable Risk (PAR)</td>
-<td align="center"><span class="math inline">\(\frac{D-A}{D}\)</span></td>
-</tr>
-</tbody>
-</table>
-<p>Notice that the PAR is simply the rate difference expressed as a fraction of total risk; it indicates the fraction of risk in the target population that would have been removed had the target rate been equal to the reference rate <span class="citation">(Menvielle, Kulhánová, and Machenbach <a href="#ref-menvielle_2019" role="doc-biblioref">2019</a>)</span>. Each of these quantities (RD, RR, PAR, EC) provide a different perspective on the magnitude of a health disparity.</p>
-<p>To calculate all of these measures for two groups in our data, we call <code>group_diff</code> on our fitted model:</p>
+<p>If we call <code>plot</code> on a fitted <em>surveil</em> model, we get a <code>ggplot</code> object depicting risk estimates with 95% credible intervals:</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit</span>, scale <span class="op">=</span> <span class="fl">100e3</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Plotted rates are per 100,000</span></span></code></pre></div>
+<p><img src="surveil-demo_files/figure-html/unnamed-chunk-9-1.png" width="456" style="display: block; margin: auto;"> The crude incidence rates (observed values) are also plotted here as points.</p>
+<p>The <code>plot</code> method has a number of optional arguments that control its appearance. For example, the <code>base_size</code> argument controls the size of labels. The size of the points for the crude rates can be adjusted using <code>size</code>, and <code>size = 0</code> removes them altogether. We can also use <code>ggplot</code> to add custom modifications:</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">fig</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit</span>, scale <span class="op">=</span> <span class="fl">100e3</span>, base_size <span class="op">=</span> <span class="fl">11</span>, size <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Plotted rates are per 100,000</span></span>
+<span><span class="va">fig</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"right"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"CRC incidence per 100,000"</span>,</span>
+<span>       subtitle <span class="op">=</span> <span class="st">"Texas MSAs, 50-79 y.o."</span><span class="op">)</span></span></code></pre></div>
+<p><img src="surveil-demo_files/figure-html/unnamed-chunk-10-1.png" width="672" style="display: block; margin: auto;"></p>
+<p>The plot method has a <code>style</code> argument that controls how uncertainty is represented. The default, <code>style = "mean_qi"</code>, shows the mean of the posterior distribution as the estimate and adds shading to depict the 95% credible interval (as above). The alternative, <code>style = "lines"</code>, plots MCMC samples from the joint probability distribution for the estimates:</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit</span>, scale <span class="op">=</span> <span class="fl">100e3</span>, base_size <span class="op">=</span> <span class="fl">11</span>, style <span class="op">=</span> <span class="st">"lines"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Plotted rates are per 100,000</span></span></code></pre></div>
+<p><img src="surveil-demo_files/figure-html/unnamed-chunk-11-1.png" width="432" style="display: block; margin: auto;"></p>
+<p>By default, <code>M = 250</code> samples are plotted. The <code>style</code> option is available for all of the <em>surveil</em> plot methods. This style is sometimes helpful for visualizing multiple groups when their credible intervals overlap.</p>
+</div>
+<div class="section level2">
+<h2 id="percent-change">Percent change<a class="anchor" aria-label="anchor" href="#percent-change"></a>
+</h2>
+<p>The <code>apc</code> method calculates percent change by period and cumulatively over time:</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">fit_pc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/apc.html">apc</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span></code></pre></div>
+<p>The object returned by <code>apc</code> contains two data frames. The first contains estimates of percent change from the previous period:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">gd</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/group_diff.html">group_diff</a></span><span class="op">(</span><span class="va">fit</span>, target <span class="op">=</span> <span class="st">"Black or African American"</span>, reference <span class="op">=</span> <span class="st">"White"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">gd</span>, scale <span class="op">=</span> <span class="fl">100e3</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Summary of Pairwise Inequality</span></span>
-<span><span class="co">#&gt; Target group: Black or African American</span></span>
-<span><span class="co">#&gt; Reference group: White</span></span>
-<span><span class="co">#&gt; Time periods observed: 19</span></span>
-<span><span class="co">#&gt; Rate scale: per 100,000</span></span>
-<span><span class="co">#&gt; Cumulative excess cases (EC): 3,210 [2979, 3462]</span></span>
-<span><span class="co">#&gt; Cumulative EC as a fraction of group risk (PAR): 0.27 [0.25, 0.28]</span></span>
-<span><span class="co">#&gt;  time Rate RD  PAR  RR  EC</span></span>
-<span><span class="co">#&gt;  1999  170 35 0.20 1.3  95</span></span>
-<span><span class="co">#&gt;  2000  166 30 0.18 1.2  85</span></span>
-<span><span class="co">#&gt;  2001  168 34 0.20 1.3 102</span></span>
-<span><span class="co">#&gt;  2002  169 39 0.23 1.3 122</span></span>
-<span><span class="co">#&gt;  2003  167 40 0.24 1.3 131</span></span>
-<span><span class="co">#&gt;  2004  167 47 0.28 1.4 162</span></span>
-<span><span class="co">#&gt;  2005  159 44 0.28 1.4 161</span></span>
-<span><span class="co">#&gt;  2006  155 45 0.29 1.4 179</span></span>
-<span><span class="co">#&gt;  2007  153 44 0.29 1.4 186</span></span>
-<span><span class="co">#&gt;  2008  150 46 0.31 1.4 203</span></span>
-<span><span class="co">#&gt;  2009  144 45 0.31 1.5 207</span></span>
-<span><span class="co">#&gt;  2010  139 43 0.31 1.4 209</span></span>
-<span><span class="co">#&gt;  2011  131 37 0.28 1.4 192</span></span>
-<span><span class="co">#&gt;  2012  125 34 0.27 1.4 184</span></span>
-<span><span class="co">#&gt;  2013  125 35 0.28 1.4 196</span></span>
-<span><span class="co">#&gt;  2014  126 35 0.28 1.4 205</span></span>
-<span><span class="co">#&gt;  2015  123 30 0.24 1.3 181</span></span>
-<span><span class="co">#&gt;  2016  122 33 0.27 1.4 211</span></span>
-<span><span class="co">#&gt;  2017  123 30 0.25 1.3 200</span></span></code></pre></div>
-<p>All of the <strong>surveil</strong> plotting and printing methods provide an option to scale rates by a custom value. By setting <code>scale = 100e3</code> (100,000), the RD is printed as cases per 100,000. Note that none of the other inequality measures (PAR, RR, EC) are ever impacted by this choice.</p>
-<p>The plot method for <code>surveil_diff</code> produces one time series <code>ggplot</code> each for RD, PAR, and EC. The means of the probability distributions for each measure are plotted as lines, while the shading indicates a 95% credible interval:</p>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">fit_pc</span><span class="op">$</span><span class="va">apc</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   time                     group        apc       lwr      upr</span></span>
+<span><span class="co">#&gt; 1 1999 Black or African American  0.0000000  0.000000 0.000000</span></span>
+<span><span class="co">#&gt; 2 2000 Black or African American -2.1595394 -9.365070 4.635585</span></span>
+<span><span class="co">#&gt; 3 2001 Black or African American  1.2133676 -5.327010 8.471612</span></span>
+<span><span class="co">#&gt; 4 2002 Black or African American  0.5447899 -5.824927 7.431111</span></span>
+<span><span class="co">#&gt; 5 2003 Black or African American -1.1590462 -7.556092 5.499482</span></span>
+<span><span class="co">#&gt; 6 2004 Black or African American -0.1273153 -6.476750 7.004283</span></span></code></pre></div>
+<p>Those estimates typically have high uncertainty.</p>
+<p>The second data frame contains estimates of cumulative percent change (since the first observed period):</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">gd</span>, scale <span class="op">=</span> <span class="fl">100e3</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Rate differences (RD) are per 100,000 at risk</span></span></code></pre></div>
-<p><img src="surveil-demo_files/figure-html/unnamed-chunk-14-1.png" width="672" style="display: block; margin: auto;"></p>
-<p>If we wanted to replace the plot of the PAR with one of the RR, we would set the <code>PAR</code> option to <code>FALSE</code>:</p>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">fit_pc</span><span class="op">$</span><span class="va">cpc</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   time                     group        cpc        lwr      upr</span></span>
+<span><span class="co">#&gt; 1 1999 Black or African American  0.0000000   0.000000 0.000000</span></span>
+<span><span class="co">#&gt; 2 2000 Black or African American -2.1595394  -9.365070 4.635585</span></span>
+<span><span class="co">#&gt; 3 2001 Black or African American -1.0028294  -9.110078 7.509797</span></span>
+<span><span class="co">#&gt; 4 2002 Black or African American -0.5095583  -8.950934 8.189904</span></span>
+<span><span class="co">#&gt; 5 2003 Black or African American -1.7158667 -10.168417 7.072674</span></span>
+<span><span class="co">#&gt; 6 2004 Black or African American -1.8906894 -10.407206 7.413012</span></span></code></pre></div>
+<p>Each value in the <code>cpc</code> column is an estimate of the difference in incidence rates between that year and the first year (in this case, 1999) expressed as a percent of the first year’s rate. The <code>lwr</code> and <code>upr</code> columns are the lower and upper bounds of the 95% credible intervals for the estimates.</p>
+<p>This information can also be plotted:</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">gd</span>, scale <span class="op">=</span> <span class="fl">100e3</span>, PAR <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Rate differences (RD) are per 100,000 at risk</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit_pc</span>, cumulative <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p><img src="surveil-demo_files/figure-html/unnamed-chunk-15-1.png" width="672" style="display: block; margin: auto;"></p>
+<p>If desired, the average annual percent change from the first period can be calculated by dividing the cumulative percent change (CPC) by the appropriate number of periods. For example, the CPC from 1999 to 2017 for whites is about -31 for an average annual percent change of about <span class="math inline">\(-31/18 = -1.72\)</span>. The credible intervals for the average annual percent change can also be obtained from the CPC table using the same method. For this example, the correct denominator is <span class="math inline">\(2017-1999=18\)</span> (generally: the last year minus the first year).</p>
 </div>
 <div class="section level2">
-<h2 id="measuring-inequality-with-multiple-groups">Measuring inequality with multiple groups<a class="anchor" aria-label="anchor" href="#measuring-inequality-with-multiple-groups"></a>
+<h2 id="mcmc-diagnostics">MCMC diagnostics<a class="anchor" aria-label="anchor" href="#mcmc-diagnostics"></a>
 </h2>
-<p>Pairwise measures are important, but they cannot provide a summary of inequality across multiple socially situated groups. Theil’s T is an entropy-based inequality index with many favorable qualities, including that it naturally accommodates complex grouping structures <span class="citation">(Theil <a href="#ref-theil_1972" role="doc-biblioref">1972</a>; Conceição and Galbraith <a href="#ref-conceicao_2000a" role="doc-biblioref">2000</a>; Conceição and Ferreira <a href="#ref-conceicao_2000b" role="doc-biblioref">2000</a>)</span>.</p>
-<p>Theil’s T measures the extent to which certain populations are overburdened by disease, meaning precisely that the proportion of cases accounted for by a particular group, <span class="math inline">\(\omega_j\)</span>, is higher than the proportion of the population constituted by that same group, <span class="math inline">\(\eta_j\)</span>. With <span class="math inline">\(k\)</span> groups, Theil’s index is <span class="math display">\[T = \sum_{j=1}^k \omega_j \big[ log(\omega_j / \eta_j) \big].\]</span> This is zero when case shares equal population shares and it increases monotonically as the two diverge for any group. Theil’s T is thus a weighted mean of log-ratios of case shares to population shares, where each log-ratio (which we may describe as a raw inequality score) is weighted by its share of total cases.</p>
-<p>Theil’s T can be computed from a fitted <strong>surveil</strong> model, the only requirement is that the model includes multiple groups (through the <code>group</code> argument):</p>
+<p>If you do not see any warnings printed to the R console at the end of the model fitting process then you can simply move forward with the analysis. If there is a warning, it may say that the effective sample size is low or that the R-hat values are large. For a crash course on MCMC analysis with <em>surveil</em>, including MCMC diagnostics, see the vignette on the topic <code><a href="../articles/surveil-mcmc.html">vignette("surveil-mcmc")</a></code>.</p>
+<p>A quick and dirty summary is that you want to watch two key diagnostics, which are effective MCMC sample size (ESS) and R-hat. For all your parameters of interest, ESS should be at least 400 or so. If you want to increase the ESS, use the <code>iter</code> argument to draw more samples. The R-hat values should all be pretty near to one, such as within the range <span class="math inline">\(1 \pm .02\)</span>. For the simple models we are using here, large R-hat values can often be fixed just by drawing more samples.</p>
+<p>You can find these diagnostics by printing results <code>print(fit$samples)</code> and seeing the columns <code>n_eff</code> (for ESS) and <code>Rhat</code>.</p>
+<p>The MCMC sampling is generally fast and without trouble when the numbers are not too small (as in this example model). When the incidence rates are based on small numbers (like counts less than 20), the sampling often proceeds more slowly and a higher <code>iter</code> value may be needed.</p>
+</div>
+<div class="section level2">
+<h2 id="multiple-time-series">Multiple time series<a class="anchor" aria-label="anchor" href="#multiple-time-series"></a>
+</h2>
+<p>In most applications, the base model specification described above will be entirely sufficient. However, <em>surveil</em> provides an option for users to add a correlation structure to the model when multiple groups are modeled together. For correlated trends, this can increase the precision of estimates.</p>
+<p>The log-rates for <span class="math inline">\(k\)</span> populations, <span class="math inline">\(\boldsymbol \phi_t\)</span>, are assigned a multivariate normal distribution <span class="citation">(Brandt and Williams <a href="#ref-brandt_2007" role="doc-biblioref">2007</a>)</span>: <span class="math display">\[\boldsymbol \phi_t \sim \text{Gau}(\boldsymbol \phi_{t-1}, \boldsymbol \Sigma),\]</span> where <span class="math inline">\(\boldsymbol \Sigma\)</span> is a <span class="math inline">\(k \times k\)</span> covariance matrix.</p>
+<p>The covariance matrix can be decomposed into a diagonal matrix containing scale parameters for each variable, <span class="math inline">\(\boldsymbol \Delta = diag(\tau_1,\dots \tau_k)\)</span>, and a symmetric correlation matrix, <span class="math inline">\(\boldsymbol \Omega\)</span> <span class="citation">(Stan Development Team <a href="#ref-stan_2021" role="doc-biblioref">2021</a>)</span>: <span class="math display">\[\boldsymbol \Sigma = \boldsymbol \Delta \boldsymbol \Omega \boldsymbol \Delta\]</span> When the correlation structure is added to the model, then a prior distribution is also required for the correlation matrix. <em>surveil</em> uses the LKJ model, which has a single shape parameter, <span class="math inline">\(\eta\)</span> <span class="citation">(Stan Development Team <a href="#ref-stan_2021" role="doc-biblioref">2021</a>)</span>. If <span class="math inline">\(\eta=1\)</span>, the LKJ model will place uniform prior probability on any <span class="math inline">\(k \times k\)</span> correlation matrix; as <span class="math inline">\(\eta\)</span> increases from one, it expresses ever greater skepticism towards large correlations. When <span class="math inline">\(\eta &lt;1\)</span>, the LKJ model becomes ‘concave’—expressing skepticism towards correlations of zero.</p>
+<p>If we wanted to add a correlation structure to the model, we would add <code>cor = TRUE</code> to <code>stan_rw</code>, as in:</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">Ts</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/theil.html">theil</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">Ts</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Summary of Theil's Inequality Index</span></span>
-<span><span class="co">#&gt; Groups:</span></span>
-<span><span class="co">#&gt; Time periods observed: 19</span></span>
-<span><span class="co">#&gt; Theil's T (times 100) with 95% credible intervals</span></span>
-<span><span class="co">#&gt;  time Theil .lower .upper</span></span>
-<span><span class="co">#&gt;  1999 0.940  0.615  1.307</span></span>
-<span><span class="co">#&gt;  2000 0.795  0.535  1.089</span></span>
-<span><span class="co">#&gt;  2001 0.900  0.644  1.187</span></span>
-<span><span class="co">#&gt;  2002 0.981  0.692  1.321</span></span>
-<span><span class="co">#&gt;  2003 0.995  0.714  1.348</span></span>
-<span><span class="co">#&gt;  2004 1.072  0.742  1.445</span></span>
-<span><span class="co">#&gt;  2005 0.997  0.675  1.336</span></span>
-<span><span class="co">#&gt;  2006 1.042  0.714  1.391</span></span>
-<span><span class="co">#&gt;  2007 1.097  0.795  1.444</span></span>
-<span><span class="co">#&gt;  2008 1.240  0.892  1.671</span></span>
-<span><span class="co">#&gt;  2009 1.199  0.858  1.591</span></span>
-<span><span class="co">#&gt;  2010 1.130  0.792  1.519</span></span>
-<span><span class="co">#&gt;  2011 0.913  0.610  1.250</span></span>
-<span><span class="co">#&gt;  2012 0.770  0.495  1.061</span></span>
-<span><span class="co">#&gt;  2013 0.806  0.509  1.116</span></span>
-<span><span class="co">#&gt;  2014 0.861  0.576  1.196</span></span>
-<span><span class="co">#&gt;  2015 0.685  0.433  0.962</span></span>
-<span><span class="co">#&gt;  2016 0.810  0.545  1.129</span></span>
-<span><span class="co">#&gt;  2017 0.725  0.450  1.075</span></span></code></pre></div>
-<p>The probability distribution for Theil’s T can be summarized visualy using the <code>"lines"</code> style plot or by plotting estimates with shaded 95% credible intervals:</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">Ts</span><span class="op">)</span></span></code></pre></div>
-<p><img src="surveil-demo_files/figure-html/unnamed-chunk-17-1.png" width="384" style="display: block; margin: auto;"></p>
-<p>While the minimum of Theil’s index is always zero, the maximum value varies with the structure of the population under observation. The index is useful for comparisons such as monitoring change over time, and should generally not be used as a indication of the absolute level of inequality.</p>
-<p>The index also has interesting extensions; for example, given disease data for a nested population structure—such as racial-ethnic groups within states—Theil’s index can provide a measure of geographic inequality across states (between-state inequality), and social inequality within states (within-state inequality) <span class="citation">(Conceição, Galbraith, and Bradford <a href="#ref-conceiccao_2001" role="doc-biblioref">2001</a>)</span>. For details, see <code><a href="../reference/theil.html">?theil</a></code>.</p>
+<code class="sourceCode R"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/stan_rw.html">stan_rw</a></span><span class="op">(</span><span class="va">msa2</span>, time <span class="op">=</span> <span class="va">Year</span>, group <span class="op">=</span> <span class="va">Race</span>, cor <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2 unnumbered">
 <h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
@@ -543,32 +496,11 @@
 <div id="ref-clayton_1996">
 <p>Clayton, DG. 1996. “Generalized Linear Mixed Models.” In <em>Markov Chain Monte Carlo in Practice: Interdisciplinary Statistics</em>, edited by WR Gilks, S Richardson, and DJ Spiegelhalter, 275–302. CRC Press.</p>
 </div>
-<div id="ref-conceicao_2000b">
-<p>Conceição, Pedro, and Pedro Ferreira. 2000. “The Young Person’s Guide to the Theil Index: Suggesting Intuitive Interpretations and Exploring Analytical Applications.” <em>University of Texas Inequality Project (UTIP)</em>. <a href="https://utip.gov.utexas.edu/papers.html" class="external-link">https://utip.gov.utexas.edu/papers.html</a>.</p>
-</div>
-<div id="ref-conceicao_2000a">
-<p>Conceição, Pedro, and James K. Galbraith. 2000. “Constructing Long and Dense Time Series of Inequality Using the Theil Index.” <em>Eastern Economic Journal</em> 26 (1): 61–74.</p>
-</div>
-<div id="ref-conceiccao_2001">
-<p>Conceição, Pedro, James K Galbraith, and Peter Bradford. 2001. “The Theil Index in Sequences of Nested and Hierarchic Grouping Structures: Implications for the Measurement of Inequality Through Time, with Data Aggregated at Different Levels of Industrial Classification.” <em>Eastern Economic Journal</em> 27 (4): 491–514.</p>
-</div>
 <div id="ref-donegan_2022">
 <p>Donegan, Connor, Amy E. Hughes, and Simon J. Craddock Lee. 2022. “Colorectal Cancer Incidence, Inequality, and Prevention Priorities in Urban Texas: Surveillance Study with the ‘Surveil’ Software Pakcage.” <em>JMIR Public Health &amp; Surveillance</em> 8 (8): e34589. <a href="https://doi.org/10.2196/34589" class="external-link">https://doi.org/10.2196/34589</a>.</p>
 </div>
-<div id="ref-gelman_2014">
-<p>Gelman, Andrew, John B Carlin, Hal S Stern, David B Dunson, Aki Vehtari, and Donald B Rubin. 2014. <em>Bayesian Data Analysis</em>. Third. CRC Press.</p>
-</div>
-<div id="ref-mackay_2003">
-<p>MacKay, David M. 2003. <em>Information Theory, Inference, and Learning Algorithms</em>. Cambridge University Press.</p>
-</div>
-<div id="ref-menvielle_2019">
-<p>Menvielle, Gwenn, Kulhánová, and Johan P. Machenbach. 2019. “Assessing the Impact of a Public Health Intervention to Reduce Social Inequalities in Cancer.” In <em>Reducing Social Inequalities in Cancer: Evidence and Priorities for Research</em>, edited by Salvatore Vaccarella, Joannie Lortet-Tieulent, Rodolfo Saracci, David I. Conway, Kurt Straif, and Christopher P. Wild, 185–92. Geneva, Switzerland: WHO Press.</p>
-</div>
 <div id="ref-stan_2021">
 <p>Stan Development Team. 2021. <em>Stan Modeling Language Users Guide and Reference Manual, 2.28</em>. <a href="https://mc-stan.org" class="external-link">https://mc-stan.org</a>.</p>
-</div>
-<div id="ref-theil_1972">
-<p>Theil, Henry. 1972. <em>Statistical Decomposition Analysis</em>. Amsterdam, The Netherlands; London, UK: North-Holland Publishing Company.</p>
 </div>
 </div>
 </div>

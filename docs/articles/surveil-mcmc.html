@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Markov chain Monte Carlo (MCMC): analysis and diagnostics • surveil</title>
+<title>MCMC with surveil • surveil</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
 <link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png">
@@ -17,7 +17,7 @@
 <script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
-<script src="../pkgdown.js"></script><meta property="og:title" content="Markov chain Monte Carlo (MCMC): analysis and diagnostics">
+<script src="../pkgdown.js"></script><meta property="og:title" content="MCMC with surveil">
 <meta property="og:description" content="surveil">
 <meta property="og:image" content="https://connordonegan.github.io/surveil/, https://cloud.r-project.org/web/packages/surveil/index.html/logo.png">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
@@ -46,7 +46,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">surveil</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.0</span>
       </span>
     </div>
 
@@ -82,7 +82,7 @@
       </header><script src="surveil-mcmc_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1 data-toc-skip>Markov chain Monte Carlo (MCMC): analysis and diagnostics</h1>
+      <h1 data-toc-skip>MCMC with surveil</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/ConnorDonegan/surveil/blob/HEAD/vignettes/surveil-mcmc.Rmd" class="external-link"><code>vignettes/surveil-mcmc.Rmd</code></a></small>
@@ -92,28 +92,25 @@
 
     
     
-<p>This vignette shows <strong>surveil</strong> users how to access and review Markov chain Monte Carlo (MCMC) diagnostics from <strong>surveil</strong> models. This is not a complete resource for understanding MCMC, and readers are encouraged to seek additional resources.</p>
-<p>Markov chain Monte Carlo (MCMC) algorithms, such as the Hamiltonian Monte Carlo algorithm that Stan (and therefore <strong>surveil</strong>) uses, aim to draw samples from the probability distribution specified by the user. The algorithm tries to explore the probability distribution extensively, and when successful, the resulting samples provide an approximate image of the target probability distribution.</p>
-<p>Books that discuss MCMC include <span class="citation">MacKay (<a href="#ref-mackay_2003" role="doc-biblioref">2003</a>)</span> and <span class="citation">Gelman et al. (<a href="#ref-gelman_2014" role="doc-biblioref">2014</a>)</span>; see also <span class="citation">Stan Development Team (<a href="#ref-stan-dev_2022" role="doc-biblioref">2022</a>)</span> and <span class="citation">Vehtari et al. (<a href="#ref-vehtari_2021" role="doc-biblioref">2021</a>)</span>. <span class="citation">McElreath (<a href="#ref-mcelreath_2016" role="doc-biblioref">2016</a>)</span> is helpful for learning Bayesian analysis using MCMC samples.</p>
+<p>Most users of <em>surveil</em> may not need to know much of anything about MCMC analysis. Many statistical software users do not know how estimates are obtained. However, there are a few topics that are important for <em>surveil</em> will benefit from having some familiarity with.</p>
 <p>The following topics will be introduced here:</p>
 <ul>
-<li>Monte Carlo standard errors (MCSE)</li>
+<li>Summarizing probability distributions</li>
 <li>Effective sample size (ESS)</li>
-<li>The split Rhat statistic</li>
+<li>The Rhat statistic</li>
 <li>Divergent transitions</li>
 </ul>
-<p>The first section examines MCMC samples from an example model in order to provide a foundation for the rest of the vignette. It is intended for users without prior exposure to MCMC analysis.</p>
+<p><span class="citation">McElreath (<a href="#ref-mcelreath_2016" role="doc-biblioref">2016</a>)</span> is helpful for learning Bayesian analysis using MCMC. Other books that discuss MCMC include <span class="citation">MacKay (<a href="#ref-mackay_2003" role="doc-biblioref">2003</a>)</span> and <span class="citation">Gelman et al. (<a href="#ref-gelman_2014" role="doc-biblioref">2014</a>)</span>; some may also want to see <span class="citation">Stan Development Team (<a href="#ref-stan-dev_2022" role="doc-biblioref">2022</a>)</span> and <span class="citation">Vehtari et al. (<a href="#ref-vehtari_2021" role="doc-biblioref">2021</a>)</span>.</p>
 <div class="section level2">
 <h2 id="example-model">Example model<a class="anchor" aria-label="anchor" href="#example-model"></a>
 </h2>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://connordonegan.github.io/surveil/" class="external-link">surveil</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mc-stan.org/rstan/" class="external-link">rstan</a></span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">cancer</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://connordonegan.github.io/surveil/" class="external-link">surveil</a></span><span class="op">)</span></span></code></pre></div>
 <p>The discussion will make use of a model of U.S. cancer incidence rates, ages 10-14 from the <code>cancer</code> data:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">data2</span> <span class="op">&lt;-</span> <span class="va">cancer</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">cancer</span><span class="op">$</span><span class="va">Age</span> <span class="op">==</span> <span class="st">"10-14"</span><span class="op">)</span>,<span class="op">]</span></span>
-<span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/stan_rw.html">stan_rw</a></span><span class="op">(</span><span class="va">data2</span>, time <span class="op">=</span> <span class="va">Year</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">cancer</span><span class="op">)</span></span>
+<span><span class="va">cancer2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">cancer</span>, <span class="va">Age</span> <span class="op">==</span> <span class="st">"10-14"</span><span class="op">)</span></span>
+<span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/stan_rw.html">stan_rw</a></span><span class="op">(</span><span class="va">cancer2</span>, time <span class="op">=</span> <span class="va">Year</span>, iter <span class="op">=</span> <span class="fl">1500</span>, chains <span class="op">=</span> <span class="fl">4</span>, refresh <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Distribution: normal</span></span>
 <span><span class="co">#&gt; Distribution: normal</span></span>
 <span><span class="co">#&gt; [1] "Setting normal prior(s) for eta_1: "</span></span>
@@ -121,253 +118,157 @@
 <span><span class="co">#&gt;        -6     5</span></span>
 <span><span class="co">#&gt; [1] "\nSetting half-normal prior for sigma: "</span></span>
 <span><span class="co">#&gt;  location scale</span></span>
-<span><span class="co">#&gt;         0     1</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; SAMPLING FOR MODEL 'RW' NOW (CHAIN 1).</span></span>
-<span><span class="co">#&gt; Chain 1: </span></span>
-<span><span class="co">#&gt; Chain 1: Gradient evaluation took 1.2e-05 seconds</span></span>
-<span><span class="co">#&gt; Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.12 seconds.</span></span>
-<span><span class="co">#&gt; Chain 1: Adjust your expectations accordingly!</span></span>
-<span><span class="co">#&gt; Chain 1: </span></span>
-<span><span class="co">#&gt; Chain 1: </span></span>
-<span><span class="co">#&gt; Chain 1: Iteration:    1 / 3000 [  0%]  (Warmup)</span></span>
-<span><span class="co">#&gt; Chain 1: Iteration: 1500 / 3000 [ 50%]  (Warmup)</span></span>
-<span><span class="co">#&gt; Chain 1: Iteration: 1501 / 3000 [ 50%]  (Sampling)</span></span>
-<span><span class="co">#&gt; Chain 1: Iteration: 3000 / 3000 [100%]  (Sampling)</span></span>
-<span><span class="co">#&gt; Chain 1: </span></span>
-<span><span class="co">#&gt; Chain 1:  Elapsed Time: 0.185 seconds (Warm-up)</span></span>
-<span><span class="co">#&gt; Chain 1:                0.165 seconds (Sampling)</span></span>
-<span><span class="co">#&gt; Chain 1:                0.35 seconds (Total)</span></span>
-<span><span class="co">#&gt; Chain 1: </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; SAMPLING FOR MODEL 'RW' NOW (CHAIN 2).</span></span>
-<span><span class="co">#&gt; Chain 2: </span></span>
-<span><span class="co">#&gt; Chain 2: Gradient evaluation took 7e-06 seconds</span></span>
-<span><span class="co">#&gt; Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.07 seconds.</span></span>
-<span><span class="co">#&gt; Chain 2: Adjust your expectations accordingly!</span></span>
-<span><span class="co">#&gt; Chain 2: </span></span>
-<span><span class="co">#&gt; Chain 2: </span></span>
-<span><span class="co">#&gt; Chain 2: Iteration:    1 / 3000 [  0%]  (Warmup)</span></span>
-<span><span class="co">#&gt; Chain 2: Iteration: 1500 / 3000 [ 50%]  (Warmup)</span></span>
-<span><span class="co">#&gt; Chain 2: Iteration: 1501 / 3000 [ 50%]  (Sampling)</span></span>
-<span><span class="co">#&gt; Chain 2: Iteration: 3000 / 3000 [100%]  (Sampling)</span></span>
-<span><span class="co">#&gt; Chain 2: </span></span>
-<span><span class="co">#&gt; Chain 2:  Elapsed Time: 0.189 seconds (Warm-up)</span></span>
-<span><span class="co">#&gt; Chain 2:                0.155 seconds (Sampling)</span></span>
-<span><span class="co">#&gt; Chain 2:                0.344 seconds (Total)</span></span>
-<span><span class="co">#&gt; Chain 2: </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; SAMPLING FOR MODEL 'RW' NOW (CHAIN 3).</span></span>
-<span><span class="co">#&gt; Chain 3: </span></span>
-<span><span class="co">#&gt; Chain 3: Gradient evaluation took 8e-06 seconds</span></span>
-<span><span class="co">#&gt; Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.08 seconds.</span></span>
-<span><span class="co">#&gt; Chain 3: Adjust your expectations accordingly!</span></span>
-<span><span class="co">#&gt; Chain 3: </span></span>
-<span><span class="co">#&gt; Chain 3: </span></span>
-<span><span class="co">#&gt; Chain 3: Iteration:    1 / 3000 [  0%]  (Warmup)</span></span>
-<span><span class="co">#&gt; Chain 3: Iteration: 1500 / 3000 [ 50%]  (Warmup)</span></span>
-<span><span class="co">#&gt; Chain 3: Iteration: 1501 / 3000 [ 50%]  (Sampling)</span></span>
-<span><span class="co">#&gt; Chain 3: Iteration: 3000 / 3000 [100%]  (Sampling)</span></span>
-<span><span class="co">#&gt; Chain 3: </span></span>
-<span><span class="co">#&gt; Chain 3:  Elapsed Time: 0.179 seconds (Warm-up)</span></span>
-<span><span class="co">#&gt; Chain 3:                0.143 seconds (Sampling)</span></span>
-<span><span class="co">#&gt; Chain 3:                0.322 seconds (Total)</span></span>
-<span><span class="co">#&gt; Chain 3: </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; SAMPLING FOR MODEL 'RW' NOW (CHAIN 4).</span></span>
-<span><span class="co">#&gt; Chain 4: </span></span>
-<span><span class="co">#&gt; Chain 4: Gradient evaluation took 1.4e-05 seconds</span></span>
-<span><span class="co">#&gt; Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.14 seconds.</span></span>
-<span><span class="co">#&gt; Chain 4: Adjust your expectations accordingly!</span></span>
-<span><span class="co">#&gt; Chain 4: </span></span>
-<span><span class="co">#&gt; Chain 4: </span></span>
-<span><span class="co">#&gt; Chain 4: Iteration:    1 / 3000 [  0%]  (Warmup)</span></span>
-<span><span class="co">#&gt; Chain 4: Iteration: 1500 / 3000 [ 50%]  (Warmup)</span></span>
-<span><span class="co">#&gt; Chain 4: Iteration: 1501 / 3000 [ 50%]  (Sampling)</span></span>
-<span><span class="co">#&gt; Chain 4: Iteration: 3000 / 3000 [100%]  (Sampling)</span></span>
-<span><span class="co">#&gt; Chain 4: </span></span>
-<span><span class="co">#&gt; Chain 4:  Elapsed Time: 0.179 seconds (Warm-up)</span></span>
-<span><span class="co">#&gt; Chain 4:                0.168 seconds (Sampling)</span></span>
-<span><span class="co">#&gt; Chain 4:                0.347 seconds (Total)</span></span>
-<span><span class="co">#&gt; Chain 4:</span></span></code></pre></div>
-<p>Given 4 MCMC chains, 3,000 samples drawn from each chain, and the first <code>.5 * 3000 = 1500</code> samples discarded as warmup, the <code>fit</code> object contains 6,000 MCMC samples. There is one parameter per year, each representing the level of cancer risk. There are 19 years of data (1999-2017). The number of samples required depends upon a number of factors, and in some cases the default settings may be more or less than is needed. One should draw enough samples that 1) the Monte Carlo standard errors are sufficiently small, and 2) the MCMC chains have had time to converge on a single distribution (these concepts will be discussed below).</p>
-<p>The <code>print</code> method will return a summary of the marginal probability distributions for each year:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">fit</span>, scale <span class="op">=</span> <span class="fl">100e3</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Summary of surveil model results</span></span>
-<span><span class="co">#&gt; Time periods: 19</span></span>
-<span><span class="co">#&gt;    time     mean  lwr_2.5 upr_97.5</span></span>
-<span><span class="co">#&gt; 1  1999 12.49594 12.08793 12.89596</span></span>
-<span><span class="co">#&gt; 2  2000 12.62998 12.25798 12.99130</span></span>
-<span><span class="co">#&gt; 3  2001 12.98121 12.62638 13.37791</span></span>
-<span><span class="co">#&gt; 4  2002 12.85162 12.48476 13.21080</span></span>
-<span><span class="co">#&gt; 5  2003 12.93041 12.56504 13.29037</span></span>
-<span><span class="co">#&gt; 6  2004 13.20805 12.84961 13.58828</span></span>
-<span><span class="co">#&gt; 7  2005 13.16727 12.80745 13.52867</span></span>
-<span><span class="co">#&gt; 8  2006 13.37160 13.00378 13.74758</span></span>
-<span><span class="co">#&gt; 9  2007 13.35138 12.96771 13.72449</span></span>
-<span><span class="co">#&gt; 10 2008 13.47646 13.08636 13.85402</span></span>
-<span><span class="co">#&gt; 11 2009 13.72628 13.35003 14.09411</span></span>
-<span><span class="co">#&gt; 12 2010 14.06283 13.69558 14.44434</span></span>
-<span><span class="co">#&gt; 13 2011 14.19842 13.81490 14.58661</span></span>
-<span><span class="co">#&gt; 14 2012 14.42604 14.03427 14.80403</span></span>
-<span><span class="co">#&gt; 15 2013 14.76398 14.36175 15.17016</span></span>
-<span><span class="co">#&gt; 16 2014 15.18113 14.77775 15.60568</span></span>
-<span><span class="co">#&gt; 17 2015 15.32577 14.93215 15.75423</span></span>
-<span><span class="co">#&gt; 18 2016 15.51918 15.10457 15.95947</span></span>
-<span><span class="co">#&gt; 19 2017 15.19557 14.75467 15.63363</span></span></code></pre></div>
-<p>Using <code>scale = 100e3</code> caused the results to be printed in terms of cases per 100,000 persons at risk.</p>
-<p>The <code>mean</code> refers to the mean of the respective marginal probability distributions and the <code>lwr_2.5</code> and <code>upr_97.5</code> report the bounds of their central 95% quantile intervals (or credible interval: CI). The mean and CI can generally be interpreted as the “estimate” and its measure of uncertainty. However, one can visualize the entire probability distribution for any modeled quantity using a histogram of the MCMC samples.</p>
+<span><span class="co">#&gt;         0     1</span></span></code></pre></div>
+<p>The <code>iter</code> argument determines how many MCMC samples will be drawn from the model. The first half of the samples will always be discarded as warmup and the remaining samples will be used for inference. The <code>chains</code> argument determines how many independent MCMC chains will be used. The code above uses <code>iter=1500</code> and <code>chains=4</code> which means there will be 3,000 MCMC samples returned for inference.</p>
 </div>
 <div class="section level2">
 <h2 id="mcmc-analysis">MCMC analysis<a class="anchor" aria-label="anchor" href="#mcmc-analysis"></a>
 </h2>
 <p>We can examine the MCMC samples themselves to see how the values provided by the <code>print</code> method were calculated. The <code>stanfit</code> object created by Stan contains all of the MCMC samples:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">samples</span> <span class="op">&lt;-</span> <span class="va">fit</span><span class="op">$</span><span class="va">samples</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">samples</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "stanfit"</span></span>
 <span><span class="co">#&gt; attr(,"package")</span></span>
 <span><span class="co">#&gt; [1] "rstan"</span></span></code></pre></div>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">phi</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">samples</span>, pars <span class="op">=</span> <span class="st">"rate"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">phi</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 6000   19</span></span></code></pre></div>
-<p>Each row of the matrix <code>phi</code> is a sample from the joint posterior probability distribution of parameters, and each column represents a parameter (in this case, each parameter represents the level of cancer risk averaged over a given year). The values in any given column are samples from the marginal probability distribution for that parameter.</p>
-<p>We can visualize the marginal distribution of cancer risk in 1999 for 10-14 year olds using a histogram; we will scale this in terms of cases per 100,000 persons at risk:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">phi_1999</span> <span class="op">&lt;-</span> <span class="va">phi</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span> <span class="op">*</span> <span class="fl">100e3</span></span>
+<span><span class="co">#&gt; [1] 3000   19</span></span></code></pre></div>
+<p>Each row of the matrix <code>phi</code> is a sample from the joint posterior probability distribution of parameters, and each column represents a parameter. In this case, each parameter is an annual cancer incidence rate. The values in any given column are samples from the marginal probability distribution for that parameter.</p>
+<p>We can visualize the samples using histograms. This code first takes the first column from <code>phi</code>, which represents the cancer incidence rate in 1999 (the first observed year); the rates are multiplied by 10,000 for ease of reading:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">phi</span> <span class="op">&lt;-</span> <span class="fl">10e3</span> <span class="op">*</span> <span class="va">phi</span></span>
+<span><span class="va">phi_1999</span> <span class="op">&lt;-</span> <span class="va">phi</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span> </span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">phi_1999</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 12.53574 12.61787 12.24797 12.92929 12.00423 11.98524</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] 1.225336 1.251036 1.232780 1.275318 1.230786 1.273219</span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html" class="external-link">hist</a></span><span class="op">(</span><span class="va">phi_1999</span>, xlab <span class="op">=</span> <span class="st">"Rate per 10,000, 1999"</span>, main <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span></span></code></pre></div>
+<p><img src="surveil-mcmc_files/figure-html/unnamed-chunk-7-1.png" width="480" style="display: block; margin: auto;"></p>
+<p>These distributions are typically summarized by calculating their mean and tail-area quantiles. The mean is taken as the parameter estimate and the tail-area quantiles provide a credible interval:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html" class="external-link">hist</a></span><span class="op">(</span><span class="va">phi_1999</span>, main <span class="op">=</span> <span class="st">"Rate per 100,000"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="surveil-mcmc_files/figure-html/unnamed-chunk-8-1.png" width="480" style="display: block; margin: auto;"></p>
-<p>To summarize this probability distribution, we can calculate the mean and select quantiles of the MCMC samples:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">phi_1999</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 12.49594</span></span></code></pre></div>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/quantile.html" class="external-link">quantile</a></span><span class="op">(</span><span class="va">phi_1999</span>, probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.025</span>, <span class="fl">0.1</span>, <span class="fl">0.9</span>, <span class="fl">0.975</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;     2.5%      10%      90%    97.5% </span></span>
-<span><span class="co">#&gt; 12.08793 12.22429 12.76627 12.89596</span></span></code></pre></div>
-<p>If we repeated these steps for all years we would obtain the same information that was provided by <code>print(fit)</code>.</p>
+<span><span class="co">#&gt; [1] 1.249454</span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/quantile.html" class="external-link">quantile</a></span><span class="op">(</span><span class="va">phi_1999</span>, probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.025</span>, <span class="fl">0.975</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;     2.5%    97.5% </span></span>
+<span><span class="co">#&gt; 1.207423 1.290590</span></span></code></pre></div>
+<p>If we repeated these steps for all years (for each column in <code>phi</code>) we would obtain the same information that was provided by <code>print(fit)</code>.</p>
 <p>In order to make inferences about quantities that involve more than one parameter, we need to use samples from the joint probability distribution. We can visualize the joint distribution using the <code>plot</code> method:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit</span>, style <span class="op">=</span> <span class="st">"lines"</span>, scale <span class="op">=</span> <span class="fl">100e3</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Plotted rates are per 100,000</span></span></code></pre></div>
-<p><img src="surveil-mcmc_files/figure-html/unnamed-chunk-11-1.png" width="480" style="display: block; margin: auto;"></p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit</span>, style <span class="op">=</span> <span class="st">"lines"</span>, scale <span class="op">=</span> <span class="fl">10e3</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Plotted rates are per 10,000</span></span></code></pre></div>
+<p><img src="surveil-mcmc_files/figure-html/unnamed-chunk-10-1.png" width="480" style="display: block; margin: auto;"></p>
 <p>Each line is a visual depiction of a row from the matrix of MCMC samples <code>phi</code>.</p>
-<p>When calculating quantities of interest, like annual percent change, cumulative change, or a measure of inequality, one must always use the joint distribution. This means that the quantity of interest needs to be calculated by working row-wise, which will result in a vector of samples for the quantity of interest. To illustrate how this is done, the following code creates a new quantity: the difference between risk in 2017 (the <span class="math inline">\(19^{th}\)</span> year) and 1999 (the first observed year).</p>
+<p>When calculating quantities of interest, like annual percent change, cumulative change, or a measure of inequality, one must always use the joint distribution. This means that the quantity of interest needs to be calculated by working row-wise. To illustrate how this is done, the following code creates a new quantity: the difference between risk in 2017 (the <span class="math inline">\(19^{th}\)</span> year) and 1999 (the first observed year):</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">phi_2017</span> <span class="op">&lt;-</span> <span class="va">phi</span><span class="op">[</span>,<span class="fl">19</span><span class="op">]</span></span>
+<span><span class="va">diff</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="va">phi_2017</span> <span class="op">-</span> <span class="va">phi_1999</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html" class="external-link">hist</a></span><span class="op">(</span><span class="va">diff</span>, xlab <span class="op">=</span> <span class="st">"Rate difference"</span>, main <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span></span></code></pre></div>
+<p><img src="surveil-mcmc_files/figure-html/unnamed-chunk-11-1.png" width="480" style="display: block; margin: auto;"></p>
+<p>The mean of the probability distribution for the change in the incidence rate per 10,000 from 1999 to 2017 is:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">diff</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="va">phi</span><span class="op">[</span>,<span class="fl">19</span><span class="op">]</span> <span class="op">-</span> <span class="va">phi</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span><span class="op">)</span> <span class="op">*</span> <span class="fl">100e3</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html" class="external-link">hist</a></span><span class="op">(</span><span class="va">diff</span><span class="op">)</span></span></code></pre></div>
-<p><img src="surveil-mcmc_files/figure-html/unnamed-chunk-12-1.png" width="480" style="display: block; margin: auto;"></p>
-<p>The principle at work here is that you never summarize MCMC samples until after all of the calculations are done. The mean of the probability distribution for the change in risk over this period is:</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">diff</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 2.699625</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] 0.2694629</span></span></code></pre></div>
+<p>Cancer incidence increased by 0.26 per 10,000 from 1999 to 2017 for kids ages 10-14. The cumulative percent change from 1999 to 2017 can also be calculated this way:</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fl">100</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span> <span class="va">diff</span> <span class="op">/</span> <span class="va">phi_1999</span> <span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 21.60027</span></span></code></pre></div>
+<p>The rate increase is a cumulative change of about 21% or about 1.2% annually.</p>
 </div>
 <div class="section level2">
 <h2 id="monte-carlo-standard-errors">Monte Carlo standard errors<a class="anchor" aria-label="anchor" href="#monte-carlo-standard-errors"></a>
 </h2>
-<p>An important difference between sampling with an MCMC algorithm and sampling from a pseudo random number generator (like <code>rnorm</code>) is that MCMC produces samples that are (often) correlated with one another other. (That is, in the process of drawing MCMC samples, movement around the probability distribution is serially correlated.) This means that for any number of MCMC samples, there is less information than would be provided by the same number of independently drawn samples. To evaluate how far the mean of our MCMC samples may plausibly be from the mean of the target probability distribution, we need to consider Monte Carlo standard errors (MCSEs) for each parameter.</p>
+<p>An important difference between sampling with an MCMC algorithm and sampling from a pseudo random number generator (like <code>rnorm</code>) is that MCMC produces samples that are (often) correlated with one another. This means that in the process of drawing MCMC samples each sample tends to be similar to the previous sample.</p>
+<p>This means that for any number of MCMC samples, there is less information than would be provided by the same number of independently drawn samples. As a result, it often requires more MCMC samples to obtain an estimate of any given prevision.</p>
 <p><span class="citation">Stan Development Team (<a href="#ref-stan-dev_2022" role="doc-biblioref">2022</a>)</span> write:</p>
 <blockquote>
 <p>Roughly speaking, the effective sample size (ESS) of a quantity of interest captures how many independent draws contain the same amount of information as the dependent sample obtained by the MCMC algorithm. The higher the ESS the better… For final results, we recommend requiring that the bulk-ESS is greater than 100 times the number of chains. For example, when running four chains, this corresponds to having a rank-normalized effective sample size of at least 400.</p>
 </blockquote>
-<p>MCSEs are calculated as <span class="citation">(Gelman et al. <a href="#ref-gelman_2014" role="doc-biblioref">2014</a>)</span></p>
-<p><span class="math display">\[MCSE(\phi) = \frac{\sqrt(Var(\phi))}{\sqrt(ESS(\phi))}\]</span></p>
-<p>where <span class="math inline">\(Var(\phi)\)</span> is the variance of the posterior distribution for parameter <span class="math inline">\(\phi\)</span> and ESS is the effective sample size. ESS is adjusted for autocorrelation in the MCMC samples.</p>
-<p>To view a histogram of MCSEs for all parameters in the <strong>surveil</strong> model, we can use <strong>rstan</strong>’s <code>stan_mcse</code> function:</p>
+<p>To examine the effective sample size (ESS), you can start by printing the <code>fit$samples</code> object. The ESS is reported in the column labeled <code>n_eff</code>:</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">rstan</span><span class="fu">::</span><span class="fu"><a href="https://mc-stan.org/rstan/reference/stan_plot_diagnostics.html" class="external-link">stan_mcse</a></span><span class="op">(</span><span class="va">samples</span><span class="op">)</span></span>
-<span><span class="co">#&gt; `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</span></span></code></pre></div>
-<p><img src="surveil-mcmc_files/figure-html/unnamed-chunk-14-1.png" width="384" style="display: block; margin: auto;"></p>
-<p>Notice that instead of returning the MCSEs themselves, <strong>rstan</strong> divides the MCSEs by the scale of the probability distribution, <span class="math inline">\(\frac{MCSE(\phi)}{SD(\phi)}\)</span>. We can see that most of these values are under 0.04. We can always obtain smaller MCSEs by drawing a larger number of samples.</p>
-<p>It may be more intuitive to examine the effective sample size (ESS) directly. You can start by printing the <code>fit$samples</code> object and examining the ESS directly. ESS is reported in the column labeled <code>n_eff</code>:</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">samples</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Inference for Stan model: RW.</span></span>
-<span><span class="co">#&gt; 4 chains, each with iter=3000; warmup=1500; thin=1; </span></span>
-<span><span class="co">#&gt; post-warmup draws per chain=1500, total post-warmup draws=6000.</span></span>
+<span><span class="co">#&gt; 4 chains, each with iter=1500; warmup=750; thin=1; </span></span>
+<span><span class="co">#&gt; post-warmup draws per chain=750, total post-warmup draws=3000.</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;                 mean se_mean   sd   2.5%    25%    50%    75%  97.5% n_eff Rhat</span></span>
-<span><span class="co">#&gt; rate[1,1]       0.00    0.00 0.00   0.00   0.00   0.00   0.00   0.00  5476    1</span></span>
-<span><span class="co">#&gt; rate[1,2]       0.00    0.00 0.00   0.00   0.00   0.00   0.00   0.00  5847    1</span></span>
-<span><span class="co">#&gt; rate[1,3]       0.00    0.00 0.00   0.00   0.00   0.00   0.00   0.00  5439    1</span></span>
-<span><span class="co">#&gt; rate[1,4]       0.00    0.00 0.00   0.00   0.00   0.00   0.00   0.00  6462    1</span></span>
-<span><span class="co">#&gt; rate[1,5]       0.00    0.00 0.00   0.00   0.00   0.00   0.00   0.00  6398    1</span></span>
-<span><span class="co">#&gt; rate[1,6]       0.00    0.00 0.00   0.00   0.00   0.00   0.00   0.00  6249    1</span></span>
-<span><span class="co">#&gt; rate[1,7]       0.00    0.00 0.00   0.00   0.00   0.00   0.00   0.00  6514    1</span></span>
-<span><span class="co">#&gt; rate[1,8]       0.00    0.00 0.00   0.00   0.00   0.00   0.00   0.00  6236    1</span></span>
-<span><span class="co">#&gt; rate[1,9]       0.00    0.00 0.00   0.00   0.00   0.00   0.00   0.00  6239    1</span></span>
-<span><span class="co">#&gt; rate[1,10]      0.00    0.00 0.00   0.00   0.00   0.00   0.00   0.00  6239    1</span></span>
-<span><span class="co">#&gt; rate[1,11]      0.00    0.00 0.00   0.00   0.00   0.00   0.00   0.00  6099    1</span></span>
-<span><span class="co">#&gt; rate[1,12]      0.00    0.00 0.00   0.00   0.00   0.00   0.00   0.00  7317    1</span></span>
-<span><span class="co">#&gt; rate[1,13]      0.00    0.00 0.00   0.00   0.00   0.00   0.00   0.00  6612    1</span></span>
-<span><span class="co">#&gt; rate[1,14]      0.00    0.00 0.00   0.00   0.00   0.00   0.00   0.00  7412    1</span></span>
-<span><span class="co">#&gt; rate[1,15]      0.00    0.00 0.00   0.00   0.00   0.00   0.00   0.00  6984    1</span></span>
-<span><span class="co">#&gt; rate[1,16]      0.00    0.00 0.00   0.00   0.00   0.00   0.00   0.00  5439    1</span></span>
-<span><span class="co">#&gt; rate[1,17]      0.00    0.00 0.00   0.00   0.00   0.00   0.00   0.00  5989    1</span></span>
-<span><span class="co">#&gt; rate[1,18]      0.00    0.00 0.00   0.00   0.00   0.00   0.00   0.00  5108    1</span></span>
-<span><span class="co">#&gt; rate[1,19]      0.00    0.00 0.00   0.00   0.00   0.00   0.00   0.00  6835    1</span></span>
-<span><span class="co">#&gt; sigma[1]        0.03    0.00 0.01   0.02   0.02   0.02   0.03   0.04  1731    1</span></span>
-<span><span class="co">#&gt; log_lik[1,1]   -5.25    0.01 0.57  -6.81  -5.40  -5.03  -4.87  -4.82  3819    1</span></span>
-<span><span class="co">#&gt; log_lik[1,2]   -5.26    0.01 0.55  -6.77  -5.41  -5.05  -4.88  -4.84  4323    1</span></span>
-<span><span class="co">#&gt; log_lik[1,3]   -5.87    0.01 0.96  -8.29  -6.33  -5.60  -5.13  -4.88  5121    1</span></span>
-<span><span class="co">#&gt; log_lik[1,4]   -5.27    0.01 0.53  -6.73  -5.41  -5.06  -4.91  -4.87  4358    1</span></span>
-<span><span class="co">#&gt; log_lik[1,5]   -5.26    0.01 0.51  -6.71  -5.41  -5.07  -4.92  -4.88  4147    1</span></span>
-<span><span class="co">#&gt; log_lik[1,6]   -5.46    0.01 0.67  -7.31  -5.69  -5.21  -4.98  -4.90  4716    1</span></span>
-<span><span class="co">#&gt; log_lik[1,7]   -5.30    0.01 0.56  -6.85  -5.47  -5.09  -4.93  -4.88  4334    1</span></span>
-<span><span class="co">#&gt; log_lik[1,8]   -5.32    0.01 0.55  -6.88  -5.48  -5.11  -4.94  -4.90  4477    1</span></span>
-<span><span class="co">#&gt; log_lik[1,9]   -5.22    0.01 0.47  -6.57  -5.33  -5.04  -4.92  -4.88  4152    1</span></span>
-<span><span class="co">#&gt; log_lik[1,10]  -5.22    0.01 0.47  -6.52  -5.31  -5.04  -4.92  -4.88  3801    1</span></span>
-<span><span class="co">#&gt; log_lik[1,11]  -5.19    0.01 0.40  -6.31  -5.30  -5.03  -4.92  -4.89  3171    1</span></span>
-<span><span class="co">#&gt; log_lik[1,12]  -5.29    0.01 0.52  -6.70  -5.43  -5.09  -4.95  -4.91  4262    1</span></span>
-<span><span class="co">#&gt; log_lik[1,13]  -5.21    0.01 0.44  -6.44  -5.29  -5.04  -4.94  -4.91  3285    1</span></span>
-<span><span class="co">#&gt; log_lik[1,14]  -5.21    0.01 0.42  -6.44  -5.31  -5.05  -4.95  -4.92  3335    1</span></span>
-<span><span class="co">#&gt; log_lik[1,15]  -5.22    0.01 0.43  -6.47  -5.30  -5.05  -4.96  -4.93  3037    1</span></span>
-<span><span class="co">#&gt; log_lik[1,16]  -5.41    0.01 0.61  -7.11  -5.58  -5.18  -5.00  -4.95  4264    1</span></span>
-<span><span class="co">#&gt; log_lik[1,17]  -5.24    0.01 0.42  -6.43  -5.32  -5.08  -4.98  -4.95  3061    1</span></span>
-<span><span class="co">#&gt; log_lik[1,18]  -5.80    0.01 0.91  -8.21  -6.17  -5.52  -5.12  -4.97  4696    1</span></span>
-<span><span class="co">#&gt; log_lik[1,19]  -5.49    0.01 0.70  -7.45  -5.71  -5.23  -5.01  -4.94  4963    1</span></span>
-<span><span class="co">#&gt; lp__          -25.59    0.10 3.80 -33.89 -27.92 -25.24 -22.78 -19.23  1584    1</span></span>
+<span><span class="co">#&gt; rate[1,1]       0.00    0.00 0.00   0.00   0.00   0.00   0.00   0.00  2643    1</span></span>
+<span><span class="co">#&gt; rate[1,2]       0.00    0.00 0.00   0.00   0.00   0.00   0.00   0.00  3030    1</span></span>
+<span><span class="co">#&gt; rate[1,3]       0.00    0.00 0.00   0.00   0.00   0.00   0.00   0.00  2720    1</span></span>
+<span><span class="co">#&gt; rate[1,4]       0.00    0.00 0.00   0.00   0.00   0.00   0.00   0.00  2931    1</span></span>
+<span><span class="co">#&gt; rate[1,5]       0.00    0.00 0.00   0.00   0.00   0.00   0.00   0.00  3219    1</span></span>
+<span><span class="co">#&gt; rate[1,6]       0.00    0.00 0.00   0.00   0.00   0.00   0.00   0.00  3164    1</span></span>
+<span><span class="co">#&gt; rate[1,7]       0.00    0.00 0.00   0.00   0.00   0.00   0.00   0.00  3732    1</span></span>
+<span><span class="co">#&gt; rate[1,8]       0.00    0.00 0.00   0.00   0.00   0.00   0.00   0.00  4165    1</span></span>
+<span><span class="co">#&gt; rate[1,9]       0.00    0.00 0.00   0.00   0.00   0.00   0.00   0.00  3829    1</span></span>
+<span><span class="co">#&gt; rate[1,10]      0.00    0.00 0.00   0.00   0.00   0.00   0.00   0.00  3450    1</span></span>
+<span><span class="co">#&gt; rate[1,11]      0.00    0.00 0.00   0.00   0.00   0.00   0.00   0.00  3953    1</span></span>
+<span><span class="co">#&gt; rate[1,12]      0.00    0.00 0.00   0.00   0.00   0.00   0.00   0.00  3346    1</span></span>
+<span><span class="co">#&gt; rate[1,13]      0.00    0.00 0.00   0.00   0.00   0.00   0.00   0.00  3081    1</span></span>
+<span><span class="co">#&gt; rate[1,14]      0.00    0.00 0.00   0.00   0.00   0.00   0.00   0.00  3697    1</span></span>
+<span><span class="co">#&gt; rate[1,15]      0.00    0.00 0.00   0.00   0.00   0.00   0.00   0.00  3641    1</span></span>
+<span><span class="co">#&gt; rate[1,16]      0.00    0.00 0.00   0.00   0.00   0.00   0.00   0.00  3348    1</span></span>
+<span><span class="co">#&gt; rate[1,17]      0.00    0.00 0.00   0.00   0.00   0.00   0.00   0.00  3408    1</span></span>
+<span><span class="co">#&gt; rate[1,18]      0.00    0.00 0.00   0.00   0.00   0.00   0.00   0.00  2329    1</span></span>
+<span><span class="co">#&gt; rate[1,19]      0.00    0.00 0.00   0.00   0.00   0.00   0.00   0.00  3213    1</span></span>
+<span><span class="co">#&gt; sigma[1]        0.03    0.00 0.01   0.02   0.02   0.02   0.03   0.04   716    1</span></span>
+<span><span class="co">#&gt; log_lik[1,1]   -5.25    0.01 0.59  -6.90  -5.39  -5.02  -4.87  -4.82  1802    1</span></span>
+<span><span class="co">#&gt; log_lik[1,2]   -5.24    0.01 0.50  -6.67  -5.41  -5.05  -4.89  -4.84  2484    1</span></span>
+<span><span class="co">#&gt; log_lik[1,3]   -5.89    0.02 1.02  -8.50  -6.35  -5.59  -5.12  -4.88  2432    1</span></span>
+<span><span class="co">#&gt; log_lik[1,4]   -5.24    0.01 0.50  -6.62  -5.38  -5.05  -4.91  -4.87  2125    1</span></span>
+<span><span class="co">#&gt; log_lik[1,5]   -5.26    0.01 0.50  -6.74  -5.41  -5.06  -4.92  -4.88  1811    1</span></span>
+<span><span class="co">#&gt; log_lik[1,6]   -5.45    0.01 0.67  -7.26  -5.66  -5.22  -4.99  -4.90  2400    1</span></span>
+<span><span class="co">#&gt; log_lik[1,7]   -5.31    0.01 0.57  -6.92  -5.46  -5.10  -4.94  -4.88  2140    1</span></span>
+<span><span class="co">#&gt; log_lik[1,8]   -5.28    0.01 0.52  -6.73  -5.42  -5.09  -4.94  -4.90  2252    1</span></span>
+<span><span class="co">#&gt; log_lik[1,9]   -5.21    0.01 0.48  -6.60  -5.30  -5.03  -4.92  -4.88  1697    1</span></span>
+<span><span class="co">#&gt; log_lik[1,10]  -5.19    0.01 0.42  -6.38  -5.31  -5.04  -4.91  -4.88  1773    1</span></span>
+<span><span class="co">#&gt; log_lik[1,11]  -5.19    0.01 0.42  -6.45  -5.28  -5.02  -4.92  -4.89  1518    1</span></span>
+<span><span class="co">#&gt; log_lik[1,12]  -5.31    0.01 0.54  -6.81  -5.44  -5.10  -4.95  -4.91  2101    1</span></span>
+<span><span class="co">#&gt; log_lik[1,13]  -5.22    0.01 0.44  -6.41  -5.31  -5.07  -4.95  -4.91  1779    1</span></span>
+<span><span class="co">#&gt; log_lik[1,14]  -5.22    0.01 0.44  -6.46  -5.31  -5.06  -4.95  -4.92  1462    1</span></span>
+<span><span class="co">#&gt; log_lik[1,15]  -5.24    0.01 0.43  -6.45  -5.34  -5.07  -4.96  -4.93  1329    1</span></span>
+<span><span class="co">#&gt; log_lik[1,16]  -5.42    0.01 0.62  -7.23  -5.61  -5.20  -5.00  -4.95  1983    1</span></span>
+<span><span class="co">#&gt; log_lik[1,17]  -5.23    0.01 0.41  -6.39  -5.34  -5.07  -4.98  -4.95  1742    1</span></span>
+<span><span class="co">#&gt; log_lik[1,18]  -5.78    0.02 0.89  -8.04  -6.13  -5.50  -5.12  -4.97  2377    1</span></span>
+<span><span class="co">#&gt; log_lik[1,19]  -5.49    0.02 0.74  -7.58  -5.69  -5.22  -5.00  -4.94  1837    1</span></span>
+<span><span class="co">#&gt; lp__          -25.71    0.15 3.85 -34.25 -27.93 -25.37 -23.02 -19.08   688    1</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Samples were drawn using NUTS(diag_e) at Sun Oct  1 21:24:17 2023.</span></span>
+<span><span class="co">#&gt; Samples were drawn using NUTS(diag_e) at Sun Jul  7 20:55:51 2024.</span></span>
 <span><span class="co">#&gt; For each parameter, n_eff is a crude measure of effective sample size,</span></span>
 <span><span class="co">#&gt; and Rhat is the potential scale reduction factor on split chains (at </span></span>
 <span><span class="co">#&gt; convergence, Rhat=1).</span></span></code></pre></div>
-<p><code>sigma</code> is the scale parameter for the model; the <code>log_lik</code> parameters are the log-likelihood of each observation. This is used for calculating WAIC (see <code><a href="../reference/waic.html">?surveil::waic</a></code>). The <code>lp__</code> parameter is always generated by Stan, it is the log-probability of the model.</p>
-<p>If Stan is warning that Bulk ESS or tail area ESS is low and possibly unreliable, the first thing you can do is print results and inspect the ESS values. Depending on one’s purpose, the warning may be overly cautious. The next step is usually to increase the number of samples drawn (using the <code>iter</code> argument to <code>stan_rw</code>).</p>
+<p>All of the rate parameters have ESS over 2,000 which is much more than adequate for inference.</p>
+<p>The rate parameters are most important, since inference is almost always focused on them. <code>sigma</code> is the scale parameter for the model; the <code>log_lik</code> parameters are the log-likelihood of each observation. The <code>lp__</code> parameter is always generated by Stan, it is the log-probability of the model.</p>
+<p>If Stan is warning that Bulk ESS or tail area ESS is low and possibly unreliable, the first thing you can do is print results and inspect the ESS values. Depending on one’s purpose, the warning may be overly cautious. Otherwise you can simply increase the number of samples drawn using the <code>iter</code> argument to <code>stan_rw</code>.</p>
 </div>
 <div class="section level2">
 <h2 id="rhat">Rhat<a class="anchor" aria-label="anchor" href="#rhat"></a>
 </h2>
-<p>A second important difference between sampling with MCMC and sampling with functions like <code>rnorm</code> is that with MCMC we have to <em>find</em> the target distribution. The reason <strong>rstan</strong> (and <strong>surveil</strong>) samples from multiple, independent MCMC chains by default is that this allows us to check that they have all converged on the same distribution. If one or more chains does not resemble the others, then there is a convergence failure.</p>
-<p>To make the most of the information provided by these MCMC chains, we can split each of them in half, effectively doubling the number of chains, before checking convergence. This is known as the split Rhat statistic <span class="citation">(Gelman et al. <a href="#ref-gelman_2014" role="doc-biblioref">2014</a>)</span>. When chains have converged, the Rhat statistics will all equal 1.</p>
+<p>A second important difference between sampling with MCMC and sampling with functions like <code>rnorm</code> is that with MCMC we have to <em>find</em> the target distribution. The reason <em>rstan</em> (and <em>surveil</em>) samples from multiple, independent MCMC chains by default is that this allows us to check that they have all converged on the same distribution. If one or more chains does not resemble the others then there may be a convergence failure <span class="citation">(Gelman et al. <a href="#ref-gelman_2014" role="doc-biblioref">2014</a>)</span>. When chains have converged, the Rhat statistics will all equal about 1.</p>
 <p><span class="citation">Stan Development Team (<a href="#ref-stan-dev_2022" role="doc-biblioref">2022</a>)</span> write:</p>
 <blockquote>
 <p>We recommend running at least four chains by default and in general only fully trust the sample if R-hat is less than 1.01.</p>
 </blockquote>
-<p>The default setting in <strong>surveil</strong> uses four MCMC chains, consistent with the above recommendation.</p>
-<p>The Rhat statistic can be examined by printing the Stanfit object <code>print(fit$samples)</code>. We can also visualize them all at once using <code><a href="https://mc-stan.org/rstan/reference/stan_plot_diagnostics.html" class="external-link">rstan::stan_rhat</a></code>:</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">rstan</span><span class="fu">::</span><span class="fu"><a href="https://mc-stan.org/rstan/reference/stan_plot_diagnostics.html" class="external-link">stan_rhat</a></span><span class="op">(</span><span class="va">samples</span><span class="op">)</span></span>
-<span><span class="co">#&gt; `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</span></span></code></pre></div>
-<p><img src="surveil-mcmc_files/figure-html/unnamed-chunk-16-1.png" width="384" style="display: block; margin: auto;"></p>
+<p>The default setting in <em>surveil</em> uses four MCMC chains, consistent with the above recommendation.</p>
+<p>The Rhat statistic can be examined by printing the Stanfit object <code>print(fit$samples)</code>. We can see above that they are all equal to about 1.00.</p>
+<p>We could also visualize the Rhats all at once using <code><a href="https://mc-stan.org/rstan/reference/stan_plot_diagnostics.html" class="external-link">rstan::stan_rhat</a></code>:</p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># plot not shown</span></span>
+<span><span class="fu">rstan</span><span class="fu">::</span><span class="fu"><a href="https://mc-stan.org/rstan/reference/stan_plot_diagnostics.html" class="external-link">stan_rhat</a></span><span class="op">(</span><span class="va">samples</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="divergent-transitions">Divergent transitions<a class="anchor" aria-label="anchor" href="#divergent-transitions"></a>
 </h2>
-<p>Sometimes, MCMC algorithms are unable to provide unbiased samples that will converge on the target distribution given sufficient time. Stan’s MCMC algorithm will issue a warning when it encounters a region of the probability model that it is unable to explore. These warnings of “divergent transitions” should not be ignored, as they indicate that something may have gone wrong <span class="citation">(Betancourt <a href="#ref-betancourt_2017b" role="doc-biblioref">2017</a><a href="#ref-betancourt_2017b" role="doc-biblioref">a</a>, <a href="#ref-betancourt_2017" role="doc-biblioref">2017</a><a href="#ref-betancourt_2017" role="doc-biblioref">b</a>)</span>. They will be printed to the console just after the model finishes sampling. Note that other MCMC platforms are simply unable to identify this bias (they will not issue a warning like Stan’s divergent transitions, even if the problem is present).</p>
-<p>If you receive a divergent transition warning from a <strong>surveil</strong> model, here are some things to consider:</p>
+<p>Sometimes, MCMC algorithms are unable to provide unbiased samples that will converge on the target distribution given sufficient time. Stan’s MCMC algorithm will issue a warning when it encounters a region of the probability model that it seems unable to explore. These warnings of “divergent transitions” should not be ignored, as they indicate that something may have gone wrong <span class="citation">(Betancourt <a href="#ref-betancourt_2017b" role="doc-biblioref">2017</a><a href="#ref-betancourt_2017b" role="doc-biblioref">a</a>, <a href="#ref-betancourt_2017" role="doc-biblioref">2017</a><a href="#ref-betancourt_2017" role="doc-biblioref">b</a>)</span>. They will be printed to the console just after the model finishes sampling. Note that other MCMC platforms are simply unable to identify this bias (they will not issue a warning like Stan’s divergent transitions, even if the problem is present).</p>
+<p>If the number of divergent transitions is small (such as a handful out of 5,000 samples), and the ESS and Rhat are both looking good, then you may determine that the amount of bias potentially introduced is acceptable for your purposes.</p>
+<p>If there is a large number of divergent transitions, this is a serious warning. You may have made a mistake with your input data, or it could be that the model is just not very appropriate for the data.</p>
+<p>If you receive a divergent transition warning from a <em>surveil</em> model, here are some things to consider:</p>
 <ol style="list-style-type: decimal">
 <li><p>Draw more samples: if you also have low ESS, the divergent transitions may disappear by increasing the number of iterations (lengthening Stan’s adaptation or warm-up period). However, the default value of <code>iter = 3000</code> should generally be sufficient.</p></li>
 <li><p>Raise <code>adapt_delta</code>: you can also control a tuning parameter related to divergent transitions. Simply raising the <code>adapt_delta</code> value to, say, 0.99 or 0.999 if need be, may be sufficient; e.g., <code>stan_rw(data, time = Year, control = list(adapt_delta = 0.99, max_treedepth = 13))</code>. (When raising <code>adapt_delta</code>, raising <code>max_treedepth</code> may improve sampling speed.) Raising <code>adapt_delta</code> ever closer to 1 (e.g., to .9999) is generally not helpful.</p></li>
 </ol>
-<p>There may be times when you are not able to prevent divergent transitions. This may occur when the population at risk is small and observations are particularly noisy; introducing the covariance structure (using <code>core = TRUE</code>) may make these issues more difficult to address. If your are working with multiple age groups, it may be the case that the age groups with very low case counts are the source of the problem. To determine if that is the case, you can run the model without that age group (or groups), or run a model for only that age group.</p>
-<p>If there is a large number of divergent transitions, this is a serious warning. You may have made a mistake with your input data, or it could be that the model is just not very appropriate for the data.</p>
-<p>If the number of divergent transitions is small (e.g., a handful out of 6,000 samples), and the ESS and Rhat are looking good, then you may determine that the amount of bias potentially introduced is acceptable for your purposes. You may want to report the issue along with results.</p>
+<p>There may be times when you are not able to prevent divergent transitions. This may occur when the population at risk is small and observations are particularly noisy; introducing the covariance structure (using <code>core = TRUE</code>) may make these issues more difficult to address. If you are working with multiple age groups, it may be the case that the age groups with very low case counts are the only source of the problem. To determine if that is the case, you can run the model without that age group or run a model for only that age group.</p>
 </div>
 <div class="section level2 unnumbered">
 <h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>

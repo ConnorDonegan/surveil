@@ -1,0 +1,152 @@
+---
+title: "Measuring health inequality"
+output: rmarkdown::html_vignette
+header-includes:
+   - \usepackage{amsmath}
+vignette: >
+  %\VignetteIndexEntry{Measuring health inequality}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+bibliography: bib.bib
+link-citations: yes
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  results = "hold", 
+  collapse = TRUE, 
+  eval = TRUE,
+  fig.pos = 'h', 
+  fig.align = 'center'
+)
+```
+
+*surveil* provides a number of functions and methods for measuring health differences or inequalities. These can calculated using the `group_diff` function. 
+
+Pairwise measures of inequality have an important purpose (tracking health inequalities between historically or currently advantaged and disadvantaged groups), but we should keep in mind the limitations inherent in tracking the progress of any group by comparing that group to a moving target (particularly one that may move in an unfavorable direction). 
+
+## Concepts
+
+The `group_diff` function returns estimates for the following quantities, where $A$ is the incidence rate for the advantaged group, $D$ is the incidence rate of the disadvantaged group, and $P_d$ is the size of the population at risk for the disadvantaged group.
+
+**Table 1:** Group difference measures for age-stratified groups.
+
+|    Concept   |  Formula |
+|:--------------|:-----:|
+| Rate Ratio (RR) | $\frac{D}{A}$ |
+| Rate Difference (RD) | $D - A$ |
+| Excess Cases (EC) | $(D-A) \times P_d$ |
+| Proportion Attributable Risk (PAR) | $\frac{D-A}{D}$  | 
+
+Notice that the PAR is simply the rate difference expressed as a fraction of total risk; it indicates the fraction of risk in the target population that would have been removed had the target rate been equal to the reference rate [@menvielle_2019]. 
+
+## Demonstration
+
+We will illustrate using the colorectal cancer data from Texas MSAs aggregated by race-ethnicity:
+
+```{r}
+library(surveil)
+data(msa)
+msa2 <- aggregate(cbind(Count, Population) ~ Year + Race, data = msa, FUN = sum)
+head(msa2)
+```
+
+This fits the time trend models to each group:
+
+```{r}
+# refresh = 0 will silence some printing
+fit <- stan_rw(msa2, time = Year, group = Race, iter = 1e3, refresh = 0)
+```		    
+
+To calculate the pairwise difference or inequality measures for two groups in our data, we call `group_diff` on our fitted model. 
+
+We have to name which group is the reference and which is the target group. The group names must match the labels in the data:
+
+```{r}
+unique(msa2$Race)
+```
+
+In this case, we will use whites as the reference rate and African Americans as the target rate:
+
+```{r}
+gd <- group_diff(fit, target = "Black or African American", reference = "White")
+print(gd, scale = 100e3)
+```
+
+All of the *surveil* plotting and printing methods provide an option to scale rates by a custom value. By setting `scale = 100e3` (100,000), the RD is printed as cases per 100,000. None of the other inequality measures (PAR, RR, EC) are impacted by this choice.
+
+The plot method for `surveil_diff` produces one time series ``ggplot`` each for RD, PAR, and EC. The estimates for each measure are plotted as lines, while the shading indicates a 95\% credible interval:
+
+```{r fig.width = 7, fig.height = 2.5}
+plot(gd, scale = 100e3)
+```
+
+(The estimates are the means of the posterior probability distributions for each quantity of interest.) If we wanted to replace the plot of the PAR with one of the rate ratio we would set the `PAR` option to `FALSE`, as in:
+
+```{r eval = FALSE}
+# figure not shown
+plot(gd, scale = 100e3, PAR = FALSE)
+```
+
+## Comparing age-stratified groups
+
+The `group_diff` function can be used to obtain measures of inequality between groups with age-standardized rates. The measures of excess cases (EC) and proportion attributable risk (PAR) are adjusted to account for age-specific rates and varying sizes of populations at risk. 
+
+In the following table, $D$ and $A$ refer to the age-standardized rates for the disadvantaged and advantaged populations, respectively. Age groups are indexed by $i$, such that $D_i$ is the incidence rate in the $i^{th}$ age group for the disadvantaged population.
+
+**Table 2:** Group difference measures for age-stratified groups.
+
+|    Concept   |  Formula |
+|:--------------:|:-----:|
+| Rate Ratio (RR) | $\frac{D}{A}$ |
+| Rate Difference (RD) | $D - A$ |
+| Excess Cases (EC) | $\sum_i (D_i - A_i) * P_{d,i}$ |
+| Proportion Attributable Risk (PAR) | $\frac{\sum_i (D_i - A_i) * P_{d,i}}{ \sum_i D_i * P_{d,i} }$| 
+
+
+The EC measure sums the excess cases across all age groups, and the PAR divides the EC measure by the total risk across all age groups in the disadvantaged population. For age stratified populations, the PAR may be preferred over the RR as a measure of relative inequality because the PAR reflects the actual population sizes.
+
+To compare two age-stratified population segments, you will first obtain age-standardized rates for each group separately. (See the vignette on age-standardization using `vignette("age-standardization")`.) When fitting these models, be sure to use the same MCMC parameters each time: the number of MCMC iterations and chains must match (that is, use the same `iter` and `chains` values for each model).
+
+For any two groups A and B, you might name these age-standardized models `fit_a` and `fit__b`. Next, combine them into a list. The first item in the list (A) will be used as the target group and the second (B) will be treated as the reference group:
+
+```{r eval = FALSE}
+fit_list <- list(group_a = fit_sr_a, group_b = fit_sr_b)
+```
+
+Then pass that list to `group_diff`:
+
+```{r eval = FALSE}
+diff <- group_diff(fit_list)
+```
+
+This will compare group A to group B.
+
+## Measuring inequality with multiple groups
+
+Pairwise cannot provide a summary of dispersion or inequality across multiple groups. Theil's T is an entropy-based inequality index with many favorable qualities, including that it naturally accommodates complex (nested) grouping structures [@theil_1972;@conceicao_2000a;@conceicao_2000b].
+
+Theil's T measures the extent to which groups are under- or over-burdened by disease, meaning simply that the proportion of cases accounted for by a particular group, $\omega_j$, is lower or higher than the proportion of the population constituted by that same group, $\eta_j$. With $k$ groups, Theil's index is
+                               $$T = \sum_{j=1}^k \omega_j \big[ log(\omega_j / \eta_j) \big].$$
+This is zero when case shares equal population shares and it increases monotonically as the two diverge for any group. Theil’s T is thus a weighted mean of log-ratios of case shares to population shares, where each log-ratio (which we may describe as a raw inequality score) is weighted by its share of total cases.
+
+Theil's T can be computed from a fitted *surveil* model, the only requirement is that the model includes multiple groups (through the `group` argument):
+
+```{r}
+Ts <- theil(fit)
+print(Ts)
+```
+
+The results can be visualized using `plot`:
+
+```{r fig.width = 4, fig.height = 3}
+plot(Ts)
+```
+
+While the minimum of Theil's index is always zero, the maximum value varies with the structure of the population under observation. The index is useful for comparisons such as monitoring change over time, and should generally not be used as a indication of the absolute level of inequality. 
+
+The index also can be extended for groups nested in regions such as racial-ethnic groups within states. Theil's index can provide a measure of geographic inequality across states (between-state inequality), and social inequality within states (within-state inequality) [@conceiccao_2001]. For details, see `?theil`.
+
+## References

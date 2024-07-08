@@ -11,7 +11,8 @@ articles:
   contents:
   - surveil-demo
   - age-standardization
-  - surveil-mcmc
+  - measuring-inequality
+  - surveil-mcmc  
 reference:
 - title: "Package overview"
 - contents:

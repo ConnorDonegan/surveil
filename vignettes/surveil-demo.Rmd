@@ -1,10 +1,10 @@
 ---
-title: "Public health surveillance with surveil"
+title: "Using surveil for public health research"
 output: rmarkdown::html_vignette
 header-includes:
    - \usepackage{amsmath}
 vignette: >
-  %\VignetteIndexEntry{Public health surveillance with surveil}
+  %\VignetteIndexEntry{Using surveil for public health research}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 bibliography: bib.bib
@@ -23,7 +23,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-This vignette demonstrates basic usage of **surveil** for public health surveillance. **surveil** leverages the principles of Bayesian inference and Markov chain Monte Carlo (MCMC) [@mackay_2003;@gelman_2014] to infer population risk of disease or death given time series data consisting of case counts and population at risk. Models were built using the [Stan](https://mc-stan.org/) modeling language, but users only need to be familiar with the R language.
+This vignette demonstrates basic usage of *surveil* for public health research. The package is designed for routine time trend analysis, namely for time trends in disease incidence rates or mortality rates. Models were built using the [Stan](https://mc-stan.org/) modeling language for Bayesian inference with Markov chain Monte Carlo (MCMC), but users only need to be familiar with the R language.
 
 The package also contains special methods for age-standardization, printing and plotting model results, and for measuring and visualizing health inequalities. For age-standardization see `vignette("age-standardization")`. For discussion and demonstration analysis see @donegan_2022.
 
@@ -31,41 +31,37 @@ The package also contains special methods for age-standardization, printing and 
 
 ```{r message=FALSE, warning=FALSE, eval=T}
 library(surveil)
-library(dplyr)
 library(ggplot2)
 library(knitr)
 ```
 
-Surveillance data minimally contain case counts, reliable population at risk estimates, and a discrete time period variable. They also may include one or more grouping variables, such as race-ethnicity.Time periods should consist of equally spaced intervals.
+To use the models provided by *surveil,* the surveillance data minimally must contain case counts, population at risk estimates, and a discrete time period variable. The data may also include one or more grouping variables, such as race-ethnicity. Time periods should consist of equally spaced intervals.
 
-This vignette analyzes age-specific (ages 50-79) colorectal cancer incidence data by race-ethnicity, year, and Texas MSA, obtained through CDC Wonder. The race-ethnicity grouping includes (non-Hispanic) Black, (non-Hispanic) White, and Hispanic, and the MSAs include those centered on the cities of Austin, Dallas, Houston, and San Antonio. 
+This vignette analyzes colorectal cancer incidence data by race-ethnicity, year, and Texas MSA for ages 50-79 (data obtained from CDC Wonder). The race-ethnicity grouping includes (non-Hispanic) black, (non-Hispanic) white, and Hispanic, and the MSAs include those centered on the cities of Austin, Dallas, Houston, and San Antonio. 
 
 
 ```{r eval=T}
-head(msa) %>%
+head(msa) |>
   kable(booktabs = TRUE, 
         caption = "Glimpse of colorectal cancer incidence data (CDC Wonder)") 
 ```
 
-**surveil**'s model fitting function, `stan_rw`, requires that the user provide a `data.frame` with specific column names. There must be one column named `Count` containing case counts, and another column named `Population`, containing the sizes of the populations at risk. The user must provide the name of the column containing the time period, and may optionally provide a grouping factor. For the MSA data printed above, the grouping column is Race and the time column is Year.
+The primary function in *surveil* is `stan_rw`, which fits random walk models to surveillance data. The function is expects the user to provide a `data.frame` with specific column names. There must be one column named `Count` containing case counts, and another column named `Population`, containing the sizes of the populations at risk. The user must provide the name of the column containing the time period (the default is `time = Year`, to match CDC Wonder data). Optionally, one can provide a grouping factor. For the MSA data printed above, the grouping column is Race and the time column is Year.
 
 ## Preparing the data
 
 We will demonstrate using aggregated CRC cases across Texas's top four MSAs. The `msa` data from CDC Wonder already has the necessary format (column names and contents), but these data are dis-aggregated by MSA. So for this analysis, we first group the data by year and race, and then combine cases across MSAs.
 
-The following code chunk aggregates the data using the `dplyr` package:
+The following code chunk aggregates the data by year and race-ethnicity:
 
 ```{r message = FALSE, warn = FALSE, eval = T}
-tx.msa <- msa %>%
-  group_by(Year, Race) %>%
-  summarise(Count = sum(Count),
-            Population = sum(Population))
+msa2 <- aggregate(cbind(Count, Population) ~ Year + Race, data = msa, FUN = sum)
 ```
 
-The following code provides a glimpse of the aggregated data (Table 2):
+The following code provides a glimpse of the aggregated data:
 
 ```{r eval = T}
-head(tx.msa) %>%
+head(msa2) |>
   kable(booktabs = TRUE, 
         caption = "Glimpse of aggregated Texas metropolitan CRC cases, by race and year")
 ```
@@ -74,86 +70,37 @@ head(tx.msa) %>%
 
 ### The basics
 
-The base **surveil** model is specified as follows. The Poisson model is used as the likelihood: the probability of observing a given number of cases, $y_t$, conditional on a given level of risk, $e^{\phi_t}$, and known population at risk, $p_t$, is:
+The base *surveil* model is specified as follows. The Poisson model is used as the likelihood: the probability of observing a given number of cases, $y_t$, conditional on a given level of risk, $e^{\phi_t}$, and known population at risk, $p_t$, is:
 $$y_t \sim \text{Pois}(p_t \cdot e^{\phi_t})$$
 where $t$ indexes the time period.
 
-Alternatively, the binomial model is available:
-$$y_t \sim \text{Binom}(p_t \cdot g^{-1}(\phi_t))$$
-where $g$ is the logit function and $g^{-1}(x) = \frac{exp(x)}{1 + exp(x)}$ (the inverse-logit function). The Poisson model is often preferred for 'rare' events (such as rates below .01), otherwise the binomial model is generally more appropriate. The remainder of this vignette will proceed using the Poisson model only.
-
-Next, we build a model for the log-rates, ${\phi_t}$ (for the binomial model, the rates are logit-transformed, rather than log-transformed). The first-difference prior states that our expectation for the log-rate at any time is its previous value, and we assign a Gaussian probability distribution to deviations from the previous value [@clayton_1996]. This is also known as the random-walk prior:
+Next, we need a model for the log-rates, ${\phi_t}$. The first-difference prior states that our expectation for the log-rate at any time is its previous value, and we assign a normal probability distribution to deviations from the previous value [@clayton_1996]. This is also known as the random-walk prior:
 $$\phi_t \sim \text{Gau}(\phi_{t-1}, \tau^2)$$
 This places higher probability on a smooth trend through time, specifically implying that underlying disease risk tends to have less variation than crude incidence.
 
-The log-risk for time $t=1$ has no previous value to anchor its expectation; thus, we assign a prior probability distribution directly to $\phi_1$. For this prior, **surveil** uses a Gaussian distribution. The scale parameter, $\tau$, also requires a prior distribution, and again **surveil** uses a Gaussian model.
+The log-risk for time $t=1$ has no previous value to anchor its expectation; thus, we assign a prior probability distribution directly to $\phi_1$. For this prior, *surveil* uses a normal distribution. The scale parameter, $\tau$, also requires a prior distribution, and again *surveil* uses a normal model which is diffuse relative to the log incidence rates.
 
-### Multiple time series
+### Binomial model
 
-For multiple time series, **surveil** allows users to add a correlation structure to the model. This allows our inferences about each population to be mutually informed by inferences about all other observed populations. Note that in many cases, the base model specification described above will be entirely sufficient.
-
-The log-rates for $k$ populations, $\boldsymbol \phi_t$, are assigned a multivariate Gaussian model [@brandt_2007]:
-$$\boldsymbol \phi_t \sim \text{Gau}(\boldsymbol \phi_{t-1}, \boldsymbol \Sigma),$$
-where $\boldsymbol \Sigma$ is a $k \times k$ covariance matrix.
-
-The covariance matrix can be decomposed into a diagonal matrix containing scale parameters for each variable, $\boldsymbol \Delta = diag(\tau_1,\dots \tau_k)$, and a symmetric correlation matrix, $\boldsymbol \Omega$ [@stan_2021]:
-$$\boldsymbol \Sigma = \boldsymbol \Delta \boldsymbol \Omega \boldsymbol \Delta$$
-When the correlation structure is added to the model, then a prior distribution is also required for the correlation matrix. **surveil** uses the LKJ model, which has a single shape parameter, $\eta$ [@stan_2021]. If $\eta=1$, the LKJ model will place uniform prior probability on any $k \times k$ correlation matrix; as $\eta$ increases from one, it expresses ever greater skepticism towards large correlations. When $\eta <1$, the LKJ model becomes 'concave'---expressing skepticism towards correlations of zero. 
+In addition to the Poisson model, the binomial model is also available:
+$$y_t \sim \text{Binom}(p_t \cdot g^{-1}(\phi_t))$$
+where $g$ is the logit function and $g^{-1}(x) = \frac{exp(x)}{1 + exp(x)}$ (the inverse-logit function). If the binomial model is used the rest of the model remains the same as stated above. The Poisson model is typically preferred for rare events (such as rates below .01), otherwise the binomial model is usually more appropriate. The remainder of this vignette will proceed using the Poisson model only.
 
 ## Fitting the model
 
-The time series model is fit by passing surveillance data to the `stan_rw` function. Here, `Year` and `Race` indicate the appropriate time and grouping columns in the `tx.msa` data frame. 
+The time series model is fit by passing surveillance data to the `stan_rw` function. Here, `Year` and `Race` indicate the appropriate time and grouping columns in the `msa2` data frame. 
 
 ```{r}
-fit <- stan_rw(tx.msa,
-               time = Year,
-	       group = Race,
-	       iter = 1500,
-	       chains = 2  #, for speed only; use default chains=4
-               )
+fit <- stan_rw(msa2, time = Year, group = Race, iter = 1e3)
 ```
 
-If we wanted to add a correlation structure to the model, we would add `cor = TRUE` (as opposed to the default, `cor = FALSE`). To speed things up, we could take advantage of parallel processing using the `cores` argument (e.g., add `cores = 4`) to run on 4 cores simultaneously. For age-standardization, see `vignette("age-standardization")`.
+The `iter = 1e3` line controls how long the MCMC sampling continues for (in this case, 1,000 samples: 500 warmup, then 500 more for inference).  The default is 3,000, which is more than sufficient for this example model. By default, there are four independent MCMC chains each with 500 post-warmup samples (for a total of 2,000 MCMC samples used for the estimates). 
 
-## MCMC diagnostics
-
-In this case, Stan did not issue any warnings; this means that all the R-hat values are near to 1 and the Monte Carlo standard errors are reasonably small. We can verify that chains have converged (and R-hats equal about 1):
-```{r fig.width = 4.5, fig.height = 3.5}
-rstan::stan_rhat(fit$samples)
-```
-
-Other useful functions for examining MCMC diagnostics are `rstan::stan_ess(fit$samples)` and `rstan::stan_mcse(fit$samples)`. For an introduction to MCMC analysis with **surveil**, including MCMC diagnostics, see the vignette `vignette("surveil-mcmc")`. 
-
-## Visualizing results
-
-If we call `plot` on a **surveil** model, we get a `ggplot` object depicting risk estimates with 95\% credible intervals:
-
-```{r fig.width = 4.5, fig.height = 3.5}
-plot(fit, scale = 100e3, base_size = 11)
-```
-Crude incidence rates are also plotted as points.
-
-The `plot` method has a number of options to control its appearance. For example, the `base_size` argument controls the size of labels. The size of the points for the crude rates can be adjusted using `size`, and `size = 0` removes them altogether. We can also use `ggplot` to add custom modifications:
-
-```{r fig.width = 7, fig.height = 3.5}
-fig <- plot(fit, scale = 100e3, base_size = 11, size = 0)
-fig +
-  theme(legend.position = "right") +
-  labs(title = "CRC incidence per 100,000",
-       subtitle = "Texas MSAs, 50-79 y.o.")
-```
-
-The plot method has a `style` argument that controls how the probability distribution is represented. The default, `style = "mean_qi"`, shows the mean of the posterior distribution of the risk at each time period with a shaded 95\% credible interval (as above). The alternative, `style = "lines"`, plots MCMC samples from the joint probability distribution across all time periods:
-
-```{r fig.width = 4.5, fig.height = 3.5}
-plot(fit, scale = 100e3, base_size = 11, style = "lines")
-```
-
-By default, `M = 250` samples are plotted. The `style` option is available for all of the **surveil** plot methods.
+To speed things up, we could take advantage of parallel processing using the `cores` argument (e.g., add `cores = 4`) to run on 4 cores simultaneously. You can suppress the messages seen above by adding `refresh = 0`.
 
 ## Printing results
 
-The `print` method will print the estimates with 95\% credible intervals to the console:
+The `print` method will print the estimates with 95\% credible intervals to the console; adding `scale = 100e3` will display rates per 100,000:
 
 ```{r}
 print(fit, scale = 100e3)
@@ -165,68 +112,95 @@ This information is also stored in a data frame, `fit$summary`:
 head(fit$summary)
 ```
 
-## Measuring pairwise inequality
+The `fit$summary` object can be used to create custom plots and tables.
 
-**surveil** provides a number of functions and methods for measuring health inequalities.
+## Visualizing results
 
-A selection of complementary pairwise inequality measures can be calculated using the `group_diff` function. The function requires a fitted **surveil** model and character strings corresponding, respectively, to the target population (indicating which group is the target of our inference, typically the overburdened or disadvantaged group), and the reference population. You can also use `group_diff` to compare two age-stratified populations with age-standardized rates (for details, see `vignette("age-standardization")` and `?group_diff`).
+If we call `plot` on a fitted *surveil* model, we get a `ggplot` object depicting risk estimates with 95\% credible intervals:
 
-It returns probability distributions and summary statements for the following quantities, where $A$ is the incidence rate for the advantaged group, $D$ is the incidence rate of the disadvantaged group, and $P_d$ is the size of the population at risk for the disadvantaged group.
+```{r fig.width = 4.75, fig.height = 3.5}
+plot(fit, scale = 100e3)
+```
+The crude incidence rates (observed values) are also plotted here as points. 
 
-|    Concept   |  Formula |
-|:--------------|:-----:|
-| Rate Ratio (RR) | $\frac{D}{A}$ |
-| Rate Difference (RD) | $D - A$ |
-| Excess Cases (EC) | $(D-A) \times P_d$ |
-| Proportion Attributable Risk (PAR) | $\frac{D-A}{D}$  | 
+The `plot` method has a number of optional arguments that control its appearance. For example, the `base_size` argument controls the size of labels. The size of the points for the crude rates can be adjusted using `size`, and `size = 0` removes them altogether. We can also use `ggplot` to add custom modifications:
 
-Notice that the PAR is simply the rate difference expressed as a fraction of total risk; it indicates the fraction of risk in the target population that would have been removed had the target rate been equal to the reference rate [@menvielle_2019]. Each of these quantities (RD, RR, PAR, EC) provide a different perspective on the magnitude of a health disparity.
+```{r fig.width = 7, fig.height = 3.5}
+fig <- plot(fit, scale = 100e3, base_size = 11, size = 0)
+fig +
+  theme(legend.position = "right") +
+  labs(title = "CRC incidence per 100,000",
+       subtitle = "Texas MSAs, 50-79 y.o.")
+```
 
-To calculate all of these measures for two groups in our data, we call `group_diff` on our fitted model:
+The plot method has a `style` argument that controls how uncertainty is represented. The default, `style = "mean_qi"`, shows the mean of the posterior distribution as the estimate and adds shading to depict the 95\% credible interval (as above). The alternative, `style = "lines"`, plots MCMC samples from the joint probability distribution for the estimates:
+
+```{r fig.width = 4.5, fig.height = 3.5}
+plot(fit, scale = 100e3, base_size = 11, style = "lines")
+```
+
+By default, `M = 250` samples are plotted. The `style` option is available for all of the *surveil* plot methods. This style is sometimes helpful for visualizing multiple groups when their credible intervals overlap.
+
+
+## Percent change
+
+The `apc` method calculates percent change by period and cumulatively over time:
 
 ```{r}
-gd <- group_diff(fit, target = "Black or African American", reference = "White")
-print(gd, scale = 100e3)
+fit_pc <- apc(fit)
 ```
 
-All of the **surveil** plotting and printing methods provide an option to scale rates by a custom value. By setting `scale = 100e3` (100,000), the RD is printed as cases per 100,000. Note that none of the other inequality measures (PAR, RR, EC) are ever impacted by this choice.
-
-The plot method for `surveil_diff` produces one time series ``ggplot`` each for RD, PAR, and EC. The means of the probability distributions for each measure are plotted as lines, while the shading indicates a 95\% credible interval:
-
-```{r fig.width = 7, fig.height = 2.5}
-plot(gd, scale = 100e3)
-```
-
-If we wanted to replace the plot of the PAR with one of the RR, we would set the `PAR` option to `FALSE`:
-
-```{r fig.width = 7, fig.height = 2.5}
-plot(gd, scale = 100e3, PAR = FALSE)
-```
-
-## Measuring inequality with multiple groups
-
-Pairwise measures are important, but they cannot provide a summary of inequality across multiple socially situated groups. Theil's T is an entropy-based inequality index with many favorable qualities, including that it naturally accommodates complex grouping structures [@theil_1972;@conceicao_2000a;@conceicao_2000b].
-
-Theil's T measures the extent to which certain populations are overburdened by disease, meaning precisely that the proportion of cases accounted for by a particular group, $\omega_j$, is higher than the proportion of the population constituted by that same group, $\eta_j$. With $k$ groups, Theil's index is
-                               $$T = \sum_{j=1}^k \omega_j \big[ log(\omega_j / \eta_j) \big].$$
-This is zero when case shares equal population shares and it increases monotonically as the two diverge for any group. Theil’s T is thus a weighted mean of log-ratios of case shares to population shares, where each log-ratio (which we may describe as a raw inequality score) is weighted by its share of total cases.
-
-Theil's T can be computed from a fitted **surveil** model, the only requirement is that the model includes multiple groups (through the `group` argument):
+The object returned by `apc` contains two data frames. The first contains estimates of percent change from the previous period:
 
 ```{r}
-Ts <- theil(fit)
-print(Ts)
+head(fit_pc$apc)
 ```
 
-The probability distribution for Theil's T can be summarized visualy using the `"lines"` style plot or by plotting estimates with shaded 95\% credible intervals:
+Those estimates typically have high uncertainty.
 
-```{r fig.width = 4, fig.height = 3}
-plot(Ts)
+The second data frame contains estimates of cumulative percent change (since the first observed period):
+
+```{r}
+head(fit_pc$cpc)
 ```
 
-While the minimum of Theil's index is always zero, the maximum value varies with the structure of the population under observation. The index is useful for comparisons such as monitoring change over time, and should generally not be used as a indication of the absolute level of inequality. 
+Each value in the `cpc` column is an estimate of the difference in incidence rates between that year and the first year (in this case, 1999) expressed as a percent of the first year's rate. The `lwr` and `upr` columns are the lower and upper bounds of the 95\% credible intervals for the estimates. 
 
-The index also has interesting extensions; for example, given disease data for a nested population structure---such as racial-ethnic groups within states---Theil's index can provide a measure of geographic inequality across states (between-state inequality), and social inequality within states (within-state inequality) [@conceiccao_2001]. For details, see `?theil`.
+This information can also be plotted:
+
+```{r fig.width = 7, fig.height = 3.5}
+plot(fit_pc, cumulative = TRUE)
+```
+
+If desired, the average annual percent change from the first period can be calculated by dividing the cumulative percent change (CPC) by the appropriate number of periods. For example, the CPC from 1999 to 2017 for whites is about -31 for an average annual percent change of about $-31/18 = -1.72$. The credible intervals for the average annual percent change can also be obtained from the CPC table using the same method. For this example, the correct denominator is $2017-1999=18$ (generally: the last year minus the first year).
+
+## MCMC diagnostics
+
+If you do not see any warnings printed to the R console at the end of the model fitting process then you can simply move forward with the analysis. If there is a warning, it may say that the effective sample size is low or that the R-hat values are large. For a crash course on MCMC analysis with *surveil*, including MCMC diagnostics, see the vignette on the topic `vignette("surveil-mcmc")`.
+
+A quick and dirty summary is that you want to watch two key diagnostics, which are effective MCMC sample size (ESS) and R-hat. For all your parameters of interest, ESS should be at least 400 or so. If you want to increase the ESS, use the `iter` argument to draw more samples. The R-hat values should all be pretty near to one, such as within the range $1 \pm .02$. For the simple models we are using here, large R-hat values can often be fixed just by drawing more samples.
+
+You can find these diagnostics by printing results `print(fit$samples)` and seeing the columns `n_eff` (for ESS) and `Rhat`.
+
+The MCMC sampling is generally fast and without trouble when the numbers are not too small (as in this example model). When the incidence rates are based on small numbers (like counts less than 20), the sampling often proceeds more slowly and a higher `iter` value may be needed.
+
+## Multiple time series
+
+In most applications, the base model specification described above will be entirely sufficient. However, *surveil* provides an option for users to add a correlation structure to the model when multiple groups are modeled together. For correlated trends, this can increase the precision of estimates.
+
+The log-rates for $k$ populations, $\boldsymbol \phi_t$, are assigned a multivariate normal distribution [@brandt_2007]:
+$$\boldsymbol \phi_t \sim \text{Gau}(\boldsymbol \phi_{t-1}, \boldsymbol \Sigma),$$
+where $\boldsymbol \Sigma$ is a $k \times k$ covariance matrix.
+
+The covariance matrix can be decomposed into a diagonal matrix containing scale parameters for each variable, $\boldsymbol \Delta = diag(\tau_1,\dots \tau_k)$, and a symmetric correlation matrix, $\boldsymbol \Omega$ [@stan_2021]:
+$$\boldsymbol \Sigma = \boldsymbol \Delta \boldsymbol \Omega \boldsymbol \Delta$$
+When the correlation structure is added to the model, then a prior distribution is also required for the correlation matrix. *surveil* uses the LKJ model, which has a single shape parameter, $\eta$ [@stan_2021]. If $\eta=1$, the LKJ model will place uniform prior probability on any $k \times k$ correlation matrix; as $\eta$ increases from one, it expresses ever greater skepticism towards large correlations. When $\eta <1$, the LKJ model becomes 'concave'---expressing skepticism towards correlations of zero.
+
+If we wanted to add a correlation structure to the model, we would add `cor = TRUE` to `stan_rw`, as in:
+
+```{r eval = FALSE}
+fit <- stan_rw(msa2, time = Year, group = Race, cor = TRUE)
+```
 
 ## References
 

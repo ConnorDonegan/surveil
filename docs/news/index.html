@@ -23,7 +23,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">surveil</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.0</span>
       </span>
     </div>
 
@@ -57,7 +57,14 @@
     </div>
 
     <div class="section level2">
-<h2 class="page-header" data-toc-text="0.2.2" id="surveil-022">surveil 0.2.2<a class="anchor" aria-label="anchor" href="#surveil-022"></a></h2>
+<h2 class="page-header" data-toc-text="0.3.0" id="surveil-030">surveil 0.3.0<a class="anchor" aria-label="anchor" href="#surveil-030"></a></h2>
+<ul><li>Example code in the documentation has been improved</li>
+<li>The package vignettes have been re-written</li>
+<li>The <code>standardize</code> function is now slightly easier to use: the standard population sizes provided by <code>data(standard)</code> can be passed to the <code>standardize</code> function without removing any unused age groups. Previously, it was necessary to subset the <code>standard</code> data before using <code>standardize</code>.</li>
+</ul><p>Another short illustration of cancer data analysis with <code>surveil</code> is provided here: <a href="https://connordonegan.github.io/surveil-paper/" class="external-link uri">https://connordonegan.github.io/surveil-paper/</a></p>
+</div>
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="0.2.2" id="surveil-022">surveil 0.2.2<small>2023-10-02</small><a class="anchor" aria-label="anchor" href="#surveil-022"></a></h2>
 <p>This release was built using <code>rstan</code> 2.26.23, which incorporates Stan’s new syntax for declaring arrays. Some models seems to run a little bit faster, but otherwise there are no changes that users should notice. This update should also address all warnings from tidyr regarding the use of deprecated tidyselect syntax.</p>
 </div>
     <div class="section level2">

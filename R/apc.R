@@ -15,13 +15,12 @@
 #'
 #' @examples
 #' data(cancer)
-#' \donttest{
-#'  fit <- stan_rw(cancer, time = Year, group = Age,
+#' cancer2 <- subset(cancer, grepl("55|60|65|70", Age))
+#' fit <- stan_rw(cancer2, time = Year, group = Age,
 #'                 iter = 900) # low iter for speed only
 #'  x <- apc(fit)
 #'  print(x)
 #'  plot(x, cumulative = TRUE)
-#' }
 #' @seealso \code{\link[surveil]{plot.apc}} \code{\link[surveil]{print.apc}} \code{\link[surveil]{stan_rw}} \code{\link[surveil]{standardize}}
 #' @md
 #' @export

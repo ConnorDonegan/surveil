@@ -9,9 +9,9 @@ standardize(x, label, standard_pop)
 \arguments{
 \item{x}{A fitted \code{surveil} model}
 
-\item{label}{Labels (character strings) for the age groups that correspond to the values of \code{stand_pop}. The labels must match the grouping variable used to fit the model (i.e., \code{all(label \%in\% names(x$data$cases))} must be true).}
+\item{label}{Labels (character strings) for the age groups that correspond to the values of \code{stand_pop}. All levels of the grouping variable used to fit the model (i.e., \code{names(x$data$cases)}) must be present in \code{label}.}
 
-\item{standard_pop}{Standard population values corresponding to the age groups specified by \code{label}}
+\item{standard_pop}{Standard population values corresponding to the age groups specified by \code{label}.}
 }
 \value{
 A list, also of class "stand_surveil", containing the entire contents of the user-provided \code{surveil} model plus the following:
@@ -35,19 +35,16 @@ data(standard)
 head(standard)
 head(cancer)
 
-\donttest{
-fit <- stan_rw(cancer,
-              time = Year,
-              group = Age,
-              chains = 2, iter = 900 # for speed only
-              )
+cancer2 <- subset(cancer, grepl("55-59|60-64|65-69", Age))
+fit <- stan_rw(cancer2, time = Year, group = Age,
+              chains = 2, iter = 1e3) # for speed only
 
 stands <- standardize(fit,
                       label = standard$age,
                       standard_pop = standard$standard_pop)
 print(stands)
 plot(stands, style = "lines")
-}
+
 }
 \seealso{
 \code{vignette("age-standardization", package = "surveil")} \code{\link[surveil]{stan_rw}}  \code{\link[surveil]{plot.stand_surveil}} \code{\link[surveil]{print.stand_surveil}}

@@ -18,7 +18,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
 <script src="pkgdown.js"></script><meta property="og:title" content="Public Health Surveillance">
-<meta property="og:description" content="Fits time series models for routine disease surveillance tasks and returns probability distributions for a variety of quantities of interest, including age-standardized rates, period and cumulative percent change, and measures of health inequality. Calculates Theil's index to measure inequality among multiple groups, and can be extended to measure inequality across multiple groups nested within geographies. Inference is completed using Markov chain Monte Carlo via the Stan modeling language. The models are appropriate for count data such as disease incidence and mortality data, employing a Poisson or binomial likelihood and the first-difference (random-walk) prior for unknown risk. Optionally add a covariance matrix for multiple, correlated time series models. References: Donegan, Hughes, and Lee (2022) &lt;doi:10.2196/34589&gt;; Stan Development Team (2021) &lt;https://mc-stan.org&gt;; Theil (1972, ISBN:0-444-10378-3).">
+<meta property="og:description" content="Fits time trend models for routine disease surveillance tasks and returns probability distributions for a variety of quantities of interest, including age-standardized rates, period and cumulative percent change, and measures of health inequality. The models are appropriate for count data such as disease incidence and mortality data, employing a Poisson or binomial likelihood and the first-difference (random-walk) prior for unknown risk. Optionally add a covariance matrix for multiple, correlated time series models. Inference is completed using Markov chain Monte Carlo via the Stan modeling language. References: Donegan, Hughes, and Lee (2022) &lt;doi:10.2196/34589&gt;; Stan Development Team (2021) &lt;https://mc-stan.org&gt;; Theil (1972, ISBN:0-444-10378-3).">
 <meta property="og:image" content="https://connordonegan.github.io/surveil/, https://cloud.r-project.org/web/packages/surveil/index.html/logo.png">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
@@ -46,7 +46,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">surveil</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.0</span>
       </span>
     </div>
 
@@ -85,12 +85,12 @@
 <h2 id="surveil-public-health-surveillance">surveil: Public health surveillance<a class="anchor" aria-label="anchor" href="#surveil-public-health-surveillance"></a>
 </h2>
 <p><img src="reference/figures/logo.png" align="right" width="160"></p>
-<p>The <strong>surveil</strong> R package provides time series models for routine public health surveillance tasks: model time trends in mortality or disease incidence rates to make inferences about levels of risk, cumulative and period percent change, age-standardized rates, and health inequalities.</p>
-<p><strong>surveil</strong> is an interface to <a href="https://mc-stan.org" class="external-link">Stan</a>, a state-of-the-art platform for Bayesian inference. For analysis of spatial health data see the <a href="https://connordonegan.github.io/geostan/" class="external-link"><strong>geostan</strong></a> R package.</p>
+<p>The <em>surveil</em> R package provides time series models for routine public health surveillance tasks: model time trends in mortality or disease incidence rates to make inferences about levels of risk, cumulative and period percent change, age-standardized rates, and health inequalities.</p>
+<p><em>surveil</em> is an interface to <a href="https://mc-stan.org" class="external-link">Stan</a>, a state-of-the-art platform for Bayesian inference. For analysis of spatial health data see the <a href="https://connordonegan.github.io/geostan/" class="external-link"><em>geostan</em></a> R package.</p>
 <div class="section level3">
 <h3 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h3>
-<p><strong>surveil</strong> is available on CRAN; install from R using:</p>
+<p><em>surveil</em> is available on CRAN; install from R using:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"surveil"</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -100,12 +100,14 @@
 <p>Review the package vignettes to get started:</p>
 <ul>
 <li>
-<code><a href="articles/surveil-demo.html">vignette("surveil-demo")</a></code>: An introduction to health modeling with <strong>surveil</strong>
+<code><a href="articles/surveil-demo.html">vignette("surveil-demo")</a></code>: An introduction to public health modeling with <em>surveil</em>
 </li>
 <li>
-<code><a href="articles/age-standardization.html">vignette("age-standardization")</a></code>: How to age-standardize <strong>surveil</strong> model results and compare age-stratified populations</li>
+<code><a href="articles/age-standardization.html">vignette("age-standardization")</a></code>: How to age-standardize <em>surveil</em> model results</li>
 <li>
-<code><a href="articles/surveil-mcmc.html">vignette("surveil-mcmc")</a></code>: A brief introduction to Markov chain Monte Carlo (MCMC) with <strong>surveil</strong>
+<code><a href="articles/measuring-inequality.html">vignette("measuring-inequality")</a></code>: Assessing pairwise health differences with measures of inequality</li>
+<li>
+<code><a href="articles/surveil-mcmc.html">vignette("surveil-mcmc")</a></code>: A brief introduction to Markov chain Monte Carlo (MCMC) with <em>surveil</em>
 </li>
 </ul>
 <p>Also see the online <a href="https://connordonegan.github.io/surveil/reference/index.html" class="external-link">documentation</a>.</p>
@@ -113,7 +115,7 @@
 <div class="section level3">
 <h3 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
 </h3>
-<p>Model time series data of mortality or disease incidence by loading the <strong>surveil</strong> package into R together with disease surveillance data. Tables exported from CDC WONDER are automatically in the correct format.</p>
+<p>Model time series data of mortality or disease incidence by loading the <em>surveil</em> package into R together with disease surveillance data. Tables exported from CDC WONDER are automatically in the correct format.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://connordonegan.github.io/surveil/" class="external-link">surveil</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://yihui.org/knitr/" class="external-link">knitr</a></span><span class="op">)</span></span>
