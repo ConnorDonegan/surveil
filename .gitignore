@@ -44,6 +44,7 @@ vignettes/*.pdf
 inst/doc
 
 # CRAN
-cran-comments
+cran-comments*
+CRAN-SUBMISSION
 /doc/
 /Meta/
