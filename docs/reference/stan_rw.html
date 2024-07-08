@@ -23,7 +23,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">surveil</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.0</span>
       </span>
     </div>
 
@@ -224,44 +224,49 @@
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co"># \donttest{</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mc-stan.org/rstan/" class="external-link">rstan</a></span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">msa</span><span class="op">)</span></span>
-<span><span class="va">austin</span> <span class="op">&lt;-</span> <span class="va">msa</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep</a></span><span class="op">(</span><span class="st">"Austin"</span>, <span class="va">msa</span><span class="op">$</span><span class="va">MSA</span><span class="op">)</span>, <span class="op">]</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">msa</span><span class="op">)</span></span>
+<span><span class="va">dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/aggregate.html" class="external-link">aggregate</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="va">Count</span>, <span class="va">Population</span><span class="op">)</span> <span class="op">~</span> <span class="va">Year</span>, data <span class="op">=</span> <span class="va">msa</span>, FUN <span class="op">=</span> <span class="va">sum</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu">stan_rw</span><span class="op">(</span><span class="va">austin</span>,</span>
-<span>               time <span class="op">=</span> <span class="va">Year</span>,</span>
-<span>               group <span class="op">=</span> <span class="va">Race</span>,</span>
-<span>               chains <span class="op">=</span> <span class="fl">2</span>, iter <span class="op">=</span> <span class="fl">900</span><span class="op">)</span> <span class="co"># for speed only</span></span>
+<span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu">stan_rw</span><span class="op">(</span><span class="va">dat</span>, time <span class="op">=</span> <span class="va">Year</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co">## MCMC diagnostics</span></span>
-<span><span class="fu">rstan</span><span class="fu">::</span><span class="fu"><a href="https://mc-stan.org/rstan/reference/stan_plot_diagnostics.html" class="external-link">stan_mcse</a></span><span class="op">(</span><span class="va">fit</span><span class="op">$</span><span class="va">samples</span><span class="op">)</span></span>
-<span><span class="fu">rstan</span><span class="fu">::</span><span class="fu"><a href="https://mc-stan.org/rstan/reference/stan_plot_diagnostics.html" class="external-link">stan_rhat</a></span><span class="op">(</span><span class="va">fit</span><span class="op">$</span><span class="va">samples</span><span class="op">)</span></span>
+<span><span class="co">## print summary of results</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">fit</span><span class="op">$</span><span class="va">summary</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">## plot time trends (rates per 10,000)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit</span>, scale <span class="op">=</span> <span class="fl">10e3</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit</span>, style <span class="op">=</span> <span class="st">'lines'</span>, scale <span class="op">=</span> <span class="fl">10e3</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">## Summary with MCMC diagnostics (n_eff, Rhat; from Rstan)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">fit</span><span class="op">$</span><span class="va">samples</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co">## print the surveil object</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">fit</span><span class="op">$</span><span class="va">summary</span><span class="op">)</span></span>
+<span><span class="co">## cumulative percent change</span></span>
+<span><span class="va">fit_pc</span> <span class="op">&lt;-</span> <span class="fu"><a href="apc.html">apc</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">fit_pc</span><span class="op">$</span><span class="va">cpc</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit_pc</span>, cumulative <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co">## plot time trends</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit</span>, style <span class="op">=</span> <span class="st">'lines'</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co">## age-specific rates and cumulative percent change</span></span>
+<span><span class="co"># \donttest{</span></span>
+<span><span class="co">## age-specific rates </span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">cancer</span><span class="op">)</span></span>
-<span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu">stan_rw</span><span class="op">(</span><span class="va">cancer</span>, time <span class="op">=</span> <span class="va">Year</span>, group <span class="op">=</span> <span class="va">Age</span>,</span>
-<span>              chains <span class="op">=</span> <span class="fl">2</span>, iter <span class="op">=</span> <span class="fl">900</span><span class="op">)</span> <span class="co"># for speed only</span></span>
-<span><span class="va">fit_apc</span> <span class="op">&lt;-</span> <span class="fu"><a href="apc.html">apc</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit_apc</span>, cumulative <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">cancer2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">cancer</span>, <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"55-59|60-64|65-69"</span>, <span class="va">Age</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu">stan_rw</span><span class="op">(</span><span class="va">cancer2</span>, time <span class="op">=</span> <span class="va">Year</span>, group <span class="op">=</span> <span class="va">Age</span>,</span>
+<span>               chains <span class="op">=</span> <span class="fl">3</span>, iter <span class="op">=</span> <span class="fl">1e3</span><span class="op">)</span> <span class="co"># for speed only</span></span>
 <span></span>
-<span><span class="co"># age-standardized rates</span></span>
+<span><span class="co">## plot trends </span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit</span>, scale <span class="op">=</span> <span class="fl">10e3</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">## age-standardized rates</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">standard</span><span class="op">)</span></span>
 <span><span class="va">fit_stands</span> <span class="op">&lt;-</span> <span class="fu"><a href="standardize.html">standardize</a></span><span class="op">(</span><span class="va">fit</span>,</span>
 <span>                          label <span class="op">=</span> <span class="va">standard</span><span class="op">$</span><span class="va">age</span>,</span>
 <span>                          standard_pop <span class="op">=</span> <span class="va">standard</span><span class="op">$</span><span class="va">standard_pop</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">fit_stands</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit_stands</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">## percent change for age-standardized rates</span></span>
 <span><span class="va">fit_stands_apc</span> <span class="op">&lt;-</span> <span class="fu"><a href="apc.html">apc</a></span><span class="op">(</span><span class="va">fit_stands</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit_stands_apc</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">fit_stands_apc</span><span class="op">)</span></span>
 <span><span class="co"># }</span></span>
 <span></span></code></pre></div>
     </div>

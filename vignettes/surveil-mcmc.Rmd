@@ -1,10 +1,10 @@
 ---
-title: "Markov chain Monte Carlo (MCMC): analysis and diagnostics"
+title: "MCMC with surveil"
 output: rmarkdown::html_vignette
 header-includes:
    - \usepackage{amsmath}
 vignette: >
-  %\VignetteIndexEntry{Markov chain Monte Carlo (MCMC): analysis and diagnostics}
+  %\VignetteIndexEntry{MCMC with surveil}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 bibliography: bib.bib
@@ -27,48 +27,32 @@ knitr::opts_chunk$set(
 )
 ```
 
-This vignette shows **surveil** users how to access and review Markov chain Monte Carlo (MCMC) diagnostics from **surveil** models. This is not a complete resource for understanding MCMC, and readers are encouraged to seek additional resources. 
-
-Markov chain Monte Carlo (MCMC) algorithms, such as the Hamiltonian Monte Carlo algorithm that Stan (and therefore **surveil**) uses, aim to draw samples from the probability distribution specified by the user. The algorithm tries to explore the probability distribution extensively, and when successful, the resulting samples provide an approximate image of the target probability distribution.
-
-Books that discuss MCMC include @mackay_2003 and @gelman_2014; see also @stan-dev_2022 and @vehtari_2021. @mcelreath_2016 is helpful for learning Bayesian analysis using MCMC samples. 
+Most users of *surveil* may not need to know much of anything about MCMC analysis. Many statistical software users do not know how estimates are obtained. However, there are a few topics that are important for *surveil* will benefit from having some familiarity with.
 
 The following topics will be introduced here:
 
-  - Monte Carlo standard errors (MCSE)
+  - Summarizing probability distributions
   - Effective sample size (ESS)
-  - The split Rhat statistic
+  - The Rhat statistic
   - Divergent transitions
 
-The first section examines MCMC samples from an example model in order to provide a foundation for the rest of the vignette. It is intended for users without prior exposure to MCMC analysis.
+@mcelreath_2016 is helpful for learning Bayesian analysis using MCMC. Other books that discuss MCMC include @mackay_2003 and @gelman_2014; some may also want to see @stan-dev_2022 and @vehtari_2021. 
 
 ## Example model
 
 ```{r message = FALSE}
 library(surveil)
-library(rstan)
-data(cancer)
 ```
 
 The discussion will make use of a model of U.S. cancer incidence rates, ages 10-14 from the `cancer` data:
 
 ```{r}
-data2 <- cancer[which(cancer$Age == "10-14"),]
-fit <- stan_rw(data2, time = Year)
+data(cancer)
+cancer2 <- subset(cancer, Age == "10-14")
+fit <- stan_rw(cancer2, time = Year, iter = 1500, chains = 4, refresh = 0)
 ```
 
-Given 4 MCMC chains, 3,000 samples drawn from each chain, and the first `.5 * 3000 = 1500` samples discarded as warmup, the `fit` object contains 6,000 MCMC samples. There is one parameter per year, each representing the level of cancer risk. There are 19 years of data (1999-2017). The number of samples required depends upon a number of factors, and in some cases the default settings may be more or less than is needed. One should draw enough samples that 1) the Monte Carlo standard errors are sufficiently small, and 2) the MCMC chains have had time to converge on a single distribution (these concepts will be discussed below).
-
-The `print` method will return a summary of the marginal probability distributions for each year:
-
-```{r}
-print(fit, scale = 100e3)
-```
-
-Using `scale = 100e3` caused the results to be printed in terms of cases per 100,000 persons at risk.
-
-
-The `mean` refers to the mean of the respective marginal probability distributions and the `lwr_2.5` and `upr_97.5` report the bounds of their central 95\% quantile intervals (or credible interval: CI). The mean and CI can generally be interpreted as the "estimate" and its measure of uncertainty. However, one can visualize the entire probability distribution for any modeled quantity using a histogram of the MCMC samples.
+The `iter` argument determines how many MCMC samples will be drawn from the model. The first half of the samples will always be discarded as warmup and the remaining samples will be used for inference. The `chains` argument determines how many independent MCMC chains will be used. The code above uses `iter=1500` and `chains=4` which means there will be 3,000 MCMC samples returned for inference. 
 
 ## MCMC analysis
 
@@ -84,115 +68,117 @@ phi <- as.matrix(samples, pars = "rate")
 dim(phi)
 ```
 
-Each row of the matrix `phi` is a sample from the joint posterior probability distribution of parameters, and each column represents a parameter (in this case, each parameter represents the level of cancer risk averaged over a given year). The values in any given column are samples from the marginal probability distribution for that parameter.
+Each row of the matrix `phi` is a sample from the joint posterior probability distribution of parameters, and each column represents a parameter. In this case, each parameter is an annual cancer incidence rate. The values in any given column are samples from the marginal probability distribution for that parameter.
 
-We can visualize the marginal distribution of cancer risk in 1999 for 10-14 year olds using a histogram; we will scale this in terms of cases per 100,000 persons at risk:
+We can visualize the samples using histograms. This code first takes the first column from `phi`, which represents the cancer incidence rate in 1999 (the first observed year); the rates are multiplied by 10,000 for ease of reading:
 
 ```{r}
-phi_1999 <- phi[,1] * 100e3
+phi <- 10e3 * phi
+phi_1999 <- phi[,1] 
 head(phi_1999)
 ```
 
 ```{r}
-hist(phi_1999, main = "Rate per 100,000")
+hist(phi_1999, xlab = "Rate per 10,000, 1999", main = NA)
 ```
 
-To summarize this probability distribution, we can calculate the mean and select quantiles of the MCMC samples:
+These distributions are typically summarized by calculating their mean and tail-area quantiles. The mean is taken as the parameter estimate and the tail-area quantiles provide a credible interval:
 
 ```{r}
 mean(phi_1999)
+
 ```
 ```{r}
-quantile(phi_1999, probs = c(0.025, 0.1, 0.9, 0.975))
+quantile(phi_1999, probs = c(0.025, 0.975))
 ```
 
-If we repeated these steps for all years we would obtain the same information that was provided by `print(fit)`.
+If we repeated these steps for all years (for each column in `phi`) we would obtain the same information that was provided by `print(fit)`.
 
 In order to make inferences about quantities that involve more than one parameter, we need to use samples from the joint probability distribution. We can visualize the joint distribution using the `plot` method:
 
 ```{r}
-plot(fit, style = "lines", scale = 100e3)
+plot(fit, style = "lines", scale = 10e3)
 ```
 
 Each line is a visual depiction of a row from the matrix of MCMC samples `phi`.
 
-When calculating quantities of interest, like annual percent change, cumulative change, or a measure of inequality, one must always use the joint distribution. This means that the quantity of interest needs to be calculated by working row-wise, which will result in a vector of samples for the quantity of interest. To illustrate how this is done, the following code creates a new quantity: the difference between risk in 2017 (the $19^{th}$ year) and 1999 (the first observed year).
+When calculating quantities of interest, like annual percent change, cumulative change, or a measure of inequality, one must always use the joint distribution. This means that the quantity of interest needs to be calculated by working row-wise. To illustrate how this is done, the following code creates a new quantity: the difference between risk in 2017 (the $19^{th}$ year) and 1999 (the first observed year):
 
 ```{r}
-diff <- (phi[,19] - phi[,1]) * 100e3
-hist(diff)
+phi_2017 <- phi[,19]
+diff <- (phi_2017 - phi_1999)
+hist(diff, xlab = "Rate difference", main = NA)
 ```
 
-The principle at work here is that you never summarize MCMC samples until after all of the calculations are done. The mean of the probability distribution for the change in risk over this period is:
+The mean of the probability distribution for the change in the incidence rate per 10,000 from 1999 to 2017 is:
 
 ```{r}
 mean(diff)
 ```
 
+Cancer incidence increased by 0.26 per 10,000 from 1999 to 2017 for kids ages 10-14. The cumulative percent change from 1999 to 2017 can also be calculated this way:
+
+```{r}
+100 * mean( diff / phi_1999 )
+```
+The rate increase is a cumulative change of about 21\% or about 1.2\% annually.
+
 ## Monte Carlo standard errors
 
-An important difference between sampling with an MCMC algorithm and sampling from a pseudo random number generator (like `rnorm`) is that MCMC produces samples that are (often) correlated with one another other. (That is, in the process of drawing MCMC samples, movement around the probability distribution is serially correlated.) This means that for any number of MCMC samples, there is less information than would be provided by the same number of independently drawn samples. To evaluate how far the mean of our MCMC samples may plausibly be from the mean of the target probability distribution, we need to consider Monte Carlo standard errors (MCSEs) for each parameter.
+An important difference between sampling with an MCMC algorithm and sampling from a pseudo random number generator (like `rnorm`) is that MCMC produces samples that are (often) correlated with one another. This means that in the process of drawing MCMC samples each sample tends to be similar to the previous sample.
+
+This means that for any number of MCMC samples, there is less information than would be provided by the same number of independently drawn samples. As a result, it often requires more MCMC samples to obtain an estimate of any given prevision.
 
 @stan-dev_2022 write:
 
 > Roughly speaking, the effective sample size (ESS) of a quantity of interest captures how many independent draws contain the same amount of information as the dependent sample obtained by the MCMC algorithm. The higher the ESS the better... For final results, we recommend requiring that the bulk-ESS is greater than 100 times the number of chains. For example, when running four chains, this corresponds to having a rank-normalized effective sample size of at least 400.
 
-MCSEs are calculated as [@gelman_2014]
 
-$$MCSE(\phi) = \frac{\sqrt(Var(\phi))}{\sqrt(ESS(\phi))}$$
-
-where $Var(\phi)$ is the variance of the posterior distribution for parameter $\phi$ and ESS is the effective sample size. ESS is adjusted for autocorrelation in the MCMC samples.
-
-To view a histogram of MCSEs for all parameters in the **surveil** model, we can use **rstan**'s `stan_mcse` function:
-
-```{r fig.width = 4, fig.height = 3.5}
-rstan::stan_mcse(samples)
-```
-
-Notice that instead of returning the MCSEs themselves, **rstan** divides the MCSEs by the scale of the probability distribution, $\frac{MCSE(\phi)}{SD(\phi)}$. We can see that most of these values are under 0.04. We can always obtain smaller MCSEs by drawing a larger number of samples.
-
-It may be more intuitive to examine the effective sample size (ESS) directly. You can start by printing the `fit$samples` object and examining the ESS directly. ESS is reported in the column labeled `n_eff`:
+To examine the effective sample size (ESS), you can start by printing the `fit$samples` object. The ESS is reported in the column labeled `n_eff`:
 
 ```{r}
 print(samples)
 ```
+All of the rate parameters have ESS over 2,000 which is much more than adequate for inference.
 
-`sigma` is the scale parameter for the model; the `log_lik` parameters are the log-likelihood of each observation. This is used for calculating WAIC (see `?surveil::waic`). The `lp__` parameter is always generated by Stan, it is the log-probability of the model.
+The rate parameters are most important, since inference is almost always focused on them. `sigma` is the scale parameter for the model; the `log_lik` parameters are the log-likelihood of each observation. The `lp__` parameter is always generated by Stan, it is the log-probability of the model.
 
-If Stan is warning that Bulk ESS or tail area ESS is low and possibly unreliable, the first thing you can do is print results and inspect the ESS values. Depending on one's purpose, the warning may be overly cautious. The next step is usually to increase the number of samples drawn (using the `iter` argument to `stan_rw`).
+If Stan is warning that Bulk ESS or tail area ESS is low and possibly unreliable, the first thing you can do is print results and inspect the ESS values. Depending on one's purpose, the warning may be overly cautious. Otherwise you can simply increase the number of samples drawn using the `iter` argument to `stan_rw`. 
 
 ## Rhat
 
-A second important difference between sampling with MCMC and sampling with functions like `rnorm` is that with MCMC we have to *find* the target distribution. The reason **rstan** (and **surveil**) samples from multiple, independent MCMC chains by default is that this allows us to check that they have all converged on the same distribution. If one or more chains does not resemble the others, then there is a convergence failure.
-
-To make the most of the information provided by these MCMC chains, we can split each of them in half, effectively doubling the number of chains, before checking convergence. This is known as the split Rhat statistic [@gelman_2014]. When chains have converged, the Rhat statistics will all equal 1.
+A second important difference between sampling with MCMC and sampling with functions like `rnorm` is that with MCMC we have to *find* the target distribution. The reason *rstan* (and *surveil*) samples from multiple, independent MCMC chains by default is that this allows us to check that they have all converged on the same distribution. If one or more chains does not resemble the others then there may be a convergence failure [@gelman_2014]. When chains have converged, the Rhat statistics will all equal about 1.
 
 @stan-dev_2022 write:
 
 > We recommend running at least four chains by default and in general only fully trust the sample if R-hat is less than 1.01.
 
-The default setting in **surveil** uses four MCMC chains, consistent with the above recommendation.
+The default setting in *surveil* uses four MCMC chains, consistent with the above recommendation.
 
-The Rhat statistic can be examined by printing the Stanfit object `print(fit$samples)`. We can also visualize them all at once using `rstan::stan_rhat`:
+The Rhat statistic can be examined by printing the Stanfit object `print(fit$samples)`. We can see above that they are all equal to about 1.00.
 
-```{r fig.width = 4, fig.height = 3.5}
+We could also visualize the Rhats all at once using `rstan::stan_rhat`:
+
+```{r fig.width = 4, fig.height = 3.5, eval = FALSE}
+# plot not shown
 rstan::stan_rhat(samples)
 ```
 
 ## Divergent transitions
 
-Sometimes, MCMC algorithms are unable to provide unbiased samples that will converge on the target distribution given sufficient time. Stan's MCMC algorithm will issue a warning when it encounters a region of the probability model that it is unable to explore. These warnings of "divergent transitions" should not be ignored, as they indicate that something may have gone wrong [@betancourt_2017b;@betancourt_2017]. They will be printed to the console just after the model finishes sampling. Note that other MCMC platforms are simply unable to identify this bias (they will not issue a warning like Stan's divergent transitions, even if the problem is present).
+Sometimes, MCMC algorithms are unable to provide unbiased samples that will converge on the target distribution given sufficient time. Stan's MCMC algorithm will issue a warning when it encounters a region of the probability model that it seems unable to explore. These warnings of "divergent transitions" should not be ignored, as they indicate that something may have gone wrong [@betancourt_2017b;@betancourt_2017]. They will be printed to the console just after the model finishes sampling. Note that other MCMC platforms are simply unable to identify this bias (they will not issue a warning like Stan's divergent transitions, even if the problem is present).
 
-If you receive a divergent transition warning from a **surveil** model, here are some things to consider:
+If the number of divergent transitions is small (such as a handful out of 5,000 samples), and the ESS and Rhat are both looking good, then you may determine that the amount of bias potentially introduced is acceptable for your purposes.
+
+If there is a large number of divergent transitions, this is a serious warning. You may have made a mistake with your input data, or it could be that the model is just not very appropriate for the data.
+
+If you receive a divergent transition warning from a *surveil* model, here are some things to consider:
 
   1. Draw more samples: if you also have low ESS, the divergent transitions may disappear by increasing the number of iterations (lengthening Stan's adaptation or warm-up period). However, the default value of `iter = 3000` should generally be sufficient.
   
   2. Raise `adapt_delta`: you can also control a tuning parameter related to divergent transitions. Simply raising the `adapt_delta` value to, say, 0.99 or 0.999 if need be, may be sufficient; e.g., `stan_rw(data, time = Year, control = list(adapt_delta = 0.99, max_treedepth = 13))`. (When raising `adapt_delta`, raising `max_treedepth` may improve sampling speed.) Raising `adapt_delta` ever closer to 1 (e.g., to .9999) is generally not helpful.
  
-There may be times when you are not able to prevent divergent transitions. This may occur when the population at risk is small and observations are particularly noisy; introducing the covariance structure (using `core = TRUE`) may make these issues more difficult to address. If your are working with multiple age groups, it may be the case that the age groups with very low case counts are the source of the problem. To determine if that is the case, you can run the model without that age group (or groups), or run a model for only that age group.
+There may be times when you are not able to prevent divergent transitions. This may occur when the population at risk is small and observations are particularly noisy; introducing the covariance structure (using `core = TRUE`) may make these issues more difficult to address. If you are working with multiple age groups, it may be the case that the age groups with very low case counts are the only source of the problem. To determine if that is the case, you can run the model without that age group or run a model for only that age group.
 
-If there is a large number of divergent transitions, this is a serious warning. You may have made a mistake with your input data, or it could be that the model is just not very appropriate for the data.
-
-If the number of divergent transitions is small (e.g., a handful out of 6,000 samples), and the ESS and Rhat are looking good, then you may determine that the amount of bias potentially introduced is acceptable for your purposes. You may want to report the issue along with results. 
 
 ## References

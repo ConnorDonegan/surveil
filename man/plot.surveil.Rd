@@ -78,23 +78,17 @@ The plot method returns a \code{ggplot} object; the print method returns nothing
 Print and plot methods for \code{surveil} model results
 }
 \examples{
-
-\donttest{
 data(msa)
-houston <- msa[grep("Houston", msa$MSA), ]
-fit <- stan_rw(houston, time = Year, group = Race,
-              chains = 2, iter = 900) # for speed only
+dat <- aggregate(cbind(Count, Population) ~ Year + Race, data = msa, FUN = sum)
+fit <- stan_rw(dat, time = Year, group = Race,
+               iter = 1e3, chains = 2) # for speed only, use 4 chains
 
 print(fit)
-
-## plot probability distribution for disease risk
-plot(fit, style = "lines")
 plot(fit, facet = TRUE, scale = 100e3)
 
  ## as a ggplot, you can customize the output
 library(ggplot2)
 plot(fit) + theme_bw()
-}
 
 }
 \seealso{

@@ -123,44 +123,49 @@ If the binomial model is used instead of the Poisson, then the first line of the
 All else is remains the same. The logit function is \code{log(r/(1-r))}, where \code{r} is a rate between zero and one; the inverse-logit function is \code{exp(x)/(1 + exp(x))}.
 }
 \examples{
-\donttest{
-library(rstan)
 data(msa)
-austin <- msa[grep("Austin", msa$MSA), ]
+dat <- aggregate(cbind(Count, Population) ~ Year, data = msa, FUN = sum)
 
-fit <- stan_rw(austin,
-               time = Year,
-               group = Race,
-               chains = 2, iter = 900) # for speed only
+fit <- stan_rw(dat, time = Year)
 
-## MCMC diagnostics
-rstan::stan_mcse(fit$samples)
-rstan::stan_rhat(fit$samples)
+## print summary of results
+print(fit)
+print(fit$summary)
+
+## plot time trends (rates per 10,000)
+plot(fit, scale = 10e3)
+plot(fit, style = 'lines', scale = 10e3)
+
+## Summary with MCMC diagnostics (n_eff, Rhat; from Rstan)
 print(fit$samples)
 
-## print the surveil object
-print(fit)
-head(fit$summary)
+## cumulative percent change
+fit_pc <- apc(fit)
+print(fit_pc$cpc)
+plot(fit_pc, cumulative = TRUE)
 
-## plot time trends
-plot(fit, style = 'lines')
-
-## age-specific rates and cumulative percent change
+\donttest{
+## age-specific rates 
 data(cancer)
-fit <- stan_rw(cancer, time = Year, group = Age,
-              chains = 2, iter = 900) # for speed only
-fit_apc <- apc(fit)
-plot(fit_apc, cumulative = TRUE)
+cancer2 <- subset(cancer, grepl("55-59|60-64|65-69", Age))
+fit <- stan_rw(cancer2, time = Year, group = Age,
+               chains = 3, iter = 1e3) # for speed only
 
-# age-standardized rates
+## plot trends 
+plot(fit, scale = 10e3)
+
+## age-standardized rates
 data(standard)
 fit_stands <- standardize(fit,
                           label = standard$age,
                           standard_pop = standard$standard_pop)
 print(fit_stands)
 plot(fit_stands)
+
+## percent change for age-standardized rates
 fit_stands_apc <- apc(fit_stands)
 plot(fit_stands_apc)
+print(fit_stands_apc)
 }
 
 }

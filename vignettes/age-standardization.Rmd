@@ -1,6 +1,5 @@
 ---
 title: "Age-standardized rates"
-author: "Connor Donegan"
 date: "3/9/2022"
 output: rmarkdown::html_vignette
 header-includes:
@@ -27,9 +26,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-Age-standardization is used to improve comparison of disease incidence or mortality rates across populations. The term 'population' is used to reference any distinct grouping of people, whether it be geographic (e.g., two or more regions), temporal (e.g., two or more years), or social (e.g., two or more genders). Because disease and mortality risk vary strongly by age, we want to control for varying age distributions across groups. Examination of each age-specific rate can be indispensable for an analysis, though age-standardized rates provide a single summary index of risk. 
-
-This vignette describes the method of direct age-standardization [@broemeling_2020] and then demonstrates implementation with **surveil**. The final section extends the methodology to the analysis of health inequality between two groups, where each group is age-stratified (e.g., two racial-ethnic groups in the same region).
+This vignette describes the method of direct age-standardization [@broemeling_2020] and then demonstrates implementation with *surveil*. 
 
 ## Data
 
@@ -50,42 +47,38 @@ print(standard)
 
 Notice that the five-year age groups in the `cancer` data match the age groups provided by `standard`. 
 
-In some cases, one is only interested in a subset of age groups. For the following examples, we will limit the analysis to persons 40-64 years old:
+In some cases, one is only interested in a subset of age groups. For the following examples, we will limit the analysis to persons 50-69 years old:
 
 ```{r}
-cancer <- cancer[grep("40-44|45-49|50-54|55-59|60-64", cancer$Age),]
-standard <- standard[10:14,]
-head(cancer)
+cancer2 <- subset(cancer, grepl("50-54|55-59|60-64|65-69", Age))
+head(cancer2)
 ```
 
-```{r}
-print(standard)
-```
-
-If, instead of making this selection, we were to use the entire age distribution in our analysis, all of the following discussion and code could proceed unchanged.
+Subsetting the data allows for faster results. If instead of making this selection we were to use the entire age distribution in our analysis, all of the following discussion and code could still proceed unchanged. 
 
 ## Direct age-standardization
 
 Let $\theta_i$ be the disease risk in the $i^{th}$ age group, and let $\omega_i$ be the standard population count for that age group. Then the age-standardized risk is:
 $$SR = \frac{\sum_i \theta_i \omega_i}{\sum_i \omega_i}$$
-That is, age-standardization consists of multiplying actual age-specific risk levels by false, but fixed, population sizes.
+That is, age-standardization consists of multiplying actual age-specific rates by false, but fixed, population sizes. This enables comparisons to be made across populations that have different age structures.
 
-There are two steps to producing age-standardized rates using **surveil**. First, model each age group using `stan_rw`. Second, convert the age-specific model results into age-standardized rates using the `standardize` function.
+There are two steps to producing age-standardized rates using **surveil**:
+
+ 1. Model time trends for each age group using `stan_rw`.
+ 2. Convert the age-specific model results into age-standardized rates using the `standardize` function.
 
 ## Modeling age-specific risk
 
 To model age-specific rates, provide the `stan_rw` function with the cancer data and tell it which column contains the time period indicator (`Year`) and which column contains the grouping variable (`Age`):
 
 ```{r}
-fit <- stan_rw(cancer,
-               time = Year,
-	       group = Age,
-	       iter = 1500,
-	       chains = 2  #, for speed only; use default chains=4	       
-	       )
+fit <- stan_rw(cancer2, time = Year, group = Age,
+               refresh = 0,# silences some printing	       
+               iter = 2e3,
+               chains = 2) # for demo speed only. Use the default chains = 4
 ```
 
-The default plot method will return all of the age-specific cancer risk trends on the same plot; with many age groups and dissimilar risk levels, it is easier to understand the results if, instead, we use a grid of multiple small plots (`facet = TRUE`) and allow the scale of the y-axes to adjust for each age group (`facet_scales = "free"`):
+The default plot method will return all of the age-specific time trends on the same plot. It is sometimes easier to understand the results using a grid of multiple small plots (`facet = TRUE`). There is also an option to allow the scale of the y-axes to adjust for each age group (`facet_scales = "free"`):
 
 ```{r fig.height = 4.5, fig.width = 6.5}
 plot(fit, 
@@ -97,9 +90,9 @@ plot(fit,
      )
 ```
 
-The lines indicate estimates of risk $\theta_i$ (the means of the posterior probability distributions for $\theta_i$) and the shaded intervals correspond to 95\% credible intervals for $\theta_i$.
+The figures contain estimates with shaded 95\% credible intervals.
 
-In addition to examining trends in age-specific risk (as above), we can also convert each age-specific trend to its annual percent change or cumulative percent change. 
+In addition to examining trends in age-specific rates (as above), we can also convert each age-specific trend to its annual percent change or cumulative percent change. 
 
 ```{r fig.height = 4.5, fig.width = 6.5}
 fit_apc <- apc(fit)
@@ -118,95 +111,32 @@ fit_sr <- standardize(fit,
                         standard_pop = standard$standard_pop)
 ```
 
-As usual, **surveil** provides a plotting method for the `fit_sr` object:
+As usual, *surveil* provides a plotting method for the `fit_sr` object:
 
 ```{r fig.height = 4, fig.width = 5}
 # load ggplot2 to enable additional plot customization
 library(ggplot2)
 plot(fit_sr, scale = 100e3, base_size = 10) + 
   labs(title = "US age-standardized cancer incidence per 100,000",
-  subtitle = "Ages 40-64")
+  subtitle = "Ages 50-69")
 ```
 
 as well as a printing method:
 
 ```{r}
-print(fit_sr)
+print(fit_sr, scale = 100e3)
 ```
 
-To learn about the contents of `fit_sr`, see `?standardize` or explores its contents as you would a list (`names(fit_sr)`, `fit_sr$standard_summary`, `head(fit_sr$standard_samples`), etc.).
+To learn about the contents of `fit_sr`, see `?standardize` or explores its contents as you would a list using `names(fit_sr)`, `fit_sr$standard_summary`, `head(fit_sr$standard_samples`), etc.
 
-## Comparing age-stratified groups
-
-### Measures of pairwise inequality
-
-The `group_diff` function can be used to obtain measures of inequality between two age-stratified groups. The measures of excess cases (EC) and proportion attributable risk (PAR) are adjusted to account for age-specific rates with varying sizes of populations at risk.
-
-In the following table, $D$ and $A$ refer to the age-standardized rates for the disadvantaged and advantaged populations, respectively. Age groups are indexed by $i$, such that $D_i$ is the incidence rate in the $i^{th}$ age group for the disadvantaged population.
-
-|    Concept   |  Formula for Age Stratified Groups |
-|:--------------|:-----:|
-| Rate Ratio (RR) | $\frac{D}{A}$ |
-| Rate Difference (RD) | $D - A$ |
-| Excess Cases (EC) | $\sum_i (D_i - A_i) * P_{d,i}$ |
-| Proportion Attributable Risk (PAR) | $\frac{\sum_i (D_i - A_i) * P_{d,i}}{ \sum_i D_i * P_{d,i} }$ | 
-
-
-The EC measure sums the excess cases across all age groups, and the PAR divides the EC measure by the total risk across all age groups in the disadvantaged population. For age stratified populations, the PAR may be preferred over the RR as a measure of relative inequality because the PAR reflects the actual population sizes.
-
-Pairwise measures of inequality have an important purpose (tracking health inequalities between historically or currently advantaged and disadvantaged groups), but we should keep in mind the limitations inherent in tracking the progress of any group by comparing that group to a moving target (particularly one that may move in an unfavorable direction). There are rarely only two groups of interest; to measure health inequality across multiple groups, consider Theil's index (see `?theil` and `vignette("demonstration")`).
-
-### Demonstration
-
-To demonstrate, we will use the same cancer data and create a fake comparison population. This will allow us to avoid introducing a new data set and it will give us control over the results.
-
-Pretend that instead of having cancer incidence data for the entire USA, we have cancer data for two sub-populations, group A and group B. The original `cancer` data will serve for A (`cancer_a`), and we will create `cancer_b` so that its cancer incidence rate is, in relative terms, steadily above that of `cancer_a`. Group B will have smaller population than group A, and we will also add some extra 'noise' to the data.
+The `apc` function and its methods for printing and plotting can be applied to the age-standardized results:
 
 ```{r}
-cancer_a <- cancer 
-cancer_b <- cancer
-## set the case count equal to 0.75 times that of group A
-cancer_b$Count <- round(cancer_a$Count * 0.75) +  
-  rpois(n = nrow(cancer), lambda = cancer_a$Count * 0.1) # adds a little noise to the data
-## set the population at risk to 0.6 times that of group A
-cancer_b$Population <- round(cancer_a$Population * 0.6) + 
-  rpois(n = nrow(cancer), lambda = cancer_a$Population * 0.1)
+fit_sr_pc <- apc(fit_sr)
 ```
-
-Now we can model age-specific risk for Group B (`cancer_b`):
 
 ```{r}
-fit_b <- stan_rw(cancer_b, time = Year, group = Age, 
-                 refresh = 0, # silences some printing
-		 iter = 1500,
-	         chains = 2  # for speed only; use default chains=4
-	         # cores = 4 # for multi-core processing
-		 )
-```
-
-And then age-standardize the results:
-
-```{r}
-fit_sr_b <- standardize(fit_b,
-                        label = standard$age,
-                        standard_pop = standard$standard_pop)
-```
-
-Finally, to obtain measures of the difference in risk between these two groups we place the two age-standardized models into a list (preferably a named list), and then pass the list to the `group_diff` function (see `?group_diff` for more details):
-
-```{r}
-fit_sr_list <- list(B = fit_sr_b, A = fit_sr)
-ineq <- group_diff(fit_sr_list)
-```
-
-```{r fig.width = 7, fig.height = 2.5}
-plot(ineq, base_size = 10)
-```
-
-We see that relative inequality (AR) is about constant (as expected), the rate difference falls (because the total level of cancer risk has fallen over time), and excess cases increase over time (because the total population at risk is both growing and aging).
-
-```{r}
-print(ineq)
+plot(fit_sr_pc, cum = TRUE)
 ```
 
 ## References

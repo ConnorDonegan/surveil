@@ -34,14 +34,12 @@
 #' @seealso \code{\link[surveil]{plot.theil}} \code{\link[surveil]{print.theil}} \code{\link[surveil]{plot.theil_list}}
 #'
 #' @examples
-#'
-#' \donttest{
-#'  houston <- msa[grep("Houston", msa$MSA), ]
+#'  houston <- subset(msa, grepl("Houston", MSA))
 #'  fit <- stan_rw(houston, time = Year, group = Race,
 #'                chains = 2, iter = 900) # for speed only
 #'  theil_dfw <- theil(fit)
 #'  plot(theil_dfw)
-#' }
+#' 
 #' @export
 #' @md
 theil <- function(x) {

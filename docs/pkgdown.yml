@@ -3,9 +3,10 @@ pkgdown: 2.0.7
 pkgdown_sha: ~
 articles:
   age-standardization: age-standardization.html
+  measuring-inequality: measuring-inequality.html
   surveil-demo: surveil-demo.html
   surveil-mcmc: surveil-mcmc.html
-last_built: 2023-10-02T20:04Z
+last_built: 2024-07-08T11:46Z
 urls:
   reference: https://connordonegan.github.io/surveil/, https://cloud.r-project.org/web/packages/surveil/index.html/reference
   article: https://connordonegan.github.io/surveil/, https://cloud.r-project.org/web/packages/surveil/index.html/articles

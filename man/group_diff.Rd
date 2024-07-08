@@ -60,16 +60,13 @@ If the user provides a list of \code{stand_surveil} objects with age-standardize
 }
 }
 \examples{
-
-\donttest{
 data(msa)
-houston <- msa[grep("Houston", msa$MSA), ]
-fit <- stan_rw(houston, time = Year, group = Race,
-               chains = 2, iter = 900) # low iter for speed only
+dat = subset(msa, grepl("Houston", MSA) & grepl("Black|White", Race))
+fit <- stan_rw(dat, time = Year, group = Race,
+               iter = 1e3) # low iter for speed only
 gd <- group_diff(fit, "Black or African American", "White")
 print(gd, scale = 100e3)
 plot(gd, scale = 100e3)
-}
 
 }
 \seealso{
